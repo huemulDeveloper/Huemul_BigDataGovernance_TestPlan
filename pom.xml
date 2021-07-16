@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.huemulsolutions.bigdata</groupId>
-  <artifactId>datagovernance.planpruebas</artifactId>
+  <artifactId>datagovernance.planpruebas_2.12</artifactId>
   <version>2.6.3</version>
   <name>DataGovernancePlanPruebas</name>
-  <description>Test Plan version 2.6.3</description>
+  <description>Test Plan version 2.6.3 scala 2.12</description>
   <inceptionYear>2016</inceptionYear>
   <licenses>
     <license>
@@ -27,9 +27,9 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.tools.version>2.11</scala.tools.version>
-    <scala.version>2.11.8</scala.version>
-    <spark.version>2.3.3</spark.version>
+    <scala.tools.version>2.12</scala.tools.version>
+    <scala.version>2.12.10</scala.version>
+    <spark.version>2.4.0</spark.version>
     
   </properties>
 
@@ -53,20 +53,20 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming_2.11</artifactId>
+      <artifactId>spark-streaming_${scala.tools.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
     
     
     <dependency>
 	  <groupId>com.huemulsolutions.bigdata</groupId>
-	  <artifactId>huemul-bigdatagovernance</artifactId>
+	  <artifactId>huemul-bigdatagovernance_${scala.tools.version}</artifactId>
 	  <version>2.6.3</version>
 	</dependency>
 
 	<dependency>
 	  <groupId>com.yourcompany</groupId>
-	  <artifactId>demo_settings</artifactId>
+	  <artifactId>demo_settings_ONPREM_${scala.tools.version}</artifactId>
 	  <version>2.6.3</version>
 	</dependency>
 	
@@ -119,19 +119,19 @@
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-core_${scala.tools.version}</artifactId>
-      <version>3.7.2</version>
+      <version>4.12.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-junit_${scala.tools.version}</artifactId>
-      <version>3.7.2</version>
+      <version>4.12.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.tools.version}</artifactId>
-      <version>3.0.0-M15</version>
+      <version>3.2.9</version>
       <scope>test</scope>
     </dependency>
     
@@ -165,23 +165,7 @@
         </executions>
       </plugin>
 
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.2</version>
-        <configuration>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-  -->
+
 
 
 
