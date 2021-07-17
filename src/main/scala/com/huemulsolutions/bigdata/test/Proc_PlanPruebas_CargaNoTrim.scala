@@ -143,10 +143,10 @@ object Proc_PlanPruebas_CargaNoTrim {
       
       Control.NewStep("DF Plan de pruebas: Negativo_Minimo ")
       val Negativo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100 /*is null*/                     then true else false end as Cumple_BigIntValue
-                                                                                     ,case when IntValue -100 /*is null*/                         then true else false end as Cumple_IntValue
-                                                                                     ,case when SmallIntValue  -100 /*is null*/                         then true else false end as Cumple_SmallIntValue
-                                                                                     ,case when TinyIntValue  -100 /*is null*/                         then true else false end as Cumple_TinyIntValue
-                                                                                     ,case when DecimalValue  -100.123 /*is null*/                    then true else false end as Cumple_DecimalValue
+                                                                                     ,case when IntValue = -100 /*is null*/                         then true else false end as Cumple_IntValue
+                                                                                     ,case when SmallIntValue = -100 /*is null*/                         then true else false end as Cumple_SmallIntValue
+                                                                                     ,case when TinyIntValue = -100 /*is null*/                         then true else false end as Cumple_TinyIntValue
+                                                                                     ,case when DecimalValue = -100.123 /*is null*/                    then true else false end as Cumple_DecimalValue
                                                                                      ,case when RealValue = -100.123                        then true else false end as Cumple_RealValue
                                                                                      ,case when FloatValue = cast(-100.123 as float)        then true else false end as Cumple_FloatValue
                                                                                      ,case when StringValue = "    TEXTO AA"                    then true else false end as Cumple_StringValue
@@ -164,11 +164,11 @@ object Proc_PlanPruebas_CargaNoTrim {
       val Negativo_Minimo = Negativo_Minimo_Todos.first()
       
       Control.NewStep("DF Plan de pruebas: Positivo_Minimo ")
-      val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue 10 /*is null*/                      then true else false end as Cumple_BigIntValue
-                                                                                     ,case when IntValue  10 /*is null*/                        then true else false end as Cumple_IntValue
-                                                                                     ,case when SmallIntValue  10 /*is null*/                         then true else false end as Cumple_SmallIntValue
-                                                                                     ,case when TinyIntValue  10 /*is null*/                         then true else false end as Cumple_TinyIntValue
-                                                                                     ,case when DecimalValue  10.123 /*is null*/                   then true else false end as Cumple_DecimalValue
+      val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10 /*is null*/                      then true else false end as Cumple_BigIntValue
+                                                                                     ,case when IntValue = 10 /*is null*/                        then true else false end as Cumple_IntValue
+                                                                                     ,case when SmallIntValue = 10 /*is null*/                         then true else false end as Cumple_SmallIntValue
+                                                                                     ,case when TinyIntValue = 10 /*is null*/                         then true else false end as Cumple_TinyIntValue
+                                                                                     ,case when DecimalValue = 10.123 /*is null*/                   then true else false end as Cumple_DecimalValue
                                                                                      ,case when RealValue = 10.123                        then true else false end as Cumple_RealValue
                                                                                      ,case when FloatValue = cast(10.123  as float)         then true else false end as Cumple_FloatValue
                                                                                      ,case when StringValue = "    TEXTO AA"                    then true else false end as Cumple_StringValue
@@ -186,11 +186,11 @@ object Proc_PlanPruebas_CargaNoTrim {
       val Positivo_Minimo = Positivo_Minimo_Todos.first()
       
       Control.NewStep("DF Plan de pruebas: Positivo_Maximo ")
-      val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue  100 /*is null*/                     then true else false end as Cumple_BigIntValue
-                                                                                     ,case when IntValue  100 /*is null*/                         then true else false end as Cumple_IntValue
-                                                                                     ,case when SmallIntValue  100 /*is null*/                         then true else false end as Cumple_SmallIntValue
-                                                                                     ,case when TinyIntValue  100 /*is null*/                        then true else false end as Cumple_TinyIntValue
-                                                                                     ,case when DecimalValue   100.123 /*is null*/                   then true else false end as Cumple_DecimalValue
+      val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100 /*is null*/                     then true else false end as Cumple_BigIntValue
+                                                                                     ,case when IntValue = 100 /*is null*/                         then true else false end as Cumple_IntValue
+                                                                                     ,case when SmallIntValue = 100 /*is null*/                         then true else false end as Cumple_SmallIntValue
+                                                                                     ,case when TinyIntValue = 100 /*is null*/                        then true else false end as Cumple_TinyIntValue
+                                                                                     ,case when DecimalValue =  100.123 /*is null*/                   then true else false end as Cumple_DecimalValue
                                                                                      ,case when RealValue = 100.123                        then true else false end as Cumple_RealValue
                                                                                      ,case when FloatValue = cast(100.123  as float)        then true else false end as Cumple_FloatValue
                                                                                      ,case when StringValue = "TEXTO ZZZZZZ"                then true else false end as Cumple_StringValue
