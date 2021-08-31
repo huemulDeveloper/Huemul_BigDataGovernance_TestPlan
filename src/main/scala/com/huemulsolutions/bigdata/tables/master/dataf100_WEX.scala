@@ -2,7 +2,7 @@ package com.huemulsolutions.bigdata.tables.master
 
 import com.huemulsolutions.bigdata.common.huemul_BigDataGovernance
 import com.huemulsolutions.bigdata.control.{huemulType_Frequency, huemul_Control}
-import com.huemulsolutions.bigdata.dataquality.{huemulType_DQNotification, huemul_DataQuality}
+import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification
 import com.huemulsolutions.bigdata.tables._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
 import org.apache.spark.sql.types.{DateType, Decimal, IntegerType, StringType}

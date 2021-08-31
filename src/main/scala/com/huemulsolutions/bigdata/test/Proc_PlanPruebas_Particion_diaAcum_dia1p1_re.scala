@@ -17,8 +17,8 @@ object Proc_PlanPruebas_Particion_diaAcum_dia1p1_re {
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     var empresaName: String = "EmpresA"
 
-    //val empresa = huemulLib.arguments.GetValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
-    val TipoTablaParam: String = huemulLib.arguments.GetValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
+    //val empresa = huemulLib.arguments.getValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
+    val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
     var TipoTabla: huemulType_StorageType = null
     if (TipoTablaParam == "orc")
       TipoTabla = huemulType_StorageType.ORC
@@ -33,7 +33,7 @@ object Proc_PlanPruebas_Particion_diaAcum_dia1p1_re {
       empresaName = empresaName.toLowerCase()
     }
 
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     var IdTestPlan: String = ""
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
@@ -53,8 +53,8 @@ object Proc_PlanPruebas_Particion_diaAcum_dia1p1_re {
       val TablaMaster = new tbl_DatosParticionAcum(huemulLib, Control, TipoTabla)
 
       //valida que existan las particiones esperadas
-      val path_20170501_super01_internet = TablaMaster.getFullNameWithPath().concat(s"/periodo=2017-05-01/$empresaName=super-01/app=internet")
-      val path_20170501_super01_tienda = TablaMaster.getFullNameWithPath().concat(s"/periodo=2017-05-01/$empresaName=super-01/app=tienda")
+      val path_20170501_super01_internet = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-01/app=internet")
+      val path_20170501_super01_tienda = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-01/app=tienda")
 
       Control.NewStep(s"buscando path $path_20170501_super01_internet")
       var path_existe = huemulLib.hdfsPath_exists(path_20170501_super01_internet)

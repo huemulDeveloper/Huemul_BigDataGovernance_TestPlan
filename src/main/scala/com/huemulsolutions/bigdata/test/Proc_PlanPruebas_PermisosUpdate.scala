@@ -4,7 +4,6 @@ import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata
 
 /**
  * Este plan de pruebas valida lo siguiente:
@@ -16,10 +15,10 @@ object Proc_PlanPruebas_PermisosUpdate {
     val huemulLib = new huemul_BigDataGovernance("01 - getWhoCanRun_executeOnlyUpdate",args,com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     var IdTestPlan: String = ""
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
@@ -34,7 +33,7 @@ object Proc_PlanPruebas_PermisosUpdate {
       TablaMaster.WhoCanRun_executeOnlyInsert_addAccess("agrega otro", "cualquier clase")
   
       
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeOnlyUpdate","Pudo agregar acceso", "no Pudo agregar acceso", s"Pudo agregar acceso", false)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeOnlyUpdate","Pudo agregar acceso", "no Pudo agregar acceso", s"Pudo agregar acceso", p_testPlan_IsOK = false)
       Control.RegisterTestPlanFeature("getWhoCanRun_executeOnlyUpdate", IdTestPlan)
       
       

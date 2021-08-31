@@ -1,13 +1,8 @@
 package com.huemulsolutions.bigdata.test
 
-import java.sql.Date
 
 import com.huemulsolutions.bigdata.common.huemul_BigDataGovernance
 import com.huemulsolutions.bigdata.control.{huemulType_Frequency, huemul_Control}
-import org.apache.spark.sql.{Row, SaveMode}
-import org.apache.spark.sql.types.{DateType, IntegerType, StringType, StructField, StructType}
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs._
 
 object prc_f100_testplan {
   var control:huemul_Control = _
@@ -25,10 +20,10 @@ object prc_f100_testplan {
     //dataGeneration(huemulBigDataGov)
 
     // Ejecuta el plan de prueba WARNING_EXCLUDE
-    //val TestPlanGroup: .arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
-    val TestPlanGroup: String = huemulBigDataGov.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
-    val outputDatabase = huemulBigDataGov.GlobalSettings.GetDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.DQError_DataBase)
-    val outputDatabase_master = huemulBigDataGov.GlobalSettings.GetDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.MASTER_DataBase)
+    //val TestPlanGroup: .arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulBigDataGov.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val outputDatabase = huemulBigDataGov.GlobalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.DQError_DataBase)
+    val outputDatabase_master = huemulBigDataGov.GlobalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.MASTER_DataBase)
 
     try {
 
@@ -415,7 +410,7 @@ object prc_f100_testplan {
            | where pkcol1 = 1 and (pkcol2 = 3 or pkcol2 = 7)
          """.stripMargin)
 
-      val testplanReg = control.RegisterTestPlan(
+      control.RegisterTestPlan(
         TestPlanGroup
         , "WEX_TRX-WARNING_EXCLUDE - Registros Cargados"
         , "Valida Cantida de registros cargados"
@@ -435,7 +430,7 @@ object prc_f100_testplan {
       case e:Throwable =>
         println(e)
         println(e.printStackTrace())
-        control.RegisterTestPlan(TestPlanGroup, "tuvo errores", "ver errores", "sin errores", e.getMessage, false)
+        control.RegisterTestPlan(TestPlanGroup, "tuvo errores", "ver errores", "sin errores", e.getMessage, p_testPlan_IsOK = false)
         control.TestPlan_CurrentIsOK(-1)
     }
 
@@ -495,7 +490,7 @@ object prc_f100_testplan {
                             , TestPlanGroup: String
                             , testPlanId:String
                             , tblDataF100WexDQ: String
-                            , notification: String) = {
+                            , notification: String): Unit = {
     //------------------------------------------------------------------------------------------------------------
     saveTestplanCount(
       dqControlId
@@ -667,11 +662,12 @@ object prc_f100_testplan {
     )
   }
 
+  /*
   private def dataGeneration(huemulBigDataGov: huemul_BigDataGovernance): Unit = {
-    val path = huemulBigDataGov.GlobalSettings.GetPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.RAW_BigFiles_Path )
+    val path = huemulBigDataGov.GlobalSettings.getPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.RAW_BigFiles_Path )
     println(s"INFO path : $path")
 
-    val pathTemp = huemulBigDataGov.GlobalSettings.GetPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.TEMPORAL_Path )
+    val pathTemp = huemulBigDataGov.GlobalSettings.getPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.TEMPORAL_Path )
     println(s"INFO path : $pathTemp")
     //Genera archivo de pruebas
     val someData = Seq(
@@ -742,4 +738,6 @@ object prc_f100_testplan {
     val partFileSourcePathTmp = new Path(fileTmp)
     hdfs.delete(partFileSourcePathTmp, true)
   }
+
+   */
 }

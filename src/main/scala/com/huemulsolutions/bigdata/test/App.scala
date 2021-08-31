@@ -3,24 +3,9 @@ package com.huemulsolutions.bigdata.test
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-//import com.yourcompany.settings.globalSettings
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import java.io.{FileNotFoundException, IOException}
-
-/*
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.pdf.PDFParser;
-import org.apache.tika.sax.BodyContentHandler;
- */
-
-//import org.xml.sax.SAXException;
-//import org.apache.tika.parser.pdf.PDFParserConfig
-
-//import org.apache.spark.streaming._
-//import org.apache.spark.streaming.StreamingContext._
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
 import org.apache.spark.sql._
@@ -60,16 +45,16 @@ object App {
       key = openFile.getLines.mkString
       openFile.close()
     } catch {
-        case _: FileNotFoundException => println(s"Couldn't find that file: ${fileName}")
+        case _: FileNotFoundException => println(s"Couldn't find that file: $fileName")
         case e: IOException => println(s"($fileName). Got an IOException! ${e.getLocalizedMessage}")
-        case _: Exception => println(s"exception opening ${fileName}")
+        case _: Exception => println(s"exception opening $fileName")
     }
     
-    return key
+    key
   }
 
   
-  def main_PDF(args : Array[String]) {
+  def main_PDF() {
     
     
     /*
@@ -104,7 +89,7 @@ object App {
    
     
     val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
    
    
    
@@ -127,7 +112,7 @@ object App {
     val query = new Query(" #Azure ")
           query.setCount(100)
           query.lang("en")
-          var finished = false
+          val finished = false
           while (!finished) {
             val result = twitter.search(query)
             val statuses = result.getTweets
@@ -292,9 +277,9 @@ object App {
     
     com.yourcompany.settings.globalSettings.Global.HIVE_HourToUpdateMetadata=6
     
-    metadata_hive_active = huemulLib_ini.arguments.GetValue("metadata_hive_active", "false").toBoolean
-    metadata_spark_active = huemulLib_ini.arguments.GetValue("metadata_spark_active", "false").toBoolean
-    metadata_hwc_active = huemulLib_ini.arguments.GetValue("metadata_hwc_active", "false").toBoolean
+    metadata_hive_active = huemulLib_ini.arguments.getValue("metadata_hive_active", "false").toBoolean
+    metadata_spark_active = huemulLib_ini.arguments.getValue("metadata_spark_active", "false").toBoolean
+    metadata_hwc_active = huemulLib_ini.arguments.getValue("metadata_hwc_active", "false").toBoolean
     
         
     huemulLib_ini.close()
@@ -316,7 +301,7 @@ object App {
     }
     com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_SPARK.setActive(metadata_spark_active).setActiveForHBASE(false)
     
-    if (com.yourcompany.settings.globalSettings.Global.getBigDataProvider() == huemulType_bigDataProvider.databricks) {
+    if (com.yourcompany.settings.globalSettings.Global.getBigDataProvider == huemulType_bigDataProvider.databricks) {
       com.yourcompany.settings.globalSettings.Global.setAVRO_format("avro")
     }
 
@@ -402,7 +387,7 @@ object App {
     else 
       println("prueba 4 error")
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
 
     
     /*Valida existencia de tablas en hive
@@ -436,7 +421,7 @@ object App {
       }
         
     }
-    Control.RegisterTestPlan(TestPlanGroup, "error_existe_tablas_en_hive", "error_existe_tablas_en_hive", "error_existe_tablas_en_hive = false", s"error_existe_tablas_en_hive = ${error_existe_tablas_en_hive}", error_existe_tablas_en_hive == false) 
+    Control.RegisterTestPlan(TestPlanGroup, "error_existe_tablas_en_hive", "error_existe_tablas_en_hive", "error_existe_tablas_en_hive = false", s"error_existe_tablas_en_hive = $error_existe_tablas_en_hive", !error_existe_tablas_en_hive)
     
     
    /*Valida existencia de tablas en hive
@@ -449,17 +434,17 @@ object App {
       validacionTablas.foreach { x => 
         try {
           println(s"valida en SPARK existencia tabla $x")
-          val valida01 = huemulLib.spark.sql(s"select count(1) as cantidad from ${x}")
+          val valida01 = huemulLib.spark.sql(s"select count(1) as cantidad from $x")
           valida01.show()
         } catch {
           case e: Exception =>
             error_existe_tablas_en_spark = true
             println(e.getMessage)
-            Control.RegisterTestPlan(TestPlanGroup, s"hive ${x}", s"detalle error: ${e.getMessage}", "no raiserror", s"raiserror", p_testPlan_IsOK = false)
+            Control.RegisterTestPlan(TestPlanGroup, s"hive $x", s"detalle error: ${e.getMessage}", "no raiserror", s"raiserror", p_testPlan_IsOK = false)
         }
       }
     }
-    Control.RegisterTestPlan(TestPlanGroup, "error_existe_tablas_en_spark", "error_existe_tablas_en_spark", "error_existe_tablas_en_spark = false", s"error_existe_tablas_en_spark = ${error_existe_tablas_en_spark}", !error_existe_tablas_en_spark)
+    Control.RegisterTestPlan(TestPlanGroup, "error_existe_tablas_en_spark", "error_existe_tablas_en_spark", "error_existe_tablas_en_spark = false", s"error_existe_tablas_en_spark = $error_existe_tablas_en_spark", !error_existe_tablas_en_spark)
     Control.TestPlan_CurrentIsOK(2)
     
     if (Control.TestPlan_IsOkById(TestPlanGroup, 40))

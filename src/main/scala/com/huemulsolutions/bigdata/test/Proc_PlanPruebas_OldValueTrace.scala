@@ -2,16 +2,6 @@ package com.huemulsolutions.bigdata.test
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos
-import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata
-import org.apache.hadoop.fs.FileSystem
-import com.huemulsolutions.bigdata.dataquality.huemul_DataQuality
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQQueryLevel
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification.huemulType_DQNotification
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification
-import scala.collection.mutable._
-import org.apache.spark.sql.types._
 import com.huemulsolutions.bigdata.raw.raw_DatosOldValue
 import com.huemulsolutions.bigdata.tables.master.tbl_OldValueTrace
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
@@ -25,11 +15,11 @@ object Proc_PlanPruebas_OldValueTrace {
     val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OldValueTrace",args,com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
-    val TipoTablaParam: String = huemulLib.arguments.GetValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
     var TipoTabla: huemulType_StorageType = null
     if (TipoTablaParam == "orc")
         TipoTabla = huemulType_StorageType.ORC
@@ -42,7 +32,7 @@ object Proc_PlanPruebas_OldValueTrace {
     else if (TipoTablaParam == "avro")
         TipoTabla = huemulType_StorageType.AVRO        
     
-    println(s"tipo tabla: ${TipoTablaParam}, ${TipoTabla}")
+    println(s"tipo tabla: $TipoTablaParam, $TipoTabla")
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
     try {
@@ -59,17 +49,17 @@ object Proc_PlanPruebas_OldValueTrace {
       TablaMaster.DF_from_RAW(DF_RAW, "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
-      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase()).collect()
-      if (a.filter { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase()  }.length > 0) {
-        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable()} ")
+      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
-      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath()}")
+      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath}")
       val fs = FullPath.getFileSystem(huemulLib.spark.sparkContext.hadoopConfiguration)
       if (fs.exists(FullPath))
         fs.delete(FullPath, true)
         
-      val FullPath_OVT = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath_OldValueTrace()}")
+      val FullPath_OVT = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath_OldValueTrace}")
       if (fs.exists(FullPath_OVT))
         fs.delete(FullPath_OVT, true)
         
@@ -88,7 +78,7 @@ object Proc_PlanPruebas_OldValueTrace {
       Control.NewStep("Ejecución")
       val tp_resultado = TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY ) 
       
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"${if (tp_resultado == true) "no" else "si"} hay error en masterización", tp_resultado == true)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"${if (tp_resultado) "no" else "si"} hay error en masterización", tp_resultado)
       Control.RegisterTestPlanFeature("OldValueTrace - inicial", IdTestPlan)
       
       TablaMaster.DataFramehuemul.DataFrame.show()  
@@ -106,7 +96,7 @@ object Proc_PlanPruebas_OldValueTrace {
 
       TablaMaster.setMappingAuto()
       TablaMaster.setRowStatusDeleteAsDeleted(false)
-      val tp_resultado_2 = TablaMaster.executeFull("DF_Final_2", org.apache.spark.storage.StorageLevel.MEMORY_ONLY )
+      TablaMaster.executeFull("DF_Final_2", org.apache.spark.storage.StorageLevel.MEMORY_ONLY )
       
       TablaMaster.DataFramehuemul.DataFrame.show()
       
@@ -171,7 +161,7 @@ object Proc_PlanPruebas_OldValueTrace {
       Control.FinishProcessOK
     } catch {
       case e: Exception => 
-        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", false)
+        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
         Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
         Control.FinishProcessError()

@@ -29,7 +29,7 @@ class tbl_DatosBasicosNombres_mes(HuemulLib: huemul_BigDataGovernance, Control: 
   this.setNameForMDM_StatusReg("xxxStatus")
   
   this.setDQ_MaxNewRecords_Num(4)
-  this.setPartitionField("periodo_mes")
+  //this.setPartitionField("periodo_mes")
   this.setFrequency(huemulType_Frequency.ANY_MOMENT)
   
   //Agrega version 1.3
@@ -37,15 +37,16 @@ class tbl_DatosBasicosNombres_mes(HuemulLib: huemul_BigDataGovernance, Control: 
   
   val periodo_mes = new huemul_Columns(StringType,true,"periodo")
   periodo_mes.setIsPK ( )
+  periodo_mes.setPartitionColumn(1)
 
   
-  val TipoValor = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
+  val TipoValor: huemul_Columns = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
     .setIsPK ()
     .setDQ_MinLen ( 2,null)
     .setDQ_MaxLen ( 50,null)
   
   
-  val IntValue = new huemul_Columns(IntegerType,true,"datos integer")
+  val IntValue: huemul_Columns = new huemul_Columns(IntegerType,true,"datos integer")
       .setNullable ( )
   
   

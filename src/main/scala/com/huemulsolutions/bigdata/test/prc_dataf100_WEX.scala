@@ -37,12 +37,12 @@ object prc_dataf100_WEX {
 
     println(line)
 
-    var paramAno = huemulBigDataGov.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017").toInt
-    var paramMes = huemulBigDataGov.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12").toInt
+    var paramAno = huemulBigDataGov.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017").toInt
+    var paramMes = huemulBigDataGov.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12").toInt
 
     val paramDia:Int = 1
 
-    val paramNumMeses = huemulBigDataGov.arguments.GetValue("num_meses", "1").toInt
+    val paramNumMeses = huemulBigDataGov.arguments.getValue("num_meses", "1").toInt
 
     /*************** CICLO RE-PROCESO MASIVO **********************/
     var i: Int = 1
@@ -93,7 +93,7 @@ object prc_dataf100_WEX {
       if (!dfRawDataF100.open("raw_dataf100", Control, paramAno, paramMes, 1, 0, 0, 0))
         Control.RaiseError(s"error encontrado, abortar: ${dfRawDataF100.Error.ControlError_Message}")
 
-      val TipoTablaParam: String = huemulBigDataGov.arguments.GetValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
+      val TipoTablaParam: String = huemulBigDataGov.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
       var TipoTabla: huemulType_StorageType = null
       if (TipoTablaParam == "orc")
         TipoTabla = huemulType_StorageType.ORC

@@ -28,11 +28,11 @@ object Proc_PlanPruebas_Particion_dia {
 
      */
     huemulLib.arguments.setArgs(args)
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
-    val dia  = huemulLib.arguments.GetValue("dia", null,"Debe especificar dia de proceso: ejemplo: dia=1")
-    val empresa = huemulLib.arguments.GetValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
-    val TipoTablaParam: String = huemulLib.arguments.GetValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val dia  = huemulLib.arguments.getValue("dia", null,"Debe especificar dia de proceso: ejemplo: dia=1")
+    val empresa = huemulLib.arguments.getValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
+    val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
     var TipoTabla: huemulType_StorageType = null
     if (TipoTablaParam == "orc")
       TipoTabla = huemulType_StorageType.ORC
@@ -45,7 +45,7 @@ object Proc_PlanPruebas_Particion_dia {
     else if (TipoTablaParam == "avro")
       TipoTabla = huemulType_StorageType.AVRO
 
-    //val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    //val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     //var IdTestPlan: String = ""
     //Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         

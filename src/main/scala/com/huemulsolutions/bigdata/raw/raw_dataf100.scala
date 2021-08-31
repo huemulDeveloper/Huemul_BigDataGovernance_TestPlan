@@ -3,7 +3,7 @@ package com.huemulsolutions.bigdata.raw
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.datalake._
-import org.apache.spark.sql.types.{DateType, DecimalType, IntegerType, StringType}
+import org.apache.spark.sql.types.{DateType, IntegerType, StringType}
 
 /**
  * Clase que abre archivo RAW nation
@@ -141,9 +141,9 @@ object raw_dataf100_test {
     val Control = new huemul_Control(huemulBigDataGov, null, huemulType_Frequency.MONTHLY )
 
     /*************** PARÁMETROS **********************/
-    val param_year = huemulBigDataGov.arguments.GetValue("year", null
+    val param_year = huemulBigDataGov.arguments.getValue("year", null
       , "Debe especificar el parámetro año, ej: year=2017").toInt
-    val param_month = huemulBigDataGov.arguments.GetValue("month", null
+    val param_month = huemulBigDataGov.arguments.getValue("month", null
       , "Debe especificar el parámetro mes, ej: month=12").toInt
 
     //Inicializa clase RAW

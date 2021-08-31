@@ -1,24 +1,19 @@
 package com.huemulsolutions.bigdata.raw
 
-import com.huemulsolutions.bigdata.datalake._
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType;
-import com.huemulsolutions.bigdata.datalake.huemulType_Separator;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLake;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting;
-import com.huemulsolutions.bigdata.control._
+import com.huemulsolutions.bigdata.datalake.huemulType_FileType
+import com.huemulsolutions.bigdata.datalake.huemulType_Separator
+import com.huemulsolutions.bigdata.datalake.huemul_DataLake
+import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import org.apache.spark.sql.types._
-import scala.util.Try
-import com.huemulsolutions.bigdata.control.huemulType_Frequency.huemulType_Frequency
-import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.Row
 
 class keyvalue(key: String, value: String, posIni: Integer, posFin: Integer) extends Serializable {
-  def getKey(): String = {return key}
-  def getValue(): String = {return value}
-  def getPosIni(): Integer = {return posIni}
-  def getPosFin(): Integer = {return posFin}
+  def getKey: String = key
+  def getValue: String = value
+  def getPosIni: Integer = posIni
+  def getPosFin: Integer = posFin
 }
 
 class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control) extends huemul_DataLake(huemulLib, Control) with Serializable  {
@@ -80,7 +75,7 @@ class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control)
         control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
       }
       
-      import huemulLib.spark.implicits._
+      //import huemulLib.spark.implicits._
    
       control.NewStep("Aplicando Filtro")
        
@@ -104,7 +99,7 @@ class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control)
       //genera expresiones regulares
       //*******************************************************
       val regexCodigo = "[A-Z]".r
-      val regexpNotas_traduce = "^(?i)nota [0-9]+".r
+      //val regexpNotas_traduce = "^(?i)nota [0-9]+".r
       
       //genera filtros de textos que no deben ser considerados
       val filtroCirculares = "Instituto Nacional de Salud".toUpperCase()
@@ -135,7 +130,7 @@ class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control)
       //*******************************************************
       //Genera resultado final de la tabla
       //*******************************************************
-      val rowRDD_Consolidado = rowRDD_Base.filter{x => x._6 == true} .map( x => (x._4 //código y texto original 
+      val rowRDD_Consolidado = rowRDD_Base.filter{x => x._6} .map(x => (x._4 //código y texto original
                                                 ,x._5(0)
                                                 ,x._5(1).trim()
                                                )
@@ -156,7 +151,7 @@ class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control)
       //*******************************************************
        val rowRDD = rowRDD_Consolidado
             .map{ x=>
-                  var DataArray_Dest : Array[Any] = new Array[Any](2)
+                  val DataArray_Dest: Array[Any] = new Array[Any](2)
                   DataArray_Dest(0) = x._2
                   DataArray_Dest(1) = x._3
                   Row.fromSeq(DataArray_Dest )
@@ -183,12 +178,11 @@ class raw_DatosPDF(huemulLib: huemul_BigDataGovernance, Control: huemul_Control)
                         
       control.FinishProcessOK                      
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()   
-      }
+        control.FinishProcessError()
     }         
-    return control.Control_Error.IsOK()
+    control.Control_Error.IsOK()
   }
 }
 
@@ -203,7 +197,7 @@ object raw_DatosPDF_test {
     val Control = new huemul_Control(huemulLib, null, huemulType_Frequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     //Inicializa clase RAW  
     val DF_RAW =  new raw_DatosPDF(huemulLib, Control)
     if (!DF_RAW.open("DF_RAW", null, 2018, 12, 31, 0, 0, 0)) {
@@ -232,87 +226,86 @@ object raw_DatosPDF_test {
                         ,MAX(CASE WHEN Codigo = "V" and Grupo = "Tubérculos andinos" then 1 else 0 end) as Cumple_V
                         ,CAST(COUNT(1) AS INTEGER) AS Cantidad
           FROM DF_RAW """).first()
-      
-      var res_Cumple_A =  resultados.getAs[Int]("Cumple_A")
-      var IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe A", "valida que exista registro A", "Valor = 1", s"Valor = ${res_Cumple_A}", res_Cumple_A == 1)
+
+      val res_Cumple_A = resultados.getAs[Int]("Cumple_A")
+      var IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe A", "valida que exista registro A", "Valor = 1", s"Valor = $res_Cumple_A", res_Cumple_A == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_B =  resultados.getAs[Int]("Cumple_B")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe B", "valida que exista registro B", "Valor = 1", s"Valor = ${res_Cumple_B}", res_Cumple_B == 1)
+
+      val res_Cumple_B = resultados.getAs[Int]("Cumple_B")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe B", "valida que exista registro B", "Valor = 1", s"Valor = $res_Cumple_B", res_Cumple_B == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_C =  resultados.getAs[Int]("Cumple_C")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe C", "valida que exista registro C", "Valor = 1", s"Valor = ${res_Cumple_C}", res_Cumple_C == 1)
+
+      val res_Cumple_C = resultados.getAs[Int]("Cumple_C")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe C", "valida que exista registro C", "Valor = 1", s"Valor = $res_Cumple_C", res_Cumple_C == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_D =  resultados.getAs[Int]("Cumple_D")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe D", "valida que exista registro D", "Valor = 1", s"Valor = ${res_Cumple_D}", res_Cumple_D == 1)
+
+      val res_Cumple_D = resultados.getAs[Int]("Cumple_D")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe D", "valida que exista registro D", "Valor = 1", s"Valor = $res_Cumple_D", res_Cumple_D == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_E =  resultados.getAs[Int]("Cumple_E")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe E", "valida que exista registro E", "Valor = 1", s"Valor = ${res_Cumple_E}", res_Cumple_E == 1)
+
+      val res_Cumple_E = resultados.getAs[Int]("Cumple_E")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe E", "valida que exista registro E", "Valor = 1", s"Valor = $res_Cumple_E", res_Cumple_E == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_F =  resultados.getAs[Int]("Cumple_F")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe F", "valida que exista registro F", "Valor = 1", s"Valor = ${res_Cumple_F}", res_Cumple_F == 1)
+
+      val res_Cumple_F = resultados.getAs[Int]("Cumple_F")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe F", "valida que exista registro F", "Valor = 1", s"Valor = $res_Cumple_F", res_Cumple_F == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_G =  resultados.getAs[Int]("Cumple_G")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe G", "valida que exista registro G", "Valor = 1", s"Valor = ${res_Cumple_G}", res_Cumple_G == 1)
+
+      val res_Cumple_G = resultados.getAs[Int]("Cumple_G")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe G", "valida que exista registro G", "Valor = 1", s"Valor = $res_Cumple_G", res_Cumple_G == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_H =  resultados.getAs[Int]("Cumple_H")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe H", "valida que exista registro H", "Valor = 1", s"Valor = ${res_Cumple_H}", res_Cumple_H == 1)
+
+      val res_Cumple_H = resultados.getAs[Int]("Cumple_H")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe H", "valida que exista registro H", "Valor = 1", s"Valor = $res_Cumple_H", res_Cumple_H == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_J =  resultados.getAs[Int]("Cumple_J")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe J", "valida que exista registro J", "Valor = 1", s"Valor = ${res_Cumple_J}", res_Cumple_J == 1)
+
+      val res_Cumple_J = resultados.getAs[Int]("Cumple_J")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe J", "valida que exista registro J", "Valor = 1", s"Valor = $res_Cumple_J", res_Cumple_J == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_K =  resultados.getAs[Int]("Cumple_K")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe K", "valida que exista registro K", "Valor = 1", s"Valor = ${res_Cumple_K}", res_Cumple_K == 1)
+
+      val res_Cumple_K = resultados.getAs[Int]("Cumple_K")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe K", "valida que exista registro K", "Valor = 1", s"Valor = $res_Cumple_K", res_Cumple_K == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_L =  resultados.getAs[Int]("Cumple_L")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe L", "valida que exista registro L", "Valor = 1", s"Valor = ${res_Cumple_L}", res_Cumple_L == 1)
+
+      val res_Cumple_L = resultados.getAs[Int]("Cumple_L")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe L", "valida que exista registro L", "Valor = 1", s"Valor = $res_Cumple_L", res_Cumple_L == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_P =  resultados.getAs[Int]("Cumple_P")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe P", "valida que exista registro P", "Valor = 1", s"Valor = ${res_Cumple_P}", res_Cumple_P == 1)
+
+      val res_Cumple_P = resultados.getAs[Int]("Cumple_P")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe P", "valida que exista registro P", "Valor = 1", s"Valor = $res_Cumple_P", res_Cumple_P == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_Q =  resultados.getAs[Int]("Cumple_Q")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe Q", "valida que exista registro Q", "Valor = 1", s"Valor = ${res_Cumple_Q}", res_Cumple_Q == 1)
+
+      val res_Cumple_Q = resultados.getAs[Int]("Cumple_Q")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe Q", "valida que exista registro Q", "Valor = 1", s"Valor = $res_Cumple_Q", res_Cumple_Q == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_T =  resultados.getAs[Int]("Cumple_T")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe T", "valida que exista registro T", "Valor = 1", s"Valor = ${res_Cumple_T}", res_Cumple_T == 1)
+
+      val res_Cumple_T = resultados.getAs[Int]("Cumple_T")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe T", "valida que exista registro T", "Valor = 1", s"Valor = $res_Cumple_T", res_Cumple_T == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_U =  resultados.getAs[Int]("Cumple_U")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe U", "valida que exista registro U", "Valor = 1", s"Valor = ${res_Cumple_U}", res_Cumple_U == 1)
+
+      val res_Cumple_U = resultados.getAs[Int]("Cumple_U")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe U", "valida que exista registro U", "Valor = 1", s"Valor = $res_Cumple_U", res_Cumple_U == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_V =  resultados.getAs[Int]("Cumple_V")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe V", "valida que exista registro V", "Valor = 1", s"Valor = ${res_Cumple_V}", res_Cumple_V == 1)
+
+      val res_Cumple_V = resultados.getAs[Int]("Cumple_V")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "existe V", "valida que exista registro V", "Valor = 1", s"Valor = $res_Cumple_V", res_Cumple_V == 1)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
-      
-      var res_Cumple_cantidad =  resultados.getAs[Int]("Cantidad")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cantidad de filas", "Valida que hayan 16 filas", "Valor = 16", s"Valor = ${res_Cumple_cantidad}", res_Cumple_cantidad == 16)
+
+      val res_Cumple_cantidad = resultados.getAs[Int]("Cantidad")
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cantidad de filas", "Valida que hayan 16 filas", "Valor = 16", s"Valor = $res_Cumple_cantidad", res_Cumple_cantidad == 16)
       Control.RegisterTestPlanFeature("Lectura PDF", IdTestPlan)
           
       
       
-      val MyName: String = this.getClass.getSimpleName
+      //val MyName: String = this.getClass.getSimpleName
       //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
       //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
       
       Control.FinishProcessOK
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         Control.Control_Error.GetError(e, this.getClass.getName, null, null)
-        Control.FinishProcessError()   
-      }
+        Control.FinishProcessError()
     }   
     
     if (Control.TestPlan_CurrentIsOK(17))

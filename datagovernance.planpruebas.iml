@@ -147,7 +147,7 @@
     <orderEntry type="library" name="Maven: com.carrotsearch:hppc:0.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.vlkan:flatbuffers:1.2.0-3f79e055" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-streaming_2.12:2.4.0" level="project" />
-    <orderEntry type="library" name="Maven: com.huemulsolutions.bigdata:huemul-bigdatagovernance_2.12:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: com.huemulsolutions.bigdata:huemul-bigdatagovernance_2.12:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.huemulsolutions.bigdata:huemul-sql-decode_2.12:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hive:hive-jdbc:3.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hive:hive-common:3.1.2" level="project" />
@@ -452,11 +452,9 @@
     <orderEntry type="library" name="Maven: com.github.jai-imageio:jai-imageio-core:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tika:tika-xmp:1.23" level="project" />
     <orderEntry type="library" name="Maven: com.adobe.xmp:xmpcore:5.1.3" level="project" />
-    <orderEntry type="library" name="Maven: com.yourcompany:demo_settings_ONPREM_2.12:2.6.3" level="project" />
+    <orderEntry type="library" name="Maven: com.yourcompany:demo_settings_GCP_2.12:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.databricks:dbutils-api_2.12:0.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-core:4.0.7" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.specs2:specs2-core_2.12:4.12.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.specs2:specs2-matcher_2.12:4.12.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.specs2:specs2-common_2.12:4.12.3" level="project" />
@@ -464,6 +462,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.scala-sbt:test-interface:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.portable-scala:portable-scala-reflect_2.12:1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.specs2:specs2-junit_2.12:4.12.3" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.13.2" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.3.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.12:3.2.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest-core_2.12:3.2.9" level="project" />

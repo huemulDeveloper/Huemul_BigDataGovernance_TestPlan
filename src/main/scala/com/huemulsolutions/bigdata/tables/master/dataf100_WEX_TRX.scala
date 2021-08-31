@@ -30,7 +30,7 @@ class dataf100_WEX_TRX(huemulBigDataGov: huemul_BigDataGovernance, Control: huem
   this.setLocalPath("planPruebas/")
 
   //columna de partición
-  this.setPartitionField("PKCOL1")
+  //this.setPartitionField("PKCOL1")
   //Frecuencia de actualización de los datos
   this.setFrequency(huemulType_Frequency.MONTHLY)
   //permite asignar un código de error personalizado al fallar la PK
@@ -79,6 +79,7 @@ class dataf100_WEX_TRX(huemulBigDataGov: huemul_BigDataGovernance, Control: huem
   //Columna de periodo
   val PKCOL1: huemul_Columns = new huemul_Columns (IntegerType, true,"PKCOL1")
     .setIsPK()
+    .setPartitionColumn(1)
 
   val PKCOL2: huemul_Columns = new huemul_Columns (IntegerType, true,"PKCOL2")
     .setIsPK()

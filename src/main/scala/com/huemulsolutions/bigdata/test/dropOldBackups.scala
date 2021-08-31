@@ -10,7 +10,7 @@ object dropOldBackups {
     val huemulBigDataGov  = new huemul_BigDataGovernance(s"BigDataGovernance Util", args, com.yourcompany.settings.globalSettings.Global)
     
     //numBackupToMaintain
-    val numBackupToMaintain = huemulBigDataGov.arguments.GetValue("numBackupToMaintain", null,"param missing: numBackupToMaintain. Example: numBackupToMaintain=2 to maintain last 2 backups")
+    val numBackupToMaintain = huemulBigDataGov.arguments.getValue("numBackupToMaintain", null,"param missing: numBackupToMaintain. Example: numBackupToMaintain=2 to maintain last 2 backups")
     
     if (numBackupToMaintain != null) {
       val Control = new huemul_Control(huemulBigDataGov,null, huemulType_Frequency.ANY_MOMENT, false, true) 

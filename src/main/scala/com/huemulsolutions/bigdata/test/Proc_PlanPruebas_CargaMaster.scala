@@ -4,11 +4,8 @@ import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata
-import org.apache.hadoop.fs.FileSystem
 import com.huemulsolutions.bigdata.dataquality.huemul_DataQuality
 import com.huemulsolutions.bigdata.dataquality.huemulType_DQQueryLevel
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification.huemulType_DQNotification
 import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification
 import scala.collection.mutable._
 import org.apache.spark.sql.types._
@@ -18,11 +15,11 @@ object Proc_PlanPruebas_CargaMaster {
     val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster",args,com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
     huemulLib.huemul_showDemoLines(false)
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
 
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
@@ -40,12 +37,12 @@ object Proc_PlanPruebas_CargaMaster {
       TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame,"DF_RAW", "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
-      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase()).collect()
-      if (a.filter { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase()  }.length > 0) {
-        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable()} ")
+      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
-      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath()}")
+      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath}")
       val fs = FullPath.getFileSystem(huemulLib.spark.sparkContext.hadoopConfiguration)
       if (fs.exists(FullPath))
         fs.delete(FullPath, true)
@@ -53,21 +50,21 @@ object Proc_PlanPruebas_CargaMaster {
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
         
         
-      TablaMaster.TipoValor.SetMapping("TipoValor",true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
-      TablaMaster.IntValue.SetMapping("IntValue")
-      TablaMaster.BigIntValue.SetMapping("BigIntValue")
-      TablaMaster.SmallIntValue.SetMapping("SmallIntValue")
-      TablaMaster.TinyIntValue.SetMapping("TinyIntValue")
-      TablaMaster.DecimalValue.SetMapping("DecimalValue")
-      TablaMaster.RealValue.SetMapping("RealValue")
-      TablaMaster.FloatValue.SetMapping("FloatValue")
-      TablaMaster.StringValue.SetMapping("StringValue")
-      TablaMaster.charValue.SetMapping("charValue")
-      TablaMaster.timeStampValue.SetMapping("timeStampValue")
+      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.IntValue.setMapping("IntValue")
+      TablaMaster.BigIntValue.setMapping("BigIntValue")
+      TablaMaster.SmallIntValue.setMapping("SmallIntValue")
+      TablaMaster.TinyIntValue.setMapping("TinyIntValue")
+      TablaMaster.DecimalValue.setMapping("DecimalValue")
+      TablaMaster.RealValue.setMapping("RealValue")
+      TablaMaster.FloatValue.setMapping("FloatValue")
+      TablaMaster.StringValue.setMapping("StringValue")
+      TablaMaster.charValue.setMapping("charValue")
+      TablaMaster.timeStampValue.setMapping("timeStampValue")
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
       Control.NewStep("Ejecución")
       if (!TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY )) {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", false)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
@@ -75,7 +72,7 @@ object Proc_PlanPruebas_CargaMaster {
       
         Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
       } else {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", true)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
@@ -109,7 +106,7 @@ object Proc_PlanPruebas_CargaMaster {
       
       var Cantidad: Long = if (Cero_Vacio_Todos == null) 0 else Cero_Vacio_Todos.count()
       
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - TieneRegistros", "Registro Cero_Vacio, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - TieneRegistros", "Registro Cero_Vacio, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -133,7 +130,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Negativo_Maximo'""")
       Cantidad = if (Negativo_Maximo_Todos == null) 0 else Negativo_Maximo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - TieneRegistros", "Registro Negativo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - TieneRegistros", "Registro Negativo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)      
@@ -155,7 +152,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Negativo_Minimo'""")
       Cantidad = if (Negativo_Minimo_Todos == null) 0 else Negativo_Minimo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - TieneRegistros", "Registro Negativo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - TieneRegistros", "Registro Negativo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -177,7 +174,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Positivo_Minimo'""")
       Cantidad = if (Positivo_Minimo_Todos == null) 0 else Positivo_Minimo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - TieneRegistros", "Registro Positivo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - TieneRegistros", "Registro Positivo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -199,7 +196,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Positivo_Maximo'""")
       Cantidad = if (Positivo_Maximo_Todos == null) 0 else Positivo_Maximo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - TieneRegistros", "Registro Positivo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - TieneRegistros", "Registro Positivo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -222,7 +219,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'nulo'""")
       Cantidad = if (ValorNull_Todos == null) 0 else ValorNull_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - TieneRegistros", "Registro ValorNull, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - TieneRegistros", "Registro ValorNull, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -245,7 +242,7 @@ object Proc_PlanPruebas_CargaMaster {
                                                                                FROM (select distinct BigIntDefaultValue, IntDefaultValue, SmallIntDefaultValue, TinyIntDefaultValue, DecimalDefaultValue, RealDefaultValue, FloatDefaultValue, StringDefaultValue, charDefaultValue, timeStampDefaultValue   FROM DF_Final) a
                                                                                """)
       Cantidad = if (ValoresDefault_Todos == null) 0 else ValoresDefault_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValoresDefault - TieneRegistros", "Registro ValoresDefault, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValoresDefault - TieneRegistros", "Registro ValoresDefault, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -540,23 +537,23 @@ object Proc_PlanPruebas_CargaMaster {
       
       val DQResultManual = TablaMaster.DataFramehuemul.DF_RunDataQuality(DQRules, null, TablaMaster)
       
-      val conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - debe tener error", "ejecuta la validación, no debe tener error", "IsError = false", s"IsErorr = ${DQResultManual.isError}${DQResultManual.Error_Code} ${DQResultManual.Description}", DQResultManual.isError == false)
+      val conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - debe tener error", "ejecuta la validación, no debe tener error", "IsError = false", s"IsErorr = ${DQResultManual.isError}${DQResultManual.Error_Code} ${DQResultManual.Description}", !DQResultManual.isError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", conError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", conError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", conError)
       Control.RegisterTestPlanFeature("DQManual_Row", conError)
-      val NumDQ = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones", "ejecuta la validación, debe tener 6 ejecuciones", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual.getDQResult().length}", DQResultManual.getDQResult().length == 4)
+      val NumDQ = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones", "ejecuta la validación, debe tener 6 ejecuciones", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual.getDQResult.length}", DQResultManual.getDQResult.length == 4)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ)
       
-      val NumDQ_conWarning = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Warning", "ejecuta la validación, debe tener 2 ejecuciones con warnings", "N° Ejecuciones = 2", s"N° Ejecuciones = ${DQResultManual.getDQResult().filter { x => x.DQ_IsWarning} .length}", DQResultManual.getDQResult().filter { x => x.DQ_IsWarning} .length == 2)
+      val NumDQ_conWarning = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Warning", "ejecuta la validación, debe tener 2 ejecuciones con warnings", "N° Ejecuciones = 2", s"N° Ejecuciones = ${DQResultManual.getDQResult.count { x => x.DQ_IsWarning }}", DQResultManual.getDQResult.count { x => x.DQ_IsWarning } == 2)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_conWarning)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conWarning)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_conWarning)
       
-      val NumDQ_conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error", "ejecuta la validación, debe tener 0 ejecuciones con error", "N° Ejecuciones = 0", s"N° Ejecuciones = ${DQResultManual.getDQResult().filter { x => x.DQ_IsError} .length}", DQResultManual.getDQResult().filter { x => x.DQ_IsError} .length == 0)
+      val NumDQ_conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error", "ejecuta la validación, debe tener 0 ejecuciones con error", "N° Ejecuciones = 0", s"N° Ejecuciones = ${DQResultManual.getDQResult.count { x => x.DQ_IsError }}", !DQResultManual.getDQResult.exists { x => x.DQ_IsError })
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_conError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conError)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_conError)
@@ -592,25 +589,25 @@ object Proc_PlanPruebas_CargaMaster {
       
       val DQResultManual_Errores = TablaMaster.DataFramehuemul.DF_RunDataQuality(DQRulesConError, null, TablaMaster)
       
-      val NumDQ_ErrorCode = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 8", "ejecuta la validación, debe tener un error de codigo 8", "error_code = 8", s"error_code = ?", DQResultManual_Errores.getDQResult().filter { x => x.DQ_ErrorCode == 8} .length == 1)
+      val NumDQ_ErrorCode = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 8", "ejecuta la validación, debe tener un error de codigo 8", "error_code = 8", s"error_code = ?", DQResultManual_Errores.getDQResult.count { x => x.DQ_ErrorCode == 8 } == 1)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCode)
       
-      val NumDQ_ErrorCode10 = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 10", "ejecuta la validación, debe tener un error de codigo 10", "error_code = 10", s"error_code = ?", DQResultManual_Errores.getDQResult().filter { x => x.DQ_ErrorCode == 10} .length == 1)
+      val NumDQ_ErrorCode10 = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 10", "ejecuta la validación, debe tener un error de codigo 10", "error_code = 10", s"error_code = ?", DQResultManual_Errores.getDQResult.count { x => x.DQ_ErrorCode == 10 } == 1)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCode10)
       
-      val NumDQ_ErrorCodeSinError = Control.RegisterTestPlan(TestPlanGroup, "DQ - DecimalValue > 0.1 sin error", "ejecuta la validación, no debe tener error", "DecimalValue > 0.1 sin error", s"DecimalValue > 0.1 ?", DQResultManual_Errores.getDQResult().filter { x => x.DQ_SQLFormula == "DecimalValue > 0.1"}(0).DQ_IsError == false )
+      val NumDQ_ErrorCodeSinError = Control.RegisterTestPlan(TestPlanGroup, "DQ - DecimalValue > 0.1 sin error", "ejecuta la validación, no debe tener error", "DecimalValue > 0.1 sin error", s"DecimalValue > 0.1 ?", !DQResultManual_Errores.getDQResult.filter { x => x.DQ_SQLFormula == "DecimalValue > 0.1" }(0).DQ_IsError )
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCodeSinError)
      
-      val NumDQ_conErrores = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error (V2)", "ejecuta la validación, debe tener 4 ejecuciones con error (warnings) (v2)", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual_Errores.getDQResult().filter { x => x.DQ_IsError} .length}", DQResultManual_Errores.getDQResult().filter { x => x.DQ_IsError} .length == 4)
+      val NumDQ_conErrores = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error (V2)", "ejecuta la validación, debe tener 4 ejecuciones con error (warnings) (v2)", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual_Errores.getDQResult.count { x => x.DQ_IsError }}", DQResultManual_Errores.getDQResult.count { x => x.DQ_IsError } == 4)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_conErrores)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_conErrores)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conErrores)
@@ -619,7 +616,7 @@ object Proc_PlanPruebas_CargaMaster {
       Control.FinishProcessOK
     } catch {
       case e: Exception => 
-        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", false)
+        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
         Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
         Control.FinishProcessError()

@@ -4,7 +4,7 @@ import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata
+
 
 /**
  * Este plan de pruebas valida lo siguiente:
@@ -16,10 +16,10 @@ object Proc_PlanPruebas_Malos01 {
     val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Malos01",args,com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     var IdTestPlan: String = ""
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
@@ -35,17 +35,17 @@ object Proc_PlanPruebas_Malos01 {
       
       //TablaMaster.DF_from_SQL("DF_Original", "select * from DF_RAW")
       
-      TablaMaster.TipoValor.SetMapping("TipoValor",true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
-      TablaMaster.IntValue.SetMapping("IntValue")
-      TablaMaster.BigIntValue.SetMapping("BigIntValue")
-      TablaMaster.SmallIntValue.SetMapping("SmallIntValue")
-      TablaMaster.TinyIntValue.SetMapping("TinyIntValue")
-      TablaMaster.DecimalValue.SetMapping("DecimalValue")
-      TablaMaster.RealValue.SetMapping("RealValue")
-      TablaMaster.FloatValue.SetMapping("FloatValue")
-      TablaMaster.StringValue.SetMapping("StringValue")
-      TablaMaster.charValue.SetMapping("charValue")
-      TablaMaster.timeStampValue.SetMapping("timeStampValue")
+      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.IntValue.setMapping("IntValue")
+      TablaMaster.BigIntValue.setMapping("BigIntValue")
+      TablaMaster.SmallIntValue.setMapping("SmallIntValue")
+      TablaMaster.TinyIntValue.setMapping("TinyIntValue")
+      TablaMaster.DecimalValue.setMapping("DecimalValue")
+      TablaMaster.RealValue.setMapping("RealValue")
+      TablaMaster.FloatValue.setMapping("FloatValue")
+      TablaMaster.StringValue.setMapping("StringValue")
+      TablaMaster.charValue.setMapping("charValue")
+      TablaMaster.timeStampValue.setMapping("timeStampValue")
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
       Control.NewStep("Ejecución")
       
@@ -58,14 +58,14 @@ object Proc_PlanPruebas_Malos01 {
       /////////////////////////////////////////////////////////////////////////////////////////
       /////////////////////////////////////////////////////////////////////////////////////////
       //valida que respuesta sea negativa
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Malo01 - Error PK", "El proceso debe retornar false", "ValorexecuteFull = false", s"ValorexecuteFull = ${ValorexecuteFull}", !ValorexecuteFull)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Malo01 - Error PK", "El proceso debe retornar false", "ValorexecuteFull = false", s"ValorexecuteFull = $ValorexecuteFull", !ValorexecuteFull)
       Control.RegisterTestPlanFeature("IsPK Error", IdTestPlan)
       
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Malo01 - Error PK 1018", "El proceso debe retornar cod. error 1018", "error_code=1018", s"error_code= ${TablaMaster.Error_Code}", TablaMaster.Error_Code == 1018)
       Control.RegisterTestPlanFeature("IsPK Error", IdTestPlan)
       
       //valida que N° de registros con problemas de PK = 1
-      val NumErrores_TipoValor = TablaMaster.DataFramehuemul.getDQResult().filter { x => x.DQ_ErrorCode == 1018 }
+      val NumErrores_TipoValor = TablaMaster.DataFramehuemul.getDQResult.filter { x => x.DQ_ErrorCode == 1018 }
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Malo01 - Obtiene DQ PK", "N° registros devueltos de DQ pK = 1", "N° Reg = 1", s"N° Reg = ${NumErrores_TipoValor.length}", NumErrores_TipoValor.length == 1)
       Control.RegisterTestPlanFeature("IsPK Error", IdTestPlan)
       
@@ -79,10 +79,10 @@ object Proc_PlanPruebas_Malos01 {
                         group by dq_error_columnname """).collect
       val cantidad = errores2.filter { x => x.getAs[String]("dq_error_columnname") == "TipoValor" }(0).getAs[Int]("Cantidad") 
       val error_01 = errores2.filter { x => x.getAs[String]("dq_error_columnname") == "TipoValor" }(0).getAs[Int]("error_01") 
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Guarda errores en tabla _dq TipoValor", "errores en columna TipoValor", "Cantidad con errores = 2", s"Cantidad con errores = ${cantidad}", cantidad == 2)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Guarda errores en tabla _dq TipoValor", "errores en columna TipoValor", "Cantidad con errores = 2", s"Cantidad con errores = $cantidad", cantidad == 2)
       Control.RegisterTestPlanFeature("FK Error encontrado", IdTestPlan)
       
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "error encontrado (tipovalor = Positivo_Maximo)", "error encontrado (tipovalor = Positivo_Maximo)", "error_01 = 2", s"error_01 = ${error_01}", error_01 == 2)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "error encontrado (tipovalor = Positivo_Maximo)", "error encontrado (tipovalor = Positivo_Maximo)", "error_01 = 2", s"error_01 = $error_01", error_01 == 2)
       Control.RegisterTestPlanFeature("FK Error encontrado", IdTestPlan)
       
       
@@ -98,7 +98,7 @@ object Proc_PlanPruebas_Malos01 {
       Control.RegisterTestPlanFeature("IsPK Error", IdTestPlan)
       */
       
-      TablaMaster.DataFramehuemul.getDQResult().foreach { x => 
+      TablaMaster.DataFramehuemul.getDQResult.foreach { x =>
         println(s"DQ_Name:${x.DQ_Name}, BBDD_Name:${x.BBDD_Name}, Table_Name:${x.Table_Name}, ColumnName:${x.ColumnName}, DQ_NumRowsTotal:${x.DQ_NumRowsTotal}, DQ_NumRowsOK:${x.DQ_NumRowsOK}, DQ_NumRowsError:${x.DQ_NumRowsError}") 
       }
       
@@ -111,7 +111,7 @@ object Proc_PlanPruebas_Malos01 {
       Control.FinishProcessOK
     } catch {
       case e: Exception => 
-        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", false)
+        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("IsPK Error", IdTestPlan)
         Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
         Control.FinishProcessError()

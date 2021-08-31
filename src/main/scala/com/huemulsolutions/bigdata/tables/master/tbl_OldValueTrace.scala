@@ -2,12 +2,9 @@ package com.huemulsolutions.bigdata.tables.master
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.dataquality._
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemulType_Tables._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
 import org.apache.spark.sql.types.DataTypes._
-import org.apache.spark.sql.types.DecimalType
 
 
 
@@ -30,26 +27,26 @@ class tbl_OldValueTrace(HuemulLib: huemul_BigDataGovernance, Control: huemul_Con
 
   
   val codigo = new huemul_Columns(IntegerType,true,"Codigo")
-  codigo.setIsPK ( true)
+  codigo.setIsPK ( )
   
   
   val Descripcion = new huemul_Columns(StringType,true,"descripción de la tabla")
-  Descripcion.setNullable ( true)
-  Descripcion.setMDM_EnableOldValue_FullTrace( true) 
+  Descripcion.setNullable ( )
+  Descripcion.setMDM_EnableOldValue_FullTrace( )
   
   val Fecha = new huemul_Columns(TimestampType,true,"datos TimeStamp")
-  Fecha.setNullable ( true)
-  Fecha.setMDM_EnableOldValue_FullTrace( true)
-  Fecha.setMDM_EnableDTLog(true)
-  Fecha.setMDM_EnableProcessLog(true)
-  Fecha.setMDM_EnableOldValue(true)
+  Fecha.setNullable ( )
+  Fecha.setMDM_EnableOldValue_FullTrace( )
+  Fecha.setMDM_EnableDTLog()
+  Fecha.setMDM_EnableProcessLog()
+  Fecha.setMDM_EnableOldValue()
   
   val Monto = new huemul_Columns(IntegerType,true,"datos Monto")
-  Monto.setNullable ( true)
-  Monto.setMDM_EnableOldValue_FullTrace( true)
-  Monto.setMDM_EnableDTLog(true)
-  Monto.setMDM_EnableProcessLog(true)
-  Monto.setMDM_EnableOldValue(true)
+  Monto.setNullable ( )
+  Monto.setMDM_EnableOldValue_FullTrace( )
+  Monto.setMDM_EnableDTLog()
+  Monto.setMDM_EnableProcessLog()
+  Monto.setMDM_EnableOldValue()
    
   
   this.ApplyTableDefinition()

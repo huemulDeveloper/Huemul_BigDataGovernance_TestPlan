@@ -2,10 +2,7 @@ package com.huemulsolutions.bigdata.test
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata
-import org.apache.hadoop.fs.FileSystem
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicosUpdate
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType
@@ -17,11 +14,11 @@ object Proc_PlanPruebas_OnlyUpdate {
     val huemulLib = new huemul_BigDataGovernance("04 - Plan pruebas - Actualiza un nuevo registros sin hacer nada mas",args,com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
-    val Ano = huemulLib.arguments.GetValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
-    val Mes = huemulLib.arguments.GetValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
+    val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
+    val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
-    val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
-    val TipoTablaParam: String = huemulLib.arguments.GetValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
+    val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+    val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
     var TipoTabla: huemulType_StorageType = null
     if (TipoTablaParam == "orc")
         TipoTabla = huemulType_StorageType.ORC
@@ -49,12 +46,12 @@ object Proc_PlanPruebas_OnlyUpdate {
       TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame, "DF_RAW", "DF_Original" ) 
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
-      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase()).collect()
-      if (a.filter { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase()  }.length > 0) {
-        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable()} ")
+      val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+        huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
-      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath()}")
+      val FullPath = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath}")
       val fs = FullPath.getFileSystem(huemulLib.spark.sparkContext.hadoopConfiguration)
       if (fs.exists(FullPath))
         fs.delete(FullPath, true)
@@ -67,29 +64,29 @@ object Proc_PlanPruebas_OnlyUpdate {
         
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       
-      TablaMaster.TipoValor.SetMapping("TipoValor",true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
-      TablaMaster.IntValue.SetMapping("IntValue")
-      TablaMaster.BigIntValue.SetMapping("BigIntValue")
-      TablaMaster.SmallIntValue.SetMapping("SmallIntValue")
-      TablaMaster.TinyIntValue.SetMapping("TinyIntValue")
-      TablaMaster.DecimalValue.SetMapping("DecimalValue")
-      TablaMaster.RealValue.SetMapping("RealValue")
-      TablaMaster.FloatValue.SetMapping("FloatValue")
-      TablaMaster.StringValue.SetMapping("StringValue")
-      TablaMaster.charValue.SetMapping("charValue")
-      TablaMaster.timeStampValue.SetMapping("timeStampValue")
-      TablaMaster.StringNoModificarValue.SetMapping("StringValue",false)
+      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.IntValue.setMapping("IntValue")
+      TablaMaster.BigIntValue.setMapping("BigIntValue")
+      TablaMaster.SmallIntValue.setMapping("SmallIntValue")
+      TablaMaster.TinyIntValue.setMapping("TinyIntValue")
+      TablaMaster.DecimalValue.setMapping("DecimalValue")
+      TablaMaster.RealValue.setMapping("RealValue")
+      TablaMaster.FloatValue.setMapping("FloatValue")
+      TablaMaster.StringValue.setMapping("StringValue")
+      TablaMaster.charValue.setMapping("charValue")
+      TablaMaster.timeStampValue.setMapping("timeStampValue")
+      TablaMaster.StringNoModificarValue.setMapping("StringValue",ReplaceValueOnUpdate = false)
       
       Control.NewStep("PASO 1: INSERTA NORMAL")
       if (!TablaMaster.executeFull("DF_Final_Todo", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", false)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       
         Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
       } else {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", true)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
@@ -105,22 +102,22 @@ object Proc_PlanPruebas_OnlyUpdate {
       Control.NewStep("Mapeo de Campos")      
       TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame, "DF_RAW_2", "DF_Mod")
       
-      TablaMaster.TipoValor.SetMapping("TipoValor",true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
-      TablaMaster.IntValue.SetMapping("IntValue")
-      TablaMaster.BigIntValue.SetMapping("BigIntValue")
-      TablaMaster.SmallIntValue.SetMapping("SmallIntValue")
-      TablaMaster.TinyIntValue.SetMapping("TinyIntValue")
-      TablaMaster.DecimalValue.SetMapping("DecimalValue")
-      TablaMaster.RealValue.SetMapping("RealValue")
-      TablaMaster.FloatValue.SetMapping("FloatValue")
-      TablaMaster.StringValue.SetMapping("StringValue")
-      TablaMaster.charValue.SetMapping("charValue")
-      TablaMaster.timeStampValue.SetMapping("timeStampValue")
-      TablaMaster.StringNoModificarValue.SetMapping("StringValue",false)
+      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.IntValue.setMapping("IntValue")
+      TablaMaster.BigIntValue.setMapping("BigIntValue")
+      TablaMaster.SmallIntValue.setMapping("SmallIntValue")
+      TablaMaster.TinyIntValue.setMapping("TinyIntValue")
+      TablaMaster.DecimalValue.setMapping("DecimalValue")
+      TablaMaster.RealValue.setMapping("RealValue")
+      TablaMaster.FloatValue.setMapping("FloatValue")
+      TablaMaster.StringValue.setMapping("StringValue")
+      TablaMaster.charValue.setMapping("charValue")
+      TablaMaster.timeStampValue.setMapping("timeStampValue")
+      TablaMaster.StringNoModificarValue.setMapping("StringValue",ReplaceValueOnUpdate = false)
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
       Control.NewStep("PASO 2: SOLO ACTUALIZA 1 REGISTRO, MARCA 0 COMO ELIMINADO, NO INSERTA NADA")
       if (!TablaMaster.executeOnlyUpdate("DF_Final_DF", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", false)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
@@ -128,7 +125,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       
         Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
       } else {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", true)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
@@ -136,7 +133,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       }
         
       
-      val DF_Final = huemulLib.DF_ExecuteQuery("DF_Final", s"""select * from ${TablaMaster.getTable()}  """)
+      val DF_Final = huemulLib.DF_ExecuteQuery("DF_Final", s"""select * from ${TablaMaster.getTable}  """)
       DF_Final.show()
       
       /////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +172,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       
       var Cantidad: Long = if (Cero_Vacio_Todos == null) 0 else Cero_Vacio_Todos.count()
       
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - TieneRegistros", "Registro Cero_Vacio, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - TieneRegistros", "Registro Cero_Vacio, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -211,7 +208,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Negativo_Maximo'""")
       Cantidad = if (Negativo_Maximo_Todos == null) 0 else Negativo_Maximo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - TieneRegistros", "Registro Negativo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - TieneRegistros", "Registro Negativo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)      
@@ -245,7 +242,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Negativo_Minimo'""")
       Cantidad = if (Negativo_Minimo_Todos == null) 0 else Negativo_Minimo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - TieneRegistros", "Registro Negativo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - TieneRegistros", "Registro Negativo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -279,7 +276,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Positivo_Minimo'""")
       Cantidad = if (Positivo_Minimo_Todos == null) 0 else Positivo_Minimo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - TieneRegistros", "Registro Positivo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - TieneRegistros", "Registro Positivo_Minimo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -313,7 +310,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Positivo_Maximo'""")
       Cantidad = if (Positivo_Maximo_Todos == null) 0 else Positivo_Maximo_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - TieneRegistros", "Registro Positivo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - TieneRegistros", "Registro Positivo_Maximo, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -348,7 +345,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'nulo'""")
       Cantidad = if (ValorNull_Todos == null) 0 else ValorNull_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - TieneRegistros", "Registro ValorNull, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - TieneRegistros", "Registro ValorNull, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -374,7 +371,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM (select distinct BigIntDefaultValue, IntDefaultValue, SmallIntDefaultValue, TinyIntDefaultValue, DecimalDefaultValue, RealDefaultValue, FloatDefaultValue, StringDefaultValue, charDefaultValue, timeStampDefaultValue   FROM DF_Final) a
                                                                                """)
       Cantidad = if (ValoresDefault_Todos == null) 0 else ValoresDefault_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValoresDefault - TieneRegistros", "Registro ValoresDefault, debe tener 1 registro", "Cantidad = 1", s"Cantidad = ${Cantidad}", Cantidad == 1)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValoresDefault - TieneRegistros", "Registro ValoresDefault, debe tener 1 registro", "Cantidad = 1", s"Cantidad = $Cantidad", Cantidad == 1)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -410,7 +407,7 @@ object Proc_PlanPruebas_OnlyUpdate {
                                                                                FROM DF_Final
                                                                                WHERE tipoValor = 'Nuevos'""")
       Cantidad = if (Nuevos_Todos == null) 0 else Nuevos_Todos.count()
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Nuevos - TieneRegistros", "Registro Nuevos, debe tener 0 registro", "Cantidad = 0", s"Cantidad = ${Cantidad}", Cantidad == 0)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Nuevos - TieneRegistros", "Registro Nuevos, debe tener 0 registro", "Cantidad = 0", s"Cantidad = $Cantidad", Cantidad == 0)
       Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
       Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
@@ -458,7 +455,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - timeStampValue", "Registro Cero_Vacio, Campo timeStampValue", "Valor = '1900-01-01 00:00:00.0'", s"Valor = ??", timeStampValue)
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       var MDM =  Cero_Vacio.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - MDM", "Registro Cero_Vacio, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Cero_Vacio - MDM", "Registro Cero_Vacio, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -501,7 +498,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - timeStampValue", "Registro Negativo_Maximo, Campo timeStampValue", "Valor = '2017-12-31 00:00:00.0'", s"Valor = ??", timeStampValue)
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       MDM =  Negativo_Maximo.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - MDM", "Registro Negativo_Maximo, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Maximo - MDM", "Registro Negativo_Maximo, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -544,7 +541,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - timeStampValue", "Registro Negativo_Minimo, Campo timeStampValue", "Valor = '2017-01-01 00:00:00.0'", s"Valor = ??", timeStampValue)
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       MDM =  Negativo_Minimo.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - MDM", "Registro Negativo_Minimo, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Negativo_Minimo - MDM", "Registro Negativo_Minimo, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -586,7 +583,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - timeStampValue", "Registro Positivo_Minimo, Campo timeStampValue", "Valor = '2017-02-03 00:00:00.0'", s"Valor = ??", timeStampValue)
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       MDM =  Positivo_Minimo.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - MDM", "Registro Positivo_Minimo, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Minimo - MDM", "Registro Positivo_Minimo, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -629,7 +626,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - timeStampValue", "Registro Positivo_Maximo, Campo timeStampValue", "Valor = '2017-12-31 00:00:00.0'", s"Valor = ??", timeStampValue)
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       MDM =  Positivo_Maximo.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - MDM", "Registro Positivo_Maximo, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Positivo_Maximo - MDM", "Registro Positivo_Maximo, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -681,7 +678,7 @@ object Proc_PlanPruebas_OnlyUpdate {
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       Control.RegisterTestPlanFeature("RAW - Convierte string null a null", IdTestPlan)
       MDM =  ValorNull.getAs[Boolean]("Cumple_MDM")
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - MDM", "Registro ValorNull, Campo MDM", "Valor = true", s"Valor = ${MDM}", MDM)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ValorNull - MDM", "Registro ValorNull, Campo MDM", "Valor = true", s"Valor = $MDM", MDM)
       Control.RegisterTestPlanFeature("MDM_EnableDTLog", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
       Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
@@ -739,7 +736,7 @@ object Proc_PlanPruebas_OnlyUpdate {
           Control.FinishProcessOK
     } catch {
       case e: Exception => 
-        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", false)
+        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeOnlyUpdate", IdTestPlan)
         Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
         Control.FinishProcessError()

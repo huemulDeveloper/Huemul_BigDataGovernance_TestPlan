@@ -3,24 +3,7 @@ package com.huemulsolutions.bigdata.test
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.yourcompany.settings.globalSettings
-import org.apache.hadoop.hbase.{HBaseConfiguration, TableName}
-import org.apache.hadoop.hbase.spark.HBaseContext
-import org.apache.hadoop.hbase.spark.HBaseRDDFunctions._
-import org.apache.hadoop.hbase.client.Put
-import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.hbase.spark.KeyFamilyQualifier
-import org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles
-import org.apache.hadoop.hbase.client.Delete
 
-//import org.apache.hadoop.hbase.io.ImmutableBytesWritable
-
-import org.apache.spark.sql._
-import org.apache.spark.sql.types._
-import org.apache.spark.sql.util._
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.functions._
-import org.apache.spark.api.java.function.FlatMapFunction
 
 
 
@@ -51,7 +34,7 @@ object App_hbase {
    
     //Validación que todo está OK
     val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
     
       /*
     val __DF = huemulLib.spark.sql("select '1010' as codigo, null as nombre, null as atelefono union all select  '1020' as codigo, 'nombre 1020' as nombre, 2222226 as atelefono union all select  '1030' as codigo, 'nombre 1030' as nombre, 3333333 as atelefono ")

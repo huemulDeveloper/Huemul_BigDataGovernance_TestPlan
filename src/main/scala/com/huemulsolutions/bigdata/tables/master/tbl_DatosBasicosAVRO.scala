@@ -2,9 +2,7 @@ package com.huemulsolutions.bigdata.tables.master
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.dataquality._
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemulType_Tables._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
 import org.apache.spark.sql.types.DataTypes._
 import org.apache.spark.sql.types.DecimalType
@@ -25,73 +23,73 @@ class tbl_DatosBasicosAVRO(HuemulLib: huemul_BigDataGovernance, Control: huemul_
 
   
   val TipoValor = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
-  TipoValor.setIsPK ( true )
+  TipoValor.setIsPK (  )
   TipoValor.setDQ_MinLen ( 2)
   TipoValor.setDQ_MaxLen ( 50)
   
   
   val IntValue = new huemul_Columns(IntegerType,true,"datos integer")
-  IntValue.setNullable ( true)
+  IntValue.setNullable ( )
  
   
   
   val BigIntValue = new huemul_Columns(LongType,true,"datos BigInt")
-  BigIntValue.setNullable ( true)
+  BigIntValue.setNullable ( )
   
   val SmallIntValue = new huemul_Columns(ShortType,true,"datos SmallInt")
-  SmallIntValue.setNullable ( true)
+  SmallIntValue.setNullable ( )
   
   val TinyIntValue = new huemul_Columns(ShortType,true,"datos TinyInt")
-  TinyIntValue.setNullable ( true)
+  TinyIntValue.setNullable ( )
   
   val DecimalValue = new huemul_Columns(DecimalType(10,4),true,"datos Decimal(10,4)")
-  DecimalValue.setNullable ( true)
+  DecimalValue.setNullable ( )
   
   val RealValue = new huemul_Columns(DoubleType,true,"datos Real")
-  RealValue.setNullable ( true)
+  RealValue.setNullable ( )
   
   val FloatValue = new huemul_Columns(FloatType,true,"datos Float")
-  FloatValue.setNullable ( true)
+  FloatValue.setNullable ( )
   
   val StringValue = new huemul_Columns(StringType,true,"datos String")
-  StringValue.setNullable ( true)
+  StringValue.setNullable ( )
   
   val charValue = new huemul_Columns(StringType,true,"datos Char")
-  charValue.setNullable ( true)
+  charValue.setNullable ( )
   
   val timeStampValue = new huemul_Columns(TimestampType,true,"datos TimeStamp")
-  timeStampValue.setNullable ( true)
+  timeStampValue.setNullable ( )
   
   
   val IntDefaultValue = new huemul_Columns(IntegerType,false,"datos default integer")
-  IntDefaultValue.setDefaultValue ( "10000")
+  IntDefaultValue.setDefaultValues ( "10000")
   
   val BigIntDefaultValue = new huemul_Columns(LongType,false,"datos default BigInt")
-  BigIntDefaultValue.setDefaultValue ( "10000")
+  BigIntDefaultValue.setDefaultValues ( "10000")
   
   val SmallIntDefaultValue = new huemul_Columns(ShortType,false,"datos default SmallInt")
-  SmallIntDefaultValue.setDefaultValue ( "10000")
+  SmallIntDefaultValue.setDefaultValues ( "10000")
   
   val TinyIntDefaultValue = new huemul_Columns(ShortType,false,"datos default TinyInt")
-  TinyIntDefaultValue.setDefaultValue ( "10000")
+  TinyIntDefaultValue.setDefaultValues ( "10000")
   
   val DecimalDefaultValue = new huemul_Columns(DecimalType(10,4),false,"datos default Decimal(10,4)")
-  DecimalDefaultValue.setDefaultValue ( "10000.345")
+  DecimalDefaultValue.setDefaultValues ( "10000.345")
   
   val RealDefaultValue = new huemul_Columns(DoubleType,false,"datos default Real")
-  RealDefaultValue.setDefaultValue ( "10000.456")
+  RealDefaultValue.setDefaultValues ( "10000.456")
   
   val FloatDefaultValue = new huemul_Columns(FloatType,false,"datos default Float")
-  FloatDefaultValue.setDefaultValue ( "10000.567")
+  FloatDefaultValue.setDefaultValues ( "10000.567")
   
   val StringDefaultValue = new huemul_Columns(StringType,false,"datos default String")
-  StringDefaultValue.setDefaultValue ( "'valor en string'")
+  StringDefaultValue.setDefaultValues ( "'valor en string'")
   
   val charDefaultValue = new huemul_Columns(StringType,false,"datos default Char")
-  charDefaultValue.setDefaultValue ( "cast('hola' as string)")
+  charDefaultValue.setDefaultValues ( "cast('hola' as string)")
   
   val timeStampDefaultValue = new huemul_Columns(TimestampType,false,"datos default TimeStamp")
-  timeStampDefaultValue.setDefaultValue ( "'2019-01-01'")
+  timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   
   this.ApplyTableDefinition()

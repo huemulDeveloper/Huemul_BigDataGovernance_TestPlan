@@ -35,47 +35,47 @@ class tbl_DatosBasicosNombres(HuemulLib: huemul_BigDataGovernance, Control: huem
 
   this.setPK_externalCode("USER_COD_PK")
   
-  val TipoValor = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
+  val TipoValor: huemul_Columns = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
                             .setIsPK().setDQ_MinLen(2, "USER_COD_MINLEN").setDQ_MaxLen(50, "USER_COD_MAXLEN")
   //TipoValor.setIsPK ( true)
   //TipoValor.setDQ_MinLen ( 2)
   //TipoValor.setDQ_MaxLen ( 50)
   //TipoValor.setBusinessGlossary_Id("BG_001")
   
-  val IntValue = new huemul_Columns(IntegerType,true,"datos integer")
+  val IntValue: huemul_Columns = new huemul_Columns(IntegerType,true,"datos integer")
                             .setMDM_EnableOldValue_FullTrace().setBusinessGlossary("BG_002")
-  IntValue.setNullable ( true)
+  IntValue.setNullable ( )
   //IntValue.setMDM_EnableOldValue_FullTrace( true)
   //IntValue.setBusinessGlossary_Id("BG_002")
   //IntValue.setDQ_MaxDecimalValue(Decimal.apply(10))
   
-  val BigIntValue = new huemul_Columns(LongType,true,"datos BigInt").setMDM_EnableOldValue_FullTrace()
+  val BigIntValue: huemul_Columns = new huemul_Columns(LongType,true,"datos BigInt").setMDM_EnableOldValue_FullTrace()
   BigIntValue.setNullable ()
   //BigIntValue.setMDM_EnableOldValue_FullTrace( true)
   
-  val SmallIntValue = new huemul_Columns(ShortType,true,"datos SmallInt").setMDM_EnableOldValue_FullTrace()
+  val SmallIntValue: huemul_Columns = new huemul_Columns(ShortType,true,"datos SmallInt").setMDM_EnableOldValue_FullTrace()
                     .setNullable ()
   //SmallIntValue.setMDM_EnableOldValue_FullTrace( true)
   
-  val TinyIntValue = new huemul_Columns(ShortType,true,"datos TinyInt")
+  val TinyIntValue: huemul_Columns = new huemul_Columns(ShortType,true,"datos TinyInt")
             .setNullable ()
   
-  val DecimalValue = new huemul_Columns(DecimalType(10,4),true,"datos Decimal(10,4)")
+  val DecimalValue: huemul_Columns = new huemul_Columns(DecimalType(10,4),true,"datos Decimal(10,4)")
             .setNullable ()
   
-  val RealValue = new huemul_Columns(DoubleType,true,"datos Real")
+  val RealValue: huemul_Columns = new huemul_Columns(DoubleType,true,"datos Real")
             .setNullable ()
   
-  val FloatValue = new huemul_Columns(FloatType,true,"datos Float")
+  val FloatValue: huemul_Columns = new huemul_Columns(FloatType,true,"datos Float")
             .setNullable ()
   
-  val StringValue = new huemul_Columns(StringType,true,"datos String")
+  val StringValue: huemul_Columns = new huemul_Columns(StringType,true,"datos String")
             .setNullable ()
   
-  val charValue = new huemul_Columns(StringType,true,"datos Char")
+  val charValue: huemul_Columns = new huemul_Columns(StringType,true,"datos Char")
             .setNullable ()
   
-  val timeStampValue = new huemul_Columns(TimestampType,true,"datos TimeStamp")
+  val timeStampValue: huemul_Columns = new huemul_Columns(TimestampType,true,"datos TimeStamp")
             .setNullable ()
   
   

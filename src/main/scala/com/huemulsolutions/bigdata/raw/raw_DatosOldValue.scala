@@ -1,16 +1,13 @@
 package com.huemulsolutions.bigdata.raw
 
-import com.huemulsolutions.bigdata.datalake._
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType;
-import com.huemulsolutions.bigdata.datalake.huemulType_Separator;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLake;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting;
-import com.huemulsolutions.bigdata.control._
+import com.huemulsolutions.bigdata.datalake.huemulType_FileType
+import com.huemulsolutions.bigdata.datalake.huemulType_Separator
+import com.huemulsolutions.bigdata.datalake.huemul_DataLake
+import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import org.apache.spark.sql.types._
 
-import com.huemulsolutions.bigdata.control.huemulType_Frequency.huemulType_Frequency
 
 class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Control) extends huemul_DataLake(huemulLib, Control) with Serializable  {
    this.Description = "datos para probar funcionalidades de Old VAlue Trace"
@@ -93,11 +90,11 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=${TipoArchivo}")){
+      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
         control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
       }
       
-      import huemulLib.spark.implicits._
+      //import huemulLib.spark.implicits._
    
       control.NewStep("Aplicando Filtro")
       /**/    //Agregar filtros o cambiar forma de leer archivo en este lugar
@@ -122,12 +119,11 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
                         
       control.FinishProcessOK                      
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()   
-      }
+        control.FinishProcessError()
     }         
-    return control.Control_Error.IsOK()
+    control.Control_Error.IsOK()
   }
 }
 
@@ -152,7 +148,7 @@ object raw_DatosOldValue {
       DF_RAW.DataFramehuemul.DataFrame.show()
       
     
-    val MyName: String = this.getClass.getSimpleName
+    this.getClass.getSimpleName
     //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
     //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
     

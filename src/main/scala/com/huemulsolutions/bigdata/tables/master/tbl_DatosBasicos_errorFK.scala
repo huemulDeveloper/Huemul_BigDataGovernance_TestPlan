@@ -2,12 +2,9 @@ package com.huemulsolutions.bigdata.tables.master
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.dataquality._
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemulType_Tables._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
 import org.apache.spark.sql.types.DataTypes._
-import org.apache.spark.sql.types.DecimalType
 
 
 
@@ -29,7 +26,7 @@ class tbl_DatosBasicos_errorFK(HuemulLib: huemul_BigDataGovernance, Control: hue
   Codigo.setIsPK ( )
   
   
-  val TipoValor = new huemul_Columns(StringType,true,"Nombre del tipo de valor (FK)")
+  val TipoValor: huemul_Columns = new huemul_Columns(StringType,true,"Nombre del tipo de valor (FK)")
       .setDQ_MinLen ( 2,null)
       .setDQ_MaxLen ( 50,null)
       
@@ -40,7 +37,7 @@ class tbl_DatosBasicos_errorFK(HuemulLib: huemul_BigDataGovernance, Control: hue
   
   //**********Ejemplo para aplicar DataQuality de Integridad Referencial
   val itbl_DatosBasicos = new tbl_DatosBasicos(HuemulLib,Control)
-  val fk_tbl_DatosBasicos = new huemul_Table_Relationship(itbl_DatosBasicos, false).setExternalCode("USER_FK_CODE")
+  val fk_tbl_DatosBasicos: huemul_Table_Relationship = new huemul_Table_Relationship(itbl_DatosBasicos, false).setExternalCode("USER_FK_CODE")
   fk_tbl_DatosBasicos.AddRelationship(itbl_DatosBasicos.TipoValor , TipoValor)
   
   

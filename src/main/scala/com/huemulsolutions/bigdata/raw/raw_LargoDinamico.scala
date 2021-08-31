@@ -1,16 +1,13 @@
 package com.huemulsolutions.bigdata.raw
 
-import com.huemulsolutions.bigdata.datalake._
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType;
-import com.huemulsolutions.bigdata.datalake.huemulType_Separator;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLake;
-import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting;
-import com.huemulsolutions.bigdata.control._
+
+import com.huemulsolutions.bigdata.datalake.huemulType_FileType
+import com.huemulsolutions.bigdata.datalake.huemulType_Separator
+import com.huemulsolutions.bigdata.datalake.huemul_DataLake
+import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import org.apache.spark.sql.types._
-
-import com.huemulsolutions.bigdata.control.huemulType_Frequency.huemulType_Frequency
 
 class raw_LargoDinamico(huemulLib: huemul_BigDataGovernance, Control: huemul_Control) extends huemul_DataLake(huemulLib, Control) with Serializable  {
    this.Description = "Datos Básicos para pruebas de largo dinámico"
@@ -92,11 +89,11 @@ class raw_LargoDinamico(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=${TipoArchivo}")){
+      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
         control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
       }
       
-      import huemulLib.spark.implicits._
+      //import huemulLib.spark.implicits._
    
       control.NewStep("Aplicando Filtro")
       /**/    //Agregar filtros o cambiar forma de leer archivo en este lugar
@@ -121,12 +118,11 @@ class raw_LargoDinamico(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
                         
       control.FinishProcessOK                      
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()   
-      }
+        control.FinishProcessError()
     }         
-    return control.Control_Error.IsOK()
+    control.Control_Error.IsOK()
   }
 }
 
@@ -140,18 +136,18 @@ object raw_LargoDinamico_test {
     val huemulLib  = new huemul_BigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
     val Control = new huemul_Control(huemulLib, null, huemulType_Frequency.MONTHLY)
     /*************** PARAMETROS **********************/
-     val TestPlanGroup: String = huemulLib.arguments.GetValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
+     val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
    
     //Inicializa clase RAW  
     val DF_RAW =  new raw_LargoDinamico(huemulLib, Control)
-    if (!DF_RAW.open("DF_RAW", null, 2018, 12, 31, 0, 0, 0, "ini",false)) {
+    if (!DF_RAW.open("DF_RAW", null, 2018, 12, 31, 0, 0, 0, "ini",AplicarTrim = false)) {
       println("************************************************************")
       println("**********  E  R R O R   E N   P R O C E S O   *************")
       println("************************************************************")
-      val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "LeeLargoDinamico", "LeeLargoDinamico sin error", "sin error", s"con error: ${DF_RAW.Error.ControlError_ErrorCode}", DF_RAW.Error_isError == false)
+      val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "LeeLargoDinamico", "LeeLargoDinamico sin error", "sin error", s"con error: ${DF_RAW.Error.ControlError_ErrorCode}", !DF_RAW.Error_isError)
       Control.RegisterTestPlanFeature("LargoDinamico", IdTestPlan)
     } else{
-      val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "LeeLargoDinamico", "LeeLargoDinamico sin error", "sin error", s"con error: ${DF_RAW.Error.ControlError_ErrorCode}", DF_RAW.Error_isError == false)
+      val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "LeeLargoDinamico", "LeeLargoDinamico sin error", "sin error", s"con error: ${DF_RAW.Error.ControlError_ErrorCode}", !DF_RAW.Error_isError)
       Control.RegisterTestPlanFeature("LargoDinamico", IdTestPlan)
       DF_RAW.DataFramehuemul.DataFrame.show()
       huemulLib.spark.sql("select *, length(campo1) as largo_campo1, length(campo2) as largo_campo2, length(campo3) as largo_campo3 FROM DF_RAW").show()
@@ -182,9 +178,9 @@ object raw_LargoDinamico_test {
       
                             
     }
-      
-    
-    val MyName: String = this.getClass.getSimpleName
+
+
+//    val MyName: String = this.getClass.getSimpleName
     //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
     //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
     

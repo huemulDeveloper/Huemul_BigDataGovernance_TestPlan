@@ -2,15 +2,11 @@ package com.huemulsolutions.bigdata.tables.master
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.dataquality._
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemulType_Tables._
 import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
 import org.apache.spark.sql.types.DataTypes._
 import org.apache.spark.sql.types.DecimalType
 import org.apache.spark.sql.types.Decimal
-
-
 
 
 class tbl_DatosBasicosErrores(HuemulLib: huemul_BigDataGovernance, Control: huemul_Control, TipoTabla: huemulType_StorageType) extends huemul_Table(HuemulLib,Control) with Serializable {
@@ -28,7 +24,7 @@ class tbl_DatosBasicosErrores(HuemulLib: huemul_BigDataGovernance, Control: huem
 
   
   val TipoValor = new huemul_Columns(StringType,true,"Nombre del tipo de valor")
-  TipoValor.setIsPK ( true )
+  TipoValor.setIsPK (  )
   TipoValor.setDQ_MinLen ( 2,null)
   TipoValor.setDQ_MaxLen ( 50,null)
   

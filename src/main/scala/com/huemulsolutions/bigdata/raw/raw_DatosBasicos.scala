@@ -96,11 +96,11 @@ class raw_DatosBasicos(huemulLib: huemul_BigDataGovernance, Control: huemul_Cont
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=${TipoArchivo}")){
+      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
         control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
       }
       
-      import huemulLib.spark.implicits._
+      //import huemulLib.spark.implicits._
    
       control.NewStep("Aplicando Filtro")
       /**/    //Agregar filtros o cambiar forma de leer archivo en este lugar
@@ -125,12 +125,12 @@ class raw_DatosBasicos(huemulLib: huemul_BigDataGovernance, Control: huemul_Cont
                         
       control.FinishProcessOK                      
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()   
-      }
+        control.FinishProcessError()
     }         
-    return control.Control_Error.IsOK()
+
+    control.Control_Error.IsOK()
   }
 }
 
