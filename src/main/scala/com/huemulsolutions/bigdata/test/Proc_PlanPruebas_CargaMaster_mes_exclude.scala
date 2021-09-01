@@ -3,16 +3,16 @@ package com.huemulsolutions.bigdata.test
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
-import com.huemulsolutions.bigdata.dataquality.huemul_DataQuality
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQQueryLevel
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification
+import com.huemulsolutions.bigdata.dataquality.HuemulDataQuality
+import com.huemulsolutions.bigdata.dataquality.HuemulTypeDQQueryLevel
+import com.huemulsolutions.bigdata.dataquality.HuemulTypeDQNotification
 import scala.collection.mutable._
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos_mes_exclude
 import org.apache.spark.sql.functions._
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType
-import com.huemulsolutions.bigdata.tables.huemul_TableConnector
-import com.huemulsolutions.bigdata.tables.huemulType_InternalTableType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType._
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
+import com.huemulsolutions.bigdata.tables.HuemulTableConnector
+import com.huemulsolutions.bigdata.tables.HuemulTypeInternalTableType
 //OJO:
 //el resultado de suma de double con valores nulos da distinto a sumar los valores sin nulos (el decimal 15 da diferente)
 //por otro lado, un float cuando se compara linea a linea con un decimal el resultado es distinto.
@@ -20,25 +20,25 @@ import com.huemulsolutions.bigdata.tables.huemulType_InternalTableType
 
 object Proc_PlanPruebas_CargaMaster_mes_exclude {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster_mes_exclude",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster_mes_exclude",args,com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = "2018"//huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
     val Mes = "09"//huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
     val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-    var TipoTabla: huemulType_StorageType = null
+    var TipoTabla: HuemulTypeStorageType = null
     if (TipoTablaParam == "orc")
-        TipoTabla = huemulType_StorageType.ORC
+        TipoTabla = HuemulTypeStorageType.ORC
     else if (TipoTablaParam == "parquet")
-        TipoTabla = huemulType_StorageType.PARQUET
+        TipoTabla = HuemulTypeStorageType.PARQUET
     else if (TipoTablaParam == "delta")
-        TipoTabla = huemulType_StorageType.DELTA
+        TipoTabla = HuemulTypeStorageType.DELTA
     else if (TipoTablaParam == "hbase")
-        TipoTabla = huemulType_StorageType.HBASE
+        TipoTabla = HuemulTypeStorageType.HBASE
     else if (TipoTablaParam == "avro")
-        TipoTabla = huemulType_StorageType.AVRO        
+        TipoTabla = HuemulTypeStorageType.AVRO
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
     try {
@@ -70,8 +70,8 @@ object Proc_PlanPruebas_CargaMaster_mes_exclude {
         
       if (TipoTablaParam == "hbase") {
         Control.NewStep("borrar tabla")
-        val th = new huemul_TableConnector(huemulLib, Control)
-        th.tableDeleteHBase(TablaMaster.getHBaseNamespace(huemulType_InternalTableType.Normal), TablaMaster.getHBaseTableName(huemulType_InternalTableType.Normal))
+        val th = new HuemulTableConnector(huemulLib, Control)
+        th.tableDeleteHBase(TablaMaster.getHBaseNamespace(HuemulTypeInternalTableType.Normal), TablaMaster.getHBaseTableName(HuemulTypeInternalTableType.Normal))
       }
         
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
@@ -491,17 +491,17 @@ object Proc_PlanPruebas_CargaMaster_mes_exclude {
       //DataQuality solo warning, sin errores
       //******************************************************************
       
-      val DQRules = new ArrayBuffer[huemul_DataQuality]()
-      val DQ_ComparaAgrupado = new huemul_DataQuality(null,"Suma Float = Suma Decimal","sum(DecimalValue) = sum(FloatValue)",2,huemulType_DQQueryLevel.Aggregate)
+      val DQRules = new ArrayBuffer[HuemulDataQuality]()
+      val DQ_ComparaAgrupado = new HuemulDataQuality(null,"Suma Float = Suma Decimal","sum(DecimalValue) = sum(FloatValue)",2,HuemulTypeDQQueryLevel.Aggregate)
       DQ_ComparaAgrupado.setDQ_ExternalCode("EC_001")
       DQRules.append(DQ_ComparaAgrupado)
-      val DQ_ComparaFila = new huemul_DataQuality(null,"coalesce(Double,0) = coalesce(Decimal,0)","coalesce(DecimalValue,0) = coalesce(RealValue,0)",3)
+      val DQ_ComparaFila = new HuemulDataQuality(null,"coalesce(Double,0) = coalesce(Decimal,0)","coalesce(DecimalValue,0) = coalesce(RealValue,0)",3)
       DQ_ComparaFila.setDQ_ExternalCode("EC_002")
       DQRules.append(DQ_ComparaFila)
       
-      val DQ_ComparaAgrupado_LanzaWarning = new huemul_DataQuality(null,"Suma Double is null","sum(DecimalValue) is null",4,huemulType_DQQueryLevel.Aggregate, huemulType_DQNotification.WARNING, true, "EC_003")
+      val DQ_ComparaAgrupado_LanzaWarning = new HuemulDataQuality(null,"Suma Double is null","sum(DecimalValue) is null",4,HuemulTypeDQQueryLevel.Aggregate, HuemulTypeDQNotification.WARNING, true, "EC_003")
       DQRules.append(DQ_ComparaAgrupado_LanzaWarning)
-      val DQ_ComparaFila_LanzaWarning = new huemul_DataQuality(null,"Double <> Decimal","DecimalValue <> FloatValue",5,huemulType_DQQueryLevel.Row, huemulType_DQNotification.WARNING)
+      val DQ_ComparaFila_LanzaWarning = new HuemulDataQuality(null,"Double <> Decimal","DecimalValue <> FloatValue",5,HuemulTypeDQQueryLevel.Row, HuemulTypeDQNotification.WARNING)
       DQRules.append(DQ_ComparaFila_LanzaWarning)
       
       val DQResultManual = TablaMaster.DataFramehuemul.DF_RunDataQuality(DQRules, null, TablaMaster)

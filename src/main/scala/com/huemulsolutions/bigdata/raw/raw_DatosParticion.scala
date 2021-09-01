@@ -2,24 +2,24 @@ package com.huemulsolutions.bigdata.raw
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.datalake.{huemulType_FileType, huemulType_Separator, huemul_DataLake, huemul_DataLakeSetting}
+import com.huemulsolutions.bigdata.datalake.{HuemulTypeFileType, HuemulTypeSeparator, HuemulDataLake, HuemulDataLakeSetting}
 import org.apache.spark.sql.types._
 
-class raw_DatosParticion(huemulLib: huemul_BigDataGovernance, Control: huemul_Control) extends huemul_DataLake(huemulLib, Control) with Serializable  {
+class raw_DatosParticion(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) extends HuemulDataLake(huemulLib, Control) with Serializable  {
    this.Description = "datos para probar funcionalidades de Old VAlue Trace"
    this.GroupName = "HuemulPlanPruebas"
       
-   val dataLakeConfig: huemul_DataLakeSetting = new huemul_DataLakeSetting(huemulLib)
+   val dataLakeConfig: HuemulDataLakeSetting = new HuemulDataLakeSetting(huemulLib)
      .setStartDate(2010,1,1,0,0,0)
      .setEndDate(2050,12,12,0,0,0)
      //Path & names
      .setGlobalPath(huemulLib.GlobalSettings.RAW_BigFiles_Path)
      .setLocalPath("planPruebas/")
      .setFileName("DatosParticion_{{YYYY}}{{MM}}{{DD}}_{{EMPRESA}}.txt")
-     .setFileType(huemulType_FileType.TEXT_FILE)
+     .setFileType(HuemulTypeFileType.TEXT_FILE)
      .setContactName("Sebastián Rodríguez")
      //Data
-     .setColumnDelimiterType(huemulType_Separator.CHARACTER)
+     .setColumnDelimiterType(HuemulTypeSeparator.CHARACTER)
      .setColumnDelimiter("\\|")
      .addColumn("periodo", "periodo", StringType,"periodo de los datos")
      .addColumn("empresa", "empresa", StringType,"Nombre de la empresa")
@@ -30,7 +30,7 @@ class raw_DatosParticion(huemulLib: huemul_BigDataGovernance, Control: huemul_Co
      .addColumn("idTx", "idTx", StringType,"codigo de la transacción")
      //Header
      .setLogNumRowsColumnName(null)
-       .setHeaderColumnDelimiterType(huemulType_Separator.CHARACTER)
+       .setHeaderColumnDelimiterType(HuemulTypeSeparator.CHARACTER)
        .setHeaderColumnDelimiter("\\|")
        .setHeaderColumnsString("VACIO")
 
@@ -45,8 +45,8 @@ class raw_DatosParticion(huemulLib: huemul_BigDataGovernance, Control: huemul_Co
    * dia: dia de los archivos recibidos <br>
    * Retorna: true si todo está OK, false si tuvo algún problema <br>
   */
-  def open(Alias: String, ControlParent: huemul_Control, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, Empresa: String, AplicarTrim: Boolean = true): Boolean = {
-    val control = new huemul_Control(huemulLib, ControlParent, huemulType_Frequency.MONTHLY, false)
+  def open(Alias: String, ControlParent: HuemulControl, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, Empresa: String, AplicarTrim: Boolean = true): Boolean = {
+    val control = new HuemulControl(huemulLib, ControlParent, HuemulTypeFrequency.MONTHLY, false)
     //Setea parámetros
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)

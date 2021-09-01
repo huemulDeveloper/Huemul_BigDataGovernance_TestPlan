@@ -4,7 +4,7 @@ import org.junit._
 import Assert._
 import com.huemulsolutions.bigdata.tables.master._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.common.huemul_BigDataGovernance
+import com.huemulsolutions.bigdata.common.HuemulBigDataGovernance
 import com.huemulsolutions.bigdata.tables._
 
 @Test
@@ -12,8 +12,8 @@ class AppTest {
     val args: Array[String] = new Array[String](1)
     args(0) = "Environment=production,RegisterInControl=false,TestPlanMode=true"
       
-    val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
       
     @Test
     def pruebita(): Unit = assertTrue(genera()
@@ -75,7 +75,7 @@ class AppTest {
       var SinError = true
       
       try {
-        val Master = new tbl_DatosBasicos_mes(huemulLib,Control,huemulType_StorageType.HBASE)
+        val Master = new tbl_DatosBasicos_mes(huemulLib,Control,HuemulTypeStorageType.HBASE)
         if (Master.Error_isError) {
           println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
           SinError = false
@@ -97,7 +97,7 @@ class AppTest {
       var SinError = true
       
       try {
-        val Master = new tbl_DatosBasicosAVRO(huemulLib,Control,huemulType_StorageType.ORC)
+        val Master = new tbl_DatosBasicosAVRO(huemulLib,Control,HuemulTypeStorageType.ORC)
         if (Master.Error_isError) {
           println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
           SinError = false
@@ -119,7 +119,7 @@ class AppTest {
       var SinError = true
       
       try {
-        val Master = new tbl_DatosBasicosInsert(huemulLib,Control,huemulType_StorageType.HBASE)
+        val Master = new tbl_DatosBasicosInsert(huemulLib,Control,HuemulTypeStorageType.HBASE)
         if (Master.Error_isError) {
           println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
           SinError = false
@@ -141,7 +141,7 @@ class AppTest {
       var SinError = true
       
       try {
-        val Master = new tbl_DatosBasicosErrores(huemulLib,Control,huemulType_StorageType.HBASE)
+        val Master = new tbl_DatosBasicosErrores(huemulLib,Control,HuemulTypeStorageType.HBASE)
         if (Master.Error_isError) {
           println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
           SinError = false
@@ -163,7 +163,7 @@ class AppTest {
       var SinError = true
       
       try {
-        val Master = new tbl_DatosBasicosUpdate(huemulLib,Control,huemulType_StorageType.PARQUET)
+        val Master = new tbl_DatosBasicosUpdate(huemulLib,Control,HuemulTypeStorageType.PARQUET)
         if (Master.Error_isError) {
           println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
           SinError = false

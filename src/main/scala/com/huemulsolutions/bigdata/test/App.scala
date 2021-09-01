@@ -88,8 +88,8 @@ object App {
    
    
     
-    val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
-    new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
+    new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
    
    
    
@@ -217,17 +217,17 @@ object App {
   }
   
   def main(args : Array[String]) {
-    //val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
-    //val Control = new huemul_Control(huemulLib,null)
+    //val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
+    //val Control = new HuemulControl(huemulLib,null)
     
     /*
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     val resultado = huemulLib.ExecuteJDBC_NoResulSet(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "insert into tempSeba values (10) ")
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     
     
     val resultado2 = huemulLib.ExecuteJDBC_WithResult(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "select * from tempSeba ")
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     println(s"N° de registros resultantes: ${resultado2.ResultSet.length}")
     resultado2.ResultSet.foreach { x => println(s"campo 0: ${x.get(0)} ") }
     resultado2.ResultSet.foreach { x => println(s"campo campo: ${x.getAs("campo")} ") }
@@ -272,7 +272,7 @@ object App {
     var metadata_spark_active: Boolean = false
     var metadata_hwc_active: Boolean = false
     
-    val huemulLib_ini = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib_ini = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
     
     
     com.yourcompany.settings.globalSettings.Global.HIVE_HourToUpdateMetadata=6
@@ -289,11 +289,11 @@ object App {
     
     com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_HIVE.setActive(metadata_hive_active).setActiveForHBASE(metadata_hive_active)
     if (metadata_hive_active) {
-      val HIVE_Setting = new ArrayBuffer[huemul_KeyValuePath]()
+      val HIVE_Setting = new ArrayBuffer[HuemulKeyValuePath]()
        val localPath: String = System.getProperty("user.dir").concat("/")
        println(s"path: $localPath")
-      HIVE_Setting.append(new huemul_KeyValuePath("production",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
-      HIVE_Setting.append(new huemul_KeyValuePath("experimental",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
+      HIVE_Setting.append(new HuemulKeyValuePath("production",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
+      HIVE_Setting.append(new HuemulKeyValuePath("experimental",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
    
       
       com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_HIVE.setConnectionStrings(HIVE_Setting)
@@ -301,7 +301,7 @@ object App {
     }
     com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_SPARK.setActive(metadata_spark_active).setActiveForHBASE(false)
     
-    if (com.yourcompany.settings.globalSettings.Global.getBigDataProvider == huemulType_bigDataProvider.databricks) {
+    if (com.yourcompany.settings.globalSettings.Global.getBigDataProvider == HuemulTypeBigDataProvider.databricks) {
       com.yourcompany.settings.globalSettings.Global.setAVRO_format("avro")
     }
 
@@ -364,8 +364,8 @@ object App {
 
     
     //Validación que todo está OK
-    val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     if (!huemulLib.hdfsPath_exists("/user/data/production/te"))
       println("prueba 1 exitosa: no existe")
@@ -397,11 +397,11 @@ object App {
     var error_existe_tablas_en_hive: Boolean = false
     if (metadata_hive_active || metadata_hwc_active) {
       if (metadata_hwc_active) {
-        val HIVE_Setting = new ArrayBuffer[huemul_KeyValuePath]()
+        val HIVE_Setting = new ArrayBuffer[HuemulKeyValuePath]()
         val localPath: String = System.getProperty("user.dir").concat("/")
         println(s"path: $localPath")
-        HIVE_Setting.append(new huemul_KeyValuePath("production",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
-        HIVE_Setting.append(new huemul_KeyValuePath("experimental",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
+        HIVE_Setting.append(new HuemulKeyValuePath("production",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
+        HIVE_Setting.append(new HuemulKeyValuePath("experimental",getKeyFromFile(s"${localPath}prod-demo-setting-hive-connection.set")))
              
         com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_HIVE.setConnectionStrings(HIVE_Setting)
       }

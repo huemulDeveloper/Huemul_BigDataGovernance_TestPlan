@@ -1,10 +1,10 @@
 package com.huemulsolutions.bigdata.raw
 
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType._
-import com.huemulsolutions.bigdata.datalake.huemulType_Separator
-import com.huemulsolutions.bigdata.datalake.huemul_DataLake
-import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting
+import com.huemulsolutions.bigdata.datalake.HuemulTypeFileType
+import com.huemulsolutions.bigdata.datalake.HuemulTypeFileType._
+import com.huemulsolutions.bigdata.datalake.HuemulTypeSeparator
+import com.huemulsolutions.bigdata.datalake.HuemulDataLake
+import com.huemulsolutions.bigdata.datalake.HuemulDataLakeSetting
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import org.apache.spark.sql.types._
@@ -14,11 +14,11 @@ import org.apache.spark.sql.types._
 /**
  * SE DEBE EJECUTAR DESPUÉS DE Proc_PlanPruebas_OnlyInsertNew
  */
-class raw_DatosFORMATO(huemulLib: huemul_BigDataGovernance, Control: huemul_Control, TipoArchivo: huemulType_FileType) extends huemul_DataLake(huemulLib, Control) with Serializable  {
+class raw_DatosFORMATO(huemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoArchivo: HuemulTypeFileType) extends HuemulDataLake(huemulLib, Control) with Serializable  {
    this.Description = "Abre archivos PARQUET, AVRO, DELTA, ORC según corresponda."
    this.GroupName = "HuemulPlanPruebas"
       
-   val FormatSetting = new huemul_DataLakeSetting(huemulLib)
+   val FormatSetting = new HuemulDataLakeSetting(huemulLib)
     FormatSetting.StartDate = huemulLib.setDateTime(2010,1,1,0,0,0)
     FormatSetting.EndDate = huemulLib.setDateTime(2050,12,12,0,0,0)
 
@@ -38,7 +38,7 @@ class raw_DatosFORMATO(huemulLib: huemul_BigDataGovernance, Control: huemul_Cont
    
     
     //PLAN EJECUCION 3:
-    FormatSetting.DataSchemaConf.ColSeparatorType = huemulType_Separator.POSITION  //POSITION;CHARACTER
+    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.POSITION  //POSITION;CHARACTER
     
     FormatSetting.DataSchemaConf.AddColumns("TipoValor", "TipoValor_ti", StringType,"")
     FormatSetting.DataSchemaConf.AddColumns("IntValue", "IntValue_ti", IntegerType,"")
@@ -65,7 +65,7 @@ class raw_DatosFORMATO(huemulLib: huemul_BigDataGovernance, Control: huemul_Cont
     
     
     //Log Info
-    FormatSetting.LogSchemaConf.ColSeparatorType = huemulType_Separator.NONE  //POSITION;CHARACTER;NONE
+    FormatSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.NONE  //POSITION;CHARACTER;NONE
     FormatSetting.LogNumRows_FieldName = null
     //Fields Info for CHARACTER
     FormatSetting.LogSchemaConf.ColSeparator = ";"    //SET FOR CARACTER
@@ -82,8 +82,8 @@ class raw_DatosFORMATO(huemulLib: huemul_BigDataGovernance, Control: huemul_Cont
    * dia: dia de los archivos recibidos <br>
    * Retorna: true si todo está OK, false si tuvo algún problema <br>
   */
-  def open(Alias: String, ControlParent: huemul_Control, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, TipoArchivo: String, AplicarTrim: Boolean = true): Boolean = {
-    val control = new huemul_Control(huemulLib, ControlParent, huemulType_Frequency.MONTHLY, false)
+  def open(Alias: String, ControlParent: HuemulControl, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, TipoArchivo: String, AplicarTrim: Boolean = true): Boolean = {
+    val control = new HuemulControl(huemulLib, ControlParent, HuemulTypeFrequency.MONTHLY, false)
     //Setea parámetros
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)
@@ -136,27 +136,27 @@ object raw_DatosFORMATO_test {
   def main(args : Array[String]) {
     
     //Creación API
-    val huemulLib  = new huemul_BigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib, null, huemulType_Frequency.MONTHLY)
+    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib, null, HuemulTypeFrequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
     val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     
     val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-    var TipoArchivo: huemulType_FileType = null
+    var TipoArchivo: HuemulTypeFileType = null
     var procesa: Boolean = true
     var cantidad = 95
     
     if (TipoTablaParam == "orc")
-        TipoArchivo = huemulType_FileType.ORC_FILE
+        TipoArchivo = HuemulTypeFileType.ORC_FILE
     else if (TipoTablaParam == "parquet")
-        TipoArchivo = huemulType_FileType.PARQUET_FILE
+        TipoArchivo = HuemulTypeFileType.PARQUET_FILE
     else if (TipoTablaParam == "delta")
-        TipoArchivo = huemulType_FileType.DELTA_FILE
+        TipoArchivo = HuemulTypeFileType.DELTA_FILE
     else if (TipoTablaParam == "hbase")
         procesa = false
     else if (TipoTablaParam == "avro")
-        TipoArchivo = huemulType_FileType.AVRO_FILE
+        TipoArchivo = HuemulTypeFileType.AVRO_FILE
         
     if (procesa) {
       try { 

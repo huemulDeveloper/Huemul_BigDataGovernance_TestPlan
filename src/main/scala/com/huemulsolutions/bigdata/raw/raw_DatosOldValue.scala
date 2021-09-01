@@ -1,19 +1,19 @@
 package com.huemulsolutions.bigdata.raw
 
-import com.huemulsolutions.bigdata.datalake.huemulType_FileType
-import com.huemulsolutions.bigdata.datalake.huemulType_Separator
-import com.huemulsolutions.bigdata.datalake.huemul_DataLake
-import com.huemulsolutions.bigdata.datalake.huemul_DataLakeSetting
+import com.huemulsolutions.bigdata.datalake.HuemulTypeFileType
+import com.huemulsolutions.bigdata.datalake.HuemulTypeSeparator
+import com.huemulsolutions.bigdata.datalake.HuemulDataLake
+import com.huemulsolutions.bigdata.datalake.HuemulDataLakeSetting
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import org.apache.spark.sql.types._
 
 
-class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Control) extends huemul_DataLake(huemulLib, Control) with Serializable  {
+class raw_DatosOldValue(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) extends HuemulDataLake(huemulLib, Control) with Serializable  {
    this.Description = "datos para probar funcionalidades de Old VAlue Trace"
    this.GroupName = "HuemulPlanPruebas"
       
-   val FormatSetting = new huemul_DataLakeSetting(huemulLib)
+   val FormatSetting = new HuemulDataLakeSetting(huemulLib)
     FormatSetting.StartDate = huemulLib.setDateTime(2010,1,1,0,0,0)
     FormatSetting.EndDate = huemulLib.setDateTime(2050,12,12,0,0,0)
 
@@ -21,14 +21,14 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
     FormatSetting.GlobalPath = huemulLib.GlobalSettings.RAW_BigFiles_Path
     FormatSetting.LocalPath = "planPruebas/"
     FormatSetting.FileName = "OldValueTrace_{{TipoArchivo}}.txt"
-    FormatSetting.FileType = huemulType_FileType.TEXT_FILE
+    FormatSetting.FileType = HuemulTypeFileType.TEXT_FILE
     FormatSetting.ContactName = "Sebastián Rodríguez"
     
     //Columns Info CHARACTER
     
     //PLAN EJECUCION 1:
     /*
-    FormatSetting.DataSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
     FormatSetting.DataSchemaConf.ColSeparator = "\\|"    //SET FOR CARACTER
     FormatSetting.DataSchemaConf.setHeaderColumnsString("TipoValor;IntValue;BigIntValue;SmallIntValue;TinyIntValue;DecimalValue;RealValue;FloatValue;StringValue;charValue;timeStampValue") //siempre con ;
     *  
@@ -36,7 +36,7 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
     
     //PLAN EJECUCION 2:
     /*
-    FormatSetting.DataSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
     FormatSetting.DataSchemaConf.ColSeparator = "\\|"    //SET FOR CARACTER
     
     FormatSetting.DataSchemaConf.AddColumns("TipoValor", "TipoValor_ti", StringType)
@@ -54,7 +54,7 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
     */
     
     //PLAN EJECUCION 3:
-    FormatSetting.DataSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
     FormatSetting.DataSchemaConf.ColSeparator = "\\|"
     
     FormatSetting.DataSchemaConf.AddColumns("codigo", "codigo", StringType,"")
@@ -64,7 +64,7 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
     
     
     //Log Info
-    FormatSetting.LogSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER  //POSITION;CHARACTER;NONE
+    FormatSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER;NONE
     FormatSetting.LogNumRows_FieldName = null
     //Fields Info for CHARACTER
     FormatSetting.LogSchemaConf.ColSeparator = "|"    //SET FOR CARACTER
@@ -80,8 +80,8 @@ class raw_DatosOldValue(huemulLib: huemul_BigDataGovernance, Control: huemul_Con
    * dia: dia de los archivos recibidos <br>
    * Retorna: true si todo está OK, false si tuvo algún problema <br>
   */
-  def open(Alias: String, ControlParent: huemul_Control, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, TipoArchivo: String, AplicarTrim: Boolean = true): Boolean = {
-    val control = new huemul_Control(huemulLib, ControlParent, huemulType_Frequency.MONTHLY, false)
+  def open(Alias: String, ControlParent: HuemulControl, ano: Integer, mes: Integer, dia: Integer, hora: Integer, min: Integer, seg: Integer, TipoArchivo: String, AplicarTrim: Boolean = true): Boolean = {
+    val control = new HuemulControl(huemulLib, ControlParent, HuemulTypeFrequency.MONTHLY, false)
     //Setea parámetros
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)
@@ -134,8 +134,8 @@ object raw_DatosOldValue {
   def main(args : Array[String]) {
     
     //Creación API
-    val huemulLib  = new huemul_BigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib, null, huemulType_Frequency.MONTHLY)
+    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib, null, HuemulTypeFrequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
     //Inicializa clase RAW  

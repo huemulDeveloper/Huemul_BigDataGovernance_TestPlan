@@ -1,20 +1,20 @@
 package com.huemulsolutions.bigdata.test
 
 
-import com.huemulsolutions.bigdata.common.huemul_BigDataGovernance
-import com.huemulsolutions.bigdata.control.{huemulType_Frequency, huemul_Control}
+import com.huemulsolutions.bigdata.common.HuemulBigDataGovernance
+import com.huemulsolutions.bigdata.control.{HuemulTypeFrequency, HuemulControl}
 
 object prc_f100_testplan {
-  var control:huemul_Control = _
-  var huemulBigDataGov:huemul_BigDataGovernance = _
+  var control:HuemulControl = _
+  var huemulBigDataGov:HuemulBigDataGovernance = _
 
   def main(args : Array[String]): Unit ={
 
-    huemulBigDataGov  = new huemul_BigDataGovernance(
+    huemulBigDataGov  = new HuemulBigDataGovernance(
       s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}"
       , args, com.yourcompany.settings.globalSettings.Global)
 
-    control = new huemul_Control(huemulBigDataGov, null, huemulType_Frequency.ANY_MOMENT )
+    control = new HuemulControl(huemulBigDataGov, null, HuemulTypeFrequency.ANY_MOMENT )
 
     //comentado, el archivo ya existe en el directorio HDFS
     //dataGeneration(huemulBigDataGov)
@@ -27,7 +27,7 @@ object prc_f100_testplan {
 
     try {
 
-      val dataF100ControlWEX: huemul_Control = prc_dataf100_WEX.processMaster(huemulBigDataGov: huemul_BigDataGovernance, control, 2020, 1)
+      val dataF100ControlWEX: HuemulControl = prc_dataf100_WEX.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
       val hasErrorWEX = dataF100ControlWEX.Control_Error.ControlError_IsError
       val dqControlIdWEX = dataF100ControlWEX.Control_Id
@@ -88,7 +88,7 @@ object prc_f100_testplan {
 
       //------------------------------------------------------------------------------------------------------------
       //------------------------------------------------------------------------------------------------------------
-      val dataF100ControlW: huemul_Control = prc_dataf100_W.processMaster(huemulBigDataGov: huemul_BigDataGovernance, control, 2020, 1)
+      val dataF100ControlW: HuemulControl = prc_dataf100_W.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
       val hasErrorW = dataF100ControlW.Control_Error.ControlError_IsError
       val dqControlIdW = dataF100ControlW.Control_Id
@@ -149,7 +149,7 @@ object prc_f100_testplan {
 
       //------------------------------------------------------------------------------------------------------------
       //------------------------------------------------------------------------------------------------------------
-      val dataF100ControlE: huemul_Control = prc_dataf100_E.processMaster(huemulBigDataGov: huemul_BigDataGovernance, control, 2020, 1)
+      val dataF100ControlE: HuemulControl = prc_dataf100_E.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
       val hasErrorE = dataF100ControlE.Control_Error.ControlError_IsError
       val dqControlIdE = dataF100ControlE.Control_Id
@@ -210,7 +210,7 @@ object prc_f100_testplan {
 
       //------------------------------------------------------------------------------------------------------------
       //------------------------------------------------------------------------------------------------------------
-      val dataF100ControlWexW: huemul_Control = prc_dataf100_WEX_W.processMaster(huemulBigDataGov: huemul_BigDataGovernance, control, 2020, 1)
+      val dataF100ControlWexW: HuemulControl = prc_dataf100_WEX_W.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
       val hasErrorWexW = dataF100ControlWexW.Control_Error.ControlError_IsError
       val dqControlIdWexW = dataF100ControlWexW.Control_Id
@@ -343,7 +343,7 @@ object prc_f100_testplan {
 
       //----------------------------------------------------------------------------
       //----------------------------------------------------------------------------
-      val dataF100ControlWEXTrx: huemul_Control = prc_dataf100_WEX_TRX.processMaster(huemulBigDataGov: huemul_BigDataGovernance, control, 2020, 1)
+      val dataF100ControlWEXTrx: HuemulControl = prc_dataf100_WEX_TRX.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
       val hasErrorWEXTrx = dataF100ControlWEXTrx.Control_Error.ControlError_IsError
       val dqControlIdWEXTrx = dataF100ControlWEXTrx.Control_Id
@@ -663,7 +663,7 @@ object prc_f100_testplan {
   }
 
   /*
-  private def dataGeneration(huemulBigDataGov: huemul_BigDataGovernance): Unit = {
+  private def dataGeneration(huemulBigDataGov: HuemulBigDataGovernance): Unit = {
     val path = huemulBigDataGov.GlobalSettings.getPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.RAW_BigFiles_Path )
     println(s"INFO path : $path")
 

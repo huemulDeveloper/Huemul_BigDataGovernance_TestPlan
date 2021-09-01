@@ -1,25 +1,25 @@
 package com.huemulsolutions.bigdata.tables.master
 
-import com.huemulsolutions.bigdata.common.huemul_BigDataGovernance
-import com.huemulsolutions.bigdata.control.{huemulType_Frequency, huemul_Control}
-import com.huemulsolutions.bigdata.dataquality.huemulType_DQNotification
+import com.huemulsolutions.bigdata.common.HuemulBigDataGovernance
+import com.huemulsolutions.bigdata.control.{HuemulTypeFrequency, HuemulControl}
+import com.huemulsolutions.bigdata.dataquality.HuemulTypeDQNotification
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType.HuemulTypeStorageType
 import org.apache.spark.sql.types.{DateType, Decimal, IntegerType, StringType}
 
-class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Control, TipoTabla: huemulType_StorageType)
-  extends huemul_Table(huemulBigDataGov, Control) with Serializable {
+class dataf100_W(huemulBigDataGov: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType)
+  extends HuemulTable(huemulBigDataGov, Control) with Serializable {
 
-  val notifLevel: huemulType_DQNotification.Value = huemulType_DQNotification.WARNING
+  val notifLevel: HuemulTypeDQNotification.Value = HuemulTypeDQNotification.WARNING
 
   /**********   C O N F I G U R A C I O N   D E   L A   T A B L A   ****************************************/
   //Tipo de tabla, Master y Reference son catálogos sin particiones de periodo
-  this.setTableType(huemulType_Tables.Reference)
+  this.setTableType(HuemulTypeTables.Reference)
   //Base de Datos en HIVE donde sera creada la tabla
   this.setDataBase(huemulBigDataGov.GlobalSettings.MASTER_DataBase)
   //Tipo de archivo que sera almacenado en HDFS
-  //if (TipoTabla == huemulType_StorageType.HBASE)
-  //  this.setStorageType(huemulType_StorageType.PARQUET)
+  //if (TipoTabla == HuemulTypeStorageType.HBASE)
+  //  this.setStorageType(HuemulTypeStorageType.PARQUET)
   //else
     this.setStorageType(TipoTabla)
   //Ruta en HDFS donde se guardara el archivo PARQUET
@@ -29,7 +29,7 @@ class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Con
   //columna de partición
   //this.setPartitionField("periodo_mes")
   //Frecuencia de actualización de los datos
-  this.setFrequency(huemulType_Frequency.MONTHLY)
+  this.setFrequency(HuemulTypeFrequency.MONTHLY)
   //permite asignar un código de error personalizado al fallar la PK
   this.setPK_externalCode("ERROR_PK")
   this.setPkNotification(notifLevel)
@@ -74,81 +74,81 @@ class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Con
 
 
   //Columna de periodo
-  val PKCOL1: huemul_Columns = new huemul_Columns (IntegerType, true,"PKCOL1")
+  val PKCOL1: HuemulColumns = new HuemulColumns (IntegerType, true,"PKCOL1")
     .setIsPK()
 
-  val PKCOL2: huemul_Columns = new huemul_Columns (IntegerType, true,"PKCOL2")
+  val PKCOL2: HuemulColumns = new HuemulColumns (IntegerType, true,"PKCOL2")
     .setIsPK()
 
-  val UNIQUECOL: huemul_Columns = new huemul_Columns (IntegerType, true,"UNIQUECOL")
+  val UNIQUECOL: HuemulColumns = new HuemulColumns (IntegerType, true,"UNIQUECOL")
     .setIsUnique("ERROR_UNIQUE")
     .setIsUnique_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val VACIOCOL: huemul_Columns = new huemul_Columns (IntegerType, true,"NULLCOL")
+  val VACIOCOL: HuemulColumns = new HuemulColumns (IntegerType, true,"NULLCOL")
     .setDQ_Nullable_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val LENGTHCOL: huemul_Columns = new huemul_Columns (StringType, true,"LENGTHCOL")
+  val LENGTHCOL: HuemulColumns = new HuemulColumns (StringType, true,"LENGTHCOL")
     .setDQ_MinLen(3,"ERROR_LEN_MIN")
     .setDQ_MaxLen(7,"ERROR_LEN_MAX")
     .setDQ_MinLen_Notification(notifLevel)
     .setDQ_MaxLen_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val DECIMALCOL: huemul_Columns = new huemul_Columns (IntegerType, true,"DECIMALCOL")
+  val DECIMALCOL: HuemulColumns = new HuemulColumns (IntegerType, true,"DECIMALCOL")
     .setDQ_MinDecimalValue(Decimal(1234),"ERROR_DECIMAL_MIN")
     .setDQ_MaxDecimalValue(Decimal(1234567),"ERROR_DECIMAL_MAX")
     .setDQ_MinDecimalValue_Notification(notifLevel)
     .setDQ_MaxDecimalValue_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val DATECOL: huemul_Columns = new huemul_Columns (DateType, true, "DATECOL")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val DATECOL: HuemulColumns = new HuemulColumns (DateType, true, "DATECOL")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MinDateTimeValue("2020-06-02","ERROR_DATE_MIN")
     .setDQ_MaxDateTimeValue("2020-06-04","ERROR_DATE_MAX")
     .setDQ_MinDateTimeValue_Notification(notifLevel)
     .setDQ_MaxDateTimeValue_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val REGEXCOL: huemul_Columns = new huemul_Columns (StringType, true, "REGEXCOL")
+  val REGEXCOL: HuemulColumns = new HuemulColumns (StringType, true, "REGEXCOL")
     .setDQ_RegExpression("^A*B*$")
     .setDQ_RegExpression_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
 
-  val HIERARCHYTEST01_E: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST01")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST01_E: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST01")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(8,"ERROR_LEN_MAX")
     .setDQ_MaxLen_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val HIERARCHYTEST01_W: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST02")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST01_W: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST02")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(8,"ERROR_LEN_MAX")
     .setDQ_MaxLen_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.WARNING)
+    .setDQ_Notification(HuemulTypeDQNotification.WARNING)
 
-  val HIERARCHYTEST01_WEX: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST02")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST01_WEX: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST02")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(8,"ERROR_LEN_MAX")
     .setDQ_MaxLen_Notification(notifLevel)
-    .setDQ_Notification(huemulType_DQNotification.WARNING_EXCLUDE)
+    .setDQ_Notification(HuemulTypeDQNotification.WARNING_EXCLUDE)
 
-  val HIERARCHYTEST02_E: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST01")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST02_E: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST01")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(8,"ERROR_LEN_MAX")
-    .setDQ_Notification(huemulType_DQNotification.ERROR)
+    .setDQ_Notification(HuemulTypeDQNotification.ERROR)
 
-  val HIERARCHYTEST02_W: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST02")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST02_W: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST02")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(8,"ERROR_LEN_MAX")
-    .setDQ_Notification(huemulType_DQNotification.WARNING)
+    .setDQ_Notification(HuemulTypeDQNotification.WARNING)
 
-  val HIERARCHYTEST02_WEX: huemul_Columns = new huemul_Columns (IntegerType, true, "HIERARCHYTEST02")
-    .securityLevel(huemulType_SecurityLevel.Public)
+  val HIERARCHYTEST02_WEX: HuemulColumns = new HuemulColumns (IntegerType, true, "HIERARCHYTEST02")
+    .securityLevel(HuemulTypeSecurityLevel.Public)
     .setDQ_MaxLen(9,"ERROR_LEN_MAX")
-    .setDQ_Notification(huemulType_DQNotification.WARNING_EXCLUDE)
+    .setDQ_Notification(HuemulTypeDQNotification.WARNING_EXCLUDE)
 
   //**********Atributos adicionales de DataQuality
   /*
@@ -174,7 +174,7 @@ class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Con
   /*
   					.encryptedType("tipo")
   					.setARCO_Data()
-  					.securityLevel(huemulType_SecurityLevel.Public)
+  					.securityLevel(HuemulTypeSecurityLevel.Public)
   					.setBusinessGlossary("CODIGO")           //desde 2.0: enlaza id de glosario de términos con campos de la tabla
   */
   //**********Otros atributos
@@ -185,7 +185,7 @@ class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Con
 
   //**********Ejemplo para aplicar DataQuality de Integridad Referencial
   //val i[[tbl_PK]] = new [[tbl_PK]](huemulBigDataGov,Control)
-  //val fk_[[tbl_PK]] = new huemul_Table_Relationship(i[[tbl_PK]], false)
+  //val fk_[[tbl_PK]] = new HuemulTableRelationship(i[[tbl_PK]], false)
   //fk_[[tbl_PK]].AddRelationship(i[[tbl_PK]].[[PK_Id]], [[LocalField]_Id)
 
   //**********Ejemplo para agregar reglas de DataQuality Avanzadas  -->ColumnXX puede ser null si la validacion es a nivel de tabla
@@ -198,7 +198,7 @@ class dataf100_W(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Con
   //********************  Notification es opcional, por default es "error", y ante la aparicion del error el programa falla, si lo cambias a "warning" y la validacion falla, el programa sigue y solo sera notificado
   //********************  SaveErrorDetails es opcional, por default es "true", permite almacenar el detalle del error o warning en una tabla específica, debe estar habilitada la opción DQ_SaveErrorDetails en GlobalSettings
   //********************  DQ_ExternalCode es opcional, por default es "null", permite asociar un Id externo de DQ
-  //val DQ_NombreRegla: huemul_DataQuality = new huemul_DataQuality(ColumnXX,"Descripcion de la validacion", "Campo_1 > Campo_2",1)
+  //val DQ_NombreRegla: HuemulDataQuality = new HuemulDataQuality(ColumnXX,"Descripcion de la validacion", "Campo_1 > Campo_2",1)
   //**************Adicionalmente, puedes agregar "tolerancia" a la validacion, es decir, puedes especiicar
   //************** numFilas = 10 para permitir 10 errores (al 11 se cae)
   //************** porcentaje = 0.2 para permitir una tolerancia del 20% de errores

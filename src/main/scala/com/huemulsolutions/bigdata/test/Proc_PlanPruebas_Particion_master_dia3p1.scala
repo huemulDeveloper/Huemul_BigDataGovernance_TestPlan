@@ -2,8 +2,8 @@ package com.huemulsolutions.bigdata.test
 
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType.HuemulTypeStorageType
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosParticionMaster
 
 /**
@@ -13,23 +13,23 @@ import com.huemulsolutions.bigdata.tables.master.tbl_DatosParticionMaster
  */
 object Proc_PlanPruebas_Particion_master_dia3p1 {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new huemul_BigDataGovernance("01 - Proc_PlanPruebas_Particion_master",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_master",args,com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     var empresaName: String = "EmpresA"
 
     //val empresa = huemulLib.arguments.getValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
     val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-    var TipoTabla: huemulType_StorageType = null
+    var TipoTabla: HuemulTypeStorageType = null
     if (TipoTablaParam == "orc")
-      TipoTabla = huemulType_StorageType.ORC
+      TipoTabla = HuemulTypeStorageType.ORC
     else if (TipoTablaParam == "parquet")
-      TipoTabla = huemulType_StorageType.PARQUET
+      TipoTabla = HuemulTypeStorageType.PARQUET
     else if (TipoTablaParam == "delta")
-      TipoTabla = huemulType_StorageType.DELTA
+      TipoTabla = HuemulTypeStorageType.DELTA
     else if (TipoTablaParam == "hbase")
-      TipoTabla = huemulType_StorageType.HBASE
+      TipoTabla = HuemulTypeStorageType.HBASE
     else if (TipoTablaParam == "avro") {
-      TipoTabla = huemulType_StorageType.AVRO
+      TipoTabla = HuemulTypeStorageType.AVRO
       empresaName = empresaName.toLowerCase()
     }
 
@@ -52,7 +52,7 @@ object Proc_PlanPruebas_Particion_master_dia3p1 {
       //abre instancia de tabla para obtener algunos parámetros
       val TablaMaster = new tbl_DatosParticionMaster(huemulLib, Control, TipoTabla)
 
-      if (TipoTabla != huemulType_StorageType.HBASE) {
+      if (TipoTabla != HuemulTypeStorageType.HBASE) {
         //valida que existan las particiones esperadas
         val path_20170501_super01_internet = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-01/app=internet")
         val path_20170501_super01_tienda = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-01/app=tienda")

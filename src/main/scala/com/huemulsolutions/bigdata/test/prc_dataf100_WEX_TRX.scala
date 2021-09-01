@@ -5,8 +5,8 @@ import java.util.Calendar
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.raw.raw_dataf100
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType.HuemulTypeStorageType
 import com.huemulsolutions.bigdata.tables.master.dataf100_WEX_TRX
 
 /**
@@ -20,14 +20,14 @@ object prc_dataf100_WEX_TRX {
    * @param args  Parámetros de invocación
    */
   def main(args : Array[String]) {
-    val arguments: huemul_Args = new huemul_Args()
+    val arguments: HuemulArgs = new HuemulArgs()
     arguments.setArgs(args)
 
 
 
     val line="*********************************************************************************************************"
     println(line)
-    val huemulBigDataGov  = new huemul_BigDataGovernance(s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
     println(line)
 
     /*************** PARÁMETROS **********************/
@@ -76,11 +76,11 @@ object prc_dataf100_WEX_TRX {
    * @param ControlParent     Clase que posibilita la integración del desarrollo con el gobierno de datos
    * @param paramAno         Año del archivo a procesar
    * @param paramMes         Mes del archivo a procesar
-   * @return                  Retorna clases huemul_Control
+   * @return                  Retorna clases HuemulControl
    */
-  def processMaster(huemulBigDataGov: huemul_BigDataGovernance, ControlParent: huemul_Control
-                    , paramAno: Integer, paramMes: Integer): huemul_Control = {
-    val Control = new huemul_Control(huemulBigDataGov, ControlParent,  huemulType_Frequency.MONTHLY)
+  def processMaster(huemulBigDataGov: HuemulBigDataGovernance, ControlParent: HuemulControl
+                    , paramAno: Integer, paramMes: Integer): HuemulControl = {
+    val Control = new HuemulControl(huemulBigDataGov, ControlParent,  HuemulTypeFrequency.MONTHLY)
 
     try {
       /*************** AGREGAR PARÁMETROS A CONTROL **********************/
@@ -95,17 +95,17 @@ object prc_dataf100_WEX_TRX {
 
 
       val TipoTablaParam: String = huemulBigDataGov.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-      var TipoTabla: huemulType_StorageType = null
+      var TipoTabla: HuemulTypeStorageType = null
       if (TipoTablaParam == "orc")
-        TipoTabla = huemulType_StorageType.ORC
+        TipoTabla = HuemulTypeStorageType.ORC
       else if (TipoTablaParam == "parquet")
-        TipoTabla = huemulType_StorageType.PARQUET
+        TipoTabla = HuemulTypeStorageType.PARQUET
       else if (TipoTablaParam == "delta")
-        TipoTabla = huemulType_StorageType.DELTA
+        TipoTabla = HuemulTypeStorageType.DELTA
       else if (TipoTablaParam == "hbase")
-        TipoTabla = huemulType_StorageType.HBASE
+        TipoTabla = HuemulTypeStorageType.HBASE
       else if (TipoTablaParam == "avro")
-        TipoTabla = huemulType_StorageType.AVRO
+        TipoTabla = HuemulTypeStorageType.AVRO
       /********************************************************/
       /*************** LÓGICA DE NEGOCIO **********************/
       /********************************************************/

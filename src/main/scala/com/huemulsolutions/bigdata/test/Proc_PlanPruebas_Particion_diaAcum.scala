@@ -3,8 +3,8 @@ package com.huemulsolutions.bigdata.test
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.raw.raw_DatosParticion
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType.HuemulTypeStorageType
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosParticionAcum
 
 /**
@@ -17,12 +17,12 @@ object Proc_PlanPruebas_Particion_diaAcum {
     processMaster(null,args)
   }
 
-  def processMaster(huemulLib2: huemul_BigDataGovernance, args: Array[String]): huemul_Control = {
-    val huemulLib = if (huemulLib2 == null) new huemul_BigDataGovernance("01 - Proc_PlanPruebas_Particion_dia",args,com.yourcompany.settings.globalSettings.Global) else huemulLib2
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+  def processMaster(huemulLib2: HuemulBigDataGovernance, args: Array[String]): HuemulControl = {
+    val huemulLib = if (huemulLib2 == null) new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_dia",args,com.yourcompany.settings.globalSettings.Global) else huemulLib2
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
 
     /*
-    if (huemulLib.GlobalSettings.getBigDataProvider() == huemulType_bigDataProvider.databricks) {
+    if (huemulLib.GlobalSettings.getBigDataProvider() == HuemulTypeBigDataProvider.databricks) {
       huemulLib.spark.sql("SET spark.databricks.delta.formatCheck.enabled=false")
     }
 
@@ -33,17 +33,17 @@ object Proc_PlanPruebas_Particion_diaAcum {
     val dia  = huemulLib.arguments.getValue("dia", null,"Debe especificar dia de proceso: ejemplo: dia=1")
     val empresa = huemulLib.arguments.getValue("empresa", null,"Debe especificar una empresa, ejemplo: empresa=super-01")
     val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-    var TipoTabla: huemulType_StorageType = null
+    var TipoTabla: HuemulTypeStorageType = null
     if (TipoTablaParam == "orc")
-      TipoTabla = huemulType_StorageType.ORC
+      TipoTabla = HuemulTypeStorageType.ORC
     else if (TipoTablaParam == "parquet")
-      TipoTabla = huemulType_StorageType.PARQUET
+      TipoTabla = HuemulTypeStorageType.PARQUET
     else if (TipoTablaParam == "delta")
-      TipoTabla = huemulType_StorageType.DELTA
+      TipoTabla = HuemulTypeStorageType.DELTA
     else if (TipoTablaParam == "hbase")
-      TipoTabla = huemulType_StorageType.PARQUET
+      TipoTabla = HuemulTypeStorageType.PARQUET
     else if (TipoTablaParam == "avro")
-      TipoTabla = huemulType_StorageType.AVRO
+      TipoTabla = HuemulTypeStorageType.AVRO
 
     //val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     //var IdTestPlan: String = ""

@@ -13,8 +13,8 @@ import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
  */
 object Proc_PlanPruebas_Malos01 {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Malos01",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Malos01",args,com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
     val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")

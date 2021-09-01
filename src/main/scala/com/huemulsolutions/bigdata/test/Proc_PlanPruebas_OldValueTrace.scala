@@ -4,33 +4,33 @@ import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.raw.raw_DatosOldValue
 import com.huemulsolutions.bigdata.tables.master.tbl_OldValueTrace
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType._
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType
-import com.huemulsolutions.bigdata.tables.huemul_TableConnector
-import com.huemulsolutions.bigdata.tables.huemulType_InternalTableType
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType._
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
+import com.huemulsolutions.bigdata.tables.HuemulTableConnector
+import com.huemulsolutions.bigdata.tables.HuemulTypeInternalTableType
 
 object Proc_PlanPruebas_OldValueTrace {
   def main(args: Array[String]): Unit = {
     com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_HIVE.setActiveForHBASE(true)
-    val huemulLib = new huemul_BigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OldValueTrace",args,com.yourcompany.settings.globalSettings.Global)
-    val Control = new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OldValueTrace",args,com.yourcompany.settings.globalSettings.Global)
+    val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
     val Mes = huemulLib.arguments.getValue("mes", null,"Debe especificar mes de proceso: ejemplo: mes=12")
     
     val TestPlanGroup: String = huemulLib.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     val TipoTablaParam: String = huemulLib.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
-    var TipoTabla: huemulType_StorageType = null
+    var TipoTabla: HuemulTypeStorageType = null
     if (TipoTablaParam == "orc")
-        TipoTabla = huemulType_StorageType.ORC
+        TipoTabla = HuemulTypeStorageType.ORC
     else if (TipoTablaParam == "parquet")
-        TipoTabla = huemulType_StorageType.PARQUET
+        TipoTabla = HuemulTypeStorageType.PARQUET
     else if (TipoTablaParam == "delta")
-        TipoTabla = huemulType_StorageType.DELTA
+        TipoTabla = HuemulTypeStorageType.DELTA
     else if (TipoTablaParam == "hbase")
-        TipoTabla = huemulType_StorageType.HBASE
+        TipoTabla = HuemulTypeStorageType.HBASE
     else if (TipoTablaParam == "avro")
-        TipoTabla = huemulType_StorageType.AVRO        
+        TipoTabla = HuemulTypeStorageType.AVRO
     
     println(s"tipo tabla: $TipoTablaParam, $TipoTabla")
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
@@ -65,8 +65,8 @@ object Proc_PlanPruebas_OldValueTrace {
         
       if (TipoTablaParam == "hbase") {
         Control.NewStep("borrar tabla")
-        val th = new huemul_TableConnector(huemulLib, Control)
-        th.tableDeleteHBase(TablaMaster.getHBaseNamespace(huemulType_InternalTableType.Normal), TablaMaster.getHBaseTableName(huemulType_InternalTableType.Normal))
+        val th = new HuemulTableConnector(huemulLib, Control)
+        th.tableDeleteHBase(TablaMaster.getHBaseNamespace(HuemulTypeInternalTableType.Normal), TablaMaster.getHBaseTableName(HuemulTypeInternalTableType.Normal))
       }
         
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS

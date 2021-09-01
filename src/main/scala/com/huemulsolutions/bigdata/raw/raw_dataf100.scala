@@ -11,15 +11,15 @@ import org.apache.spark.sql.types.{DateType, IntegerType, StringType}
  * @param huemulBigDataGov  Clase inicial de la librería Huemul Big Data Governance
  * @param Control           Clase que posibilita la integración del desarrollo con el gobierno de datos
  */
-class raw_dataf100(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_Control)
-  extends huemul_DataLake(huemulBigDataGov, Control) with Serializable  {
+class raw_dataf100(huemulBigDataGov: HuemulBigDataGovernance, Control: HuemulControl)
+  extends HuemulDataLake(huemulBigDataGov, Control) with Serializable  {
 
   this.Description = "Data F100"
   this.GroupName = "poc"
-  this.setFrequency(huemulType_Frequency.MONTHLY)
+  this.setFrequency(HuemulTypeFrequency.MONTHLY)
 
   //Crea variable para configuración de lectura del archivo
-  val CurrentSetting = new huemul_DataLakeSetting(huemulBigDataGov)
+  val CurrentSetting = new HuemulDataLakeSetting(huemulBigDataGov)
   //configurar la fecha de vigencia de esta configuración
   CurrentSetting.StartDate = huemulBigDataGov.setDateTime(2010,1,1,0,0,0)
   CurrentSetting.EndDate = huemulBigDataGov.setDateTime(2050,12,12,0,0,0)
@@ -31,12 +31,12 @@ class raw_dataf100(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_C
   //configura el nombre del archivo (se pueden usar comodines)
   CurrentSetting.FileName = "TestDataF100.csv"
   //especifica el tipo de archivo a leer
-  CurrentSetting.FileType = huemulType_FileType.TEXT_FILE
+  CurrentSetting.FileType = HuemulTypeFileType.TEXT_FILE
   //especifica el nombre del contacto del archivo en TI
   CurrentSetting.ContactName = "Christian Sattler"
 
   //Indica como se lee el archivo
-  CurrentSetting.DataSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER  //POSITION;CHARACTER
+  CurrentSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
   //separador de columnas
   CurrentSetting.DataSchemaConf.ColSeparator = ","    //SET FOR CHARACTER
 
@@ -51,8 +51,8 @@ class raw_dataf100(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_C
   CurrentSetting.DataSchemaConf.AddColumns("HIERARCHYTEST01", "", StringType, "")
   CurrentSetting.DataSchemaConf.AddColumns("HIERARCHYTEST02", "", StringType, "")
 
-  //Configurar de lectura de información de Log (en caso de tener, si no tiene se configura huemulType_Separator.NONE)
-  CurrentSetting.LogSchemaConf.ColSeparatorType = huemulType_Separator.CHARACTER
+  //Configurar de lectura de información de Log (en caso de tener, si no tiene se configura HuemulTypeSeparator.NONE)
+  CurrentSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER
   CurrentSetting.LogSchemaConf.ColSeparator=","
   CurrentSetting.LogSchemaConf.setHeaderColumnsString("HEADER")
   CurrentSetting.LogNumRows_FieldName = null
@@ -73,10 +73,10 @@ class raw_dataf100(huemulBigDataGov: huemul_BigDataGovernance, Control: huemul_C
    * @param seg           Segundo Hora del archivo
    * @return              Boolean: True si la apertura del archivo fue exitosa
    */
-  def open(Alias: String, ControlParent: huemul_Control
+  def open(Alias: String, ControlParent: HuemulControl
            , year: Integer, month: Integer, day: Integer, hour: Integer, min: Integer, seg: Integer): Boolean = {
     //Crea registro de control de procesos
-    val control = new huemul_Control(huemulBigDataGov, ControlParent, huemulType_Frequency.ANY_MOMENT)
+    val control = new HuemulControl(huemulBigDataGov, ControlParent, HuemulTypeFrequency.ANY_MOMENT)
 
     //Guarda los parámetros importantes en el control de procesos
     control.AddParamYear("Ano", year)
@@ -135,10 +135,10 @@ object raw_dataf100_test {
 
 
     //Creación API
-    val huemulBigDataGov  = new huemul_BigDataGovernance(s"Testing DataLake - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Testing DataLake - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
 
     //Creación del objeto control, por default no permite ejecuciones en paralelo del mismo objeto (corre en modo SINGLETON)
-    val Control = new huemul_Control(huemulBigDataGov, null, huemulType_Frequency.MONTHLY )
+    val Control = new HuemulControl(huemulBigDataGov, null, HuemulTypeFrequency.MONTHLY )
 
     /*************** PARÁMETROS **********************/
     val param_year = huemulBigDataGov.arguments.getValue("year", null

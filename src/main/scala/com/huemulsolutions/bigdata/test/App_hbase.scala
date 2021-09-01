@@ -12,17 +12,17 @@ object App_hbase {
 
   
   def main(args : Array[String]) {
-    //val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
-    //val Control = new huemul_Control(huemulLib,null)
+    //val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
+    //val Control = new HuemulControl(huemulLib,null)
     
     /*
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     val resultado = huemulLib.ExecuteJDBC_NoResulSet(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "insert into tempSeba values (10) ")
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     
     
     val resultado2 = huemulLib.ExecuteJDBC_WithResult(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "select * from tempSeba ")
-    println(s"${huemulLib.huemul_getDateForLog()}")
+    println(s"${huemulLib.HuemulgetDateForLog()}")
     println(s"N° de registros resultantes: ${resultado2.ResultSet.length}")
     resultado2.ResultSet.foreach { x => println(s"campo 0: ${x.get(0)} ") }
     resultado2.ResultSet.foreach { x => println(s"campo campo: ${x.getAs("campo")} ") }
@@ -33,8 +33,8 @@ object App_hbase {
     
    
     //Validación que todo está OK
-    val huemulLib = new huemul_BigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
-    new huemul_Control(huemulLib,null, huemulType_Frequency.MONTHLY)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
+    new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
       /*
     val __DF = huemulLib.spark.sql("select '1010' as codigo, null as nombre, null as atelefono union all select  '1020' as codigo, 'nombre 1020' as nombre, 2222226 as atelefono union all select  '1030' as codigo, 'nombre 1030' as nombre, 3333333 as atelefono ")

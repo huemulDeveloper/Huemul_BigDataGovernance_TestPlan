@@ -3,23 +3,23 @@ package com.huemulsolutions.bigdata.tables.master
 import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.tables._
-import com.huemulsolutions.bigdata.tables.huemul_Columns
-import com.huemulsolutions.bigdata.tables.huemulType_StorageType.huemulType_StorageType
+import com.huemulsolutions.bigdata.tables.HuemulColumns
+import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType.HuemulTypeStorageType
 import org.apache.spark.sql.types.DataTypes._
 
 
 
-class tbl_DatosParticion(HuemulLib: huemul_BigDataGovernance, Control: huemul_Control, TipoTabla: huemulType_StorageType) extends huemul_Table(HuemulLib,Control) with Serializable {
-  this.setTableType(huemulType_Tables.Transaction)
+class tbl_DatosParticion(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
+  this.setTableType(HuemulTypeTables.Transaction)
   this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
   this.setDescription("Plan pruebas: Carga datos con varias particiones")
   this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
   this.setLocalPath("planPruebas/")
   this.setStorageType(TipoTabla)
-  //this.setStorageType(huemulType_StorageType.ORC)
-  //this.setStorageType(huemulType_StorageType.PARQUET)
+  //this.setStorageType(HuemulTypeStorageType.ORC)
+  //this.setStorageType(HuemulTypeStorageType.PARQUET)
   //this.setDQ_MaxNewRecords_Num(value = 4)
-  this.setFrequency(huemulType_Frequency.DAILY)
+  this.setFrequency(HuemulTypeFrequency.DAILY)
   
   //Agrega version 1.3
   //this.setNumPartitions(2)
@@ -29,24 +29,24 @@ class tbl_DatosParticion(HuemulLib: huemul_BigDataGovernance, Control: huemul_Co
 
   this.setPK_externalCode("USER_COD_PK")
   
-  val periodo: huemul_Columns = new huemul_Columns(DateType,true,"Periodo de los datos")
+  val periodo: HuemulColumns = new HuemulColumns(DateType,true,"Periodo de los datos")
                             .setIsPK().setPartitionColumn(1,dropBeforeInsert = false, oneValuePerProcess = true)
 
-  val idTx: huemul_Columns = new huemul_Columns(StringType,true,"codigo de la transacción")
+  val idTx: HuemulColumns = new HuemulColumns(StringType,true,"codigo de la transacción")
     .setIsPK()
 
 
-  val EmpresA: huemul_Columns = new huemul_Columns(StringType,true,"Empresa que registra ventas")
+  val EmpresA: HuemulColumns = new HuemulColumns(StringType,true,"Empresa que registra ventas")
     .setPartitionColumn(2,dropBeforeInsert = true, oneValuePerProcess = false)
 
-  val app: huemul_Columns = new huemul_Columns(StringType,true,"app que registra ventas")
+  val app: HuemulColumns = new HuemulColumns(StringType,true,"app que registra ventas")
     .setPartitionColumn(3,dropBeforeInsert = false, oneValuePerProcess = false)
 
-  val producto: huemul_Columns = new huemul_Columns(StringType,true,"producto de la venta")
+  val producto: HuemulColumns = new HuemulColumns(StringType,true,"producto de la venta")
 
-  val cantidad: huemul_Columns = new huemul_Columns(IntegerType,true,"Cantidad de productos vendidos")
+  val cantidad: HuemulColumns = new HuemulColumns(IntegerType,true,"Cantidad de productos vendidos")
 
-  val precio: huemul_Columns = new huemul_Columns(IntegerType,true,"precio de la venta")
+  val precio: HuemulColumns = new HuemulColumns(IntegerType,true,"precio de la venta")
 
 
   
