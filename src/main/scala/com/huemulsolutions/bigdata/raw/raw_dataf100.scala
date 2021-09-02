@@ -14,56 +14,56 @@ import org.apache.spark.sql.types.{DateType, IntegerType, StringType}
 class raw_dataf100(huemulBigDataGov: HuemulBigDataGovernance, Control: HuemulControl)
   extends HuemulDataLake(huemulBigDataGov, Control) with Serializable  {
 
-  this.Description = "Data F100"
-  this.GroupName = "poc"
+  this.description = "Data F100"
+  this.groupName = "poc"
   this.setFrequency(HuemulTypeFrequency.MONTHLY)
 
   //Crea variable para configuración de lectura del archivo
   val CurrentSetting = new HuemulDataLakeSetting(huemulBigDataGov)
   //configurar la fecha de vigencia de esta configuración
-  CurrentSetting.StartDate = huemulBigDataGov.setDateTime(2010,1,1,0,0,0)
-  CurrentSetting.EndDate = huemulBigDataGov.setDateTime(2050,12,12,0,0,0)
+  CurrentSetting.startDate = huemulBigDataGov.setDateTime(2010,1,1,0,0,0)
+  CurrentSetting.endDate = huemulBigDataGov.setDateTime(2050,12,12,0,0,0)
 
   //Configuración de rutas globales
-  CurrentSetting.GlobalPath = huemulBigDataGov.GlobalSettings.RAW_SmallFiles_Path
+  CurrentSetting.globalPath = huemulBigDataGov.globalSettings.rawSmallFilesPath
   //Configura ruta local, se pueden usar comodines
-  CurrentSetting.LocalPath = "planPruebas/"
+  CurrentSetting.localPath = "planPruebas/"
   //configura el nombre del archivo (se pueden usar comodines)
-  CurrentSetting.FileName = "TestDataF100.csv"
+  CurrentSetting.fileName = "TestDataF100.csv"
   //especifica el tipo de archivo a leer
-  CurrentSetting.FileType = HuemulTypeFileType.TEXT_FILE
+  CurrentSetting.fileType = HuemulTypeFileType.TEXT_FILE
   //especifica el nombre del contacto del archivo en TI
-  CurrentSetting.ContactName = "Christian Sattler"
+  CurrentSetting.contactName = "Christian Sattler"
 
   //Indica como se lee el archivo
-  CurrentSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
+  CurrentSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
   //separador de columnas
-  CurrentSetting.DataSchemaConf.ColSeparator = ","    //SET FOR CHARACTER
+  CurrentSetting.dataSchemaConf.colSeparator = ","    //SET FOR CHARACTER
 
-  CurrentSetting.DataSchemaConf.AddColumns("PKCOL1", "", IntegerType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("PKCOL2", "", IntegerType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("UNIQUECOL", "", IntegerType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("NULLCOL", "", IntegerType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("LENGTHCOL", "", StringType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("DECIMALCOL", "", IntegerType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("DATECOL", "", DateType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("REGEXCOL", "", StringType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("HIERARCHYTEST01", "", StringType, "")
-  CurrentSetting.DataSchemaConf.AddColumns("HIERARCHYTEST02", "", StringType, "")
+  CurrentSetting.dataSchemaConf.addColumns("PKCOL1", "", IntegerType, "")
+  CurrentSetting.dataSchemaConf.addColumns("PKCOL2", "", IntegerType, "")
+  CurrentSetting.dataSchemaConf.addColumns("UNIQUECOL", "", IntegerType, "")
+  CurrentSetting.dataSchemaConf.addColumns("NULLCOL", "", IntegerType, "")
+  CurrentSetting.dataSchemaConf.addColumns("LENGTHCOL", "", StringType, "")
+  CurrentSetting.dataSchemaConf.addColumns("DECIMALCOL", "", IntegerType, "")
+  CurrentSetting.dataSchemaConf.addColumns("DATECOL", "", DateType, "")
+  CurrentSetting.dataSchemaConf.addColumns("REGEXCOL", "", StringType, "")
+  CurrentSetting.dataSchemaConf.addColumns("HIERARCHYTEST01", "", StringType, "")
+  CurrentSetting.dataSchemaConf.addColumns("HIERARCHYTEST02", "", StringType, "")
 
-  //Configurar de lectura de información de Log (en caso de tener, si no tiene se configura HuemulTypeSeparator.NONE)
-  CurrentSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER
-  CurrentSetting.LogSchemaConf.ColSeparator=","
-  CurrentSetting.LogSchemaConf.setHeaderColumnsString("HEADER")
-  CurrentSetting.LogNumRows_FieldName = null
+  //Configurar de lectura de información de log (en caso de tener, si no tiene se configura HuemulTypeSeparator.NONE)
+  CurrentSetting.logSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER
+  CurrentSetting.logSchemaConf.colSeparator=","
+  CurrentSetting.logSchemaConf.setHeaderColumnsString("HEADER")
+  CurrentSetting.logNumRowsFieldName = null
 
 
-  this.SettingByDate.append(CurrentSetting)
+  this.settingByDate.append(CurrentSetting)
 
   /**
    * Método que retorna una estructura con un DF de detalle, y registros de control
    *
-   * @param Alias         Alias del DataFrame SQL
+   * @param Alias         Alias del dataFrame SQL
    * @param ControlParent ControlParent
    * @param year          Año del archivo
    * @param month         Mes del archivo
@@ -83,39 +83,39 @@ class raw_dataf100(huemulBigDataGov: HuemulBigDataGovernance, Control: HuemulCon
     control.AddParamMonth("Mes", month)
 
     try {
-      //NewStep va registrando los pasos de este proceso, también sirve como documentación del mismo.
-      control.NewStep("Abre archivo RDD y devuelve esquemas para transformar a DF")
-      if (!this.OpenFile(year, month, day, hour, min, seg, null)){
+      //newStep va registrando los pasos de este proceso, también sirve como documentación del mismo.
+      control.newStep("Abre archivo RDD y devuelve esquemas para transformar a DF")
+      if (!this.openFile(year, month, day, hour, min, seg, null)){
         //Control también entrega mecanismos de envío de excepciones
-        control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
+        control.raiseError(s"error al abrir archivo: ${this.error.controlErrorMessage}")
       }
 
       //Si el archivo no tiene cabecera, comentar la línea de .filter
-      control.NewStep("Aplicando Filtro")
-      val rowRDD = this.DataRDD
+      control.newStep("Aplicando Filtro")
+      val rowRDD = this.dataRdd
         //filtro para dejar fuera la primera fila
-        .filter { x => x != this.Log.DataFirstRow  }
-        .map { x => this.ConvertSchema(x) }
+        .filter { x => x != this.log.dataFirstRow  }
+        .map { x => this.convertSchema(x) }
 
-      //Crea DataFrame en Data.DataDF
-      control.NewStep("Transformando datos a DataFrame")
-      this.DF_from_RAW(rowRDD, Alias)
+      //Crea dataFrame en Data.DataDF
+      control.newStep("Transformando datos a dataFrame")
+      this.dfFromRaw(rowRDD, Alias)
 
       //************************
       //**** VALIDACIÓN DQ *****
       //************************
-      control.NewStep("Valida que cantidad de registros esté entre 10 y 500")
+      control.newStep("Valida que cantidad de registros esté entre 10 y 500")
       //validación cantidad de filas
-      val validaNumFilas = this.DataFramehuemul.DQ_NumRowsInterval(this, 1, 100)
-      if (validaNumFilas.isError) control.RaiseError(s"user: Numero de Filas fuera del rango. ${validaNumFilas.Description}")
+      val validaNumFilas = this.dataFrameHuemul.DQ_NumRowsInterval(this, 1, 100)
+      if (validaNumFilas.isError) control.raiseError(s"user: Numero de Filas fuera del rango. ${validaNumFilas.description}")
 
-      control.FinishProcessOK
+      control.finishProcessOk
     } catch {
       case e: Exception =>
-        control.Control_Error.GetError(e, this.getClass.getName, null)
-        control.FinishProcessError()
+        control.controlError.setError(e, this.getClass.getName, null)
+        control.finishProcessError()
     }
-    control.Control_Error.IsOK()
+    control.controlError.isOK
   }
 }
 
@@ -135,7 +135,7 @@ object raw_dataf100_test {
 
 
     //Creación API
-    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Testing DataLake - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Testing DataLake - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.global)
 
     //Creación del objeto control, por default no permite ejecuciones en paralelo del mismo objeto (corre en modo SINGLETON)
     val Control = new HuemulControl(huemulBigDataGov, null, HuemulTypeFrequency.MONTHLY )
@@ -154,9 +154,9 @@ object raw_dataf100_test {
       huemulBigDataGov.log_info.error("************************************************************")
 
     } else
-      DF_RAW.DataFramehuemul.DataFrame.show()
+      DF_RAW.dataFrameHuemul.dataFrame.show()
 
-    Control.FinishProcessOK
+    Control.finishProcessOk
     huemulBigDataGov.close()
 
   }

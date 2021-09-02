@@ -9,14 +9,14 @@ import org.apache.spark.sql.types.DataTypes._
 
 class tbl_DatosParticionMaster(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: Carga datos con varias particiones")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   this.setStorageType(TipoTabla)
   //this.setStorageType(HuemulTypeStorageType.ORC)
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
-  //this.setDQ_MaxNewRecords_Num(value = 4)
+  //this.setDqMaxNewRecordsNum(value = 4)
   this.setFrequency(HuemulTypeFrequency.DAILY)
 
   if (TipoTabla == HuemulTypeStorageType.AVRO) {
@@ -29,7 +29,7 @@ class tbl_DatosParticionMaster(HuemulLib: HuemulBigDataGovernance, Control: Huem
   //Agrega versión 2.0
   this.setSaveBackup(true)
 
-  this.setPK_externalCode("USER_COD_PK")
+  this.setPkExternalCode("USER_COD_PK")
   
   val periodo: HuemulColumns = new HuemulColumns(DateType,true,"Periodo de los datos")
                             .setIsPK().setPartitionColumn(1,dropBeforeInsert = false, oneValuePerProcess = true)
@@ -52,6 +52,6 @@ class tbl_DatosParticionMaster(HuemulLib: HuemulBigDataGovernance, Control: Huem
 
 
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

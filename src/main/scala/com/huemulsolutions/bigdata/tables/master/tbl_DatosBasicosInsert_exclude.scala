@@ -11,9 +11,9 @@ import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType._
 
 class tbl_DatosBasicosInsert_exclude(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta (carga 1 vez, luego solo inserta datos)")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   this.setStorageType(TipoTabla)
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
@@ -28,69 +28,69 @@ class tbl_DatosBasicosInsert_exclude(HuemulLib: HuemulBigDataGovernance, Control
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK ( )
-  TipoValor.setDQ_MinLen ( 2)
-  TipoValor.setDQ_MaxLen ( 50)
+  TipoValor.setDqMinLen ( 2)
+  TipoValor.setDqMaxLen ( 50)
   
   
   val IntValue = new HuemulColumns(IntegerType,true,"datos integer")
   IntValue.setNullable ( )
-  IntValue.setMDM_EnableDTLog ( )
-  IntValue.setMDM_EnableOldValue ( )
-  IntValue.setMDM_EnableProcessLog ( )
+  IntValue.setMdmEnableDTLog ( )
+  IntValue.setMdmEnableOldValue ( )
+  IntValue.setMdmEnableProcessLog ( )
   
   val BigIntValue = new HuemulColumns(LongType,true,"datos BigInt")
   BigIntValue.setNullable ( )
-  BigIntValue.setMDM_EnableDTLog ( )
-  BigIntValue.setMDM_EnableOldValue ( )
-  BigIntValue.setMDM_EnableProcessLog ( )
+  BigIntValue.setMdmEnableDTLog ( )
+  BigIntValue.setMdmEnableOldValue ( )
+  BigIntValue.setMdmEnableProcessLog ( )
   
   val SmallIntValue = new HuemulColumns(ShortType,true,"datos SmallInt")
   SmallIntValue.setNullable ( )
-  SmallIntValue.setMDM_EnableDTLog ( )
-  SmallIntValue.setMDM_EnableOldValue ( )
-  SmallIntValue.setMDM_EnableProcessLog ( )
+  SmallIntValue.setMdmEnableDTLog ( )
+  SmallIntValue.setMdmEnableOldValue ( )
+  SmallIntValue.setMdmEnableProcessLog ( )
   
   val TinyIntValue = new HuemulColumns(ShortType,true,"datos TinyInt")
   TinyIntValue.setNullable ( )
-  TinyIntValue.setMDM_EnableDTLog ( )
-  TinyIntValue.setMDM_EnableOldValue ( )
-  TinyIntValue.setMDM_EnableProcessLog ( )
+  TinyIntValue.setMdmEnableDTLog ( )
+  TinyIntValue.setMdmEnableOldValue ( )
+  TinyIntValue.setMdmEnableProcessLog ( )
   
   val DecimalValue = new HuemulColumns(DecimalType(10,4),true,"datos Decimal(10,4)")
   DecimalValue.setNullable ( )
-  DecimalValue.setMDM_EnableDTLog ( )
-  DecimalValue.setMDM_EnableOldValue ( )
-  DecimalValue.setMDM_EnableProcessLog ( )
+  DecimalValue.setMdmEnableDTLog ( )
+  DecimalValue.setMdmEnableOldValue ( )
+  DecimalValue.setMdmEnableProcessLog ( )
   
   val RealValue = new HuemulColumns(DoubleType,true,"datos Real")
   RealValue.setNullable ( )
-  RealValue.setMDM_EnableDTLog ( )
-  RealValue.setMDM_EnableOldValue ( )
-  RealValue.setMDM_EnableProcessLog ( )
+  RealValue.setMdmEnableDTLog ( )
+  RealValue.setMdmEnableOldValue ( )
+  RealValue.setMdmEnableProcessLog ( )
   
   val FloatValue = new HuemulColumns(FloatType,true,"datos Float")
   FloatValue.setNullable ( )
-  FloatValue.setMDM_EnableDTLog ( )
-  FloatValue.setMDM_EnableOldValue ( )
-  FloatValue.setMDM_EnableProcessLog ( )
+  FloatValue.setMdmEnableDTLog ( )
+  FloatValue.setMdmEnableOldValue ( )
+  FloatValue.setMdmEnableProcessLog ( )
   
   val StringValue = new HuemulColumns(StringType,true,"datos String")
   StringValue.setNullable ( )
-  StringValue.setMDM_EnableDTLog ( )
-  StringValue.setMDM_EnableOldValue ( )
-  StringValue.setMDM_EnableProcessLog ( )
+  StringValue.setMdmEnableDTLog ( )
+  StringValue.setMdmEnableOldValue ( )
+  StringValue.setMdmEnableProcessLog ( )
   
   val charValue = new HuemulColumns(StringType,true,"datos Char")
   charValue.setNullable ( )
-  charValue.setMDM_EnableDTLog ( )
-  charValue.setMDM_EnableOldValue ( )
-  charValue.setMDM_EnableProcessLog ( )
+  charValue.setMdmEnableDTLog ( )
+  charValue.setMdmEnableOldValue ( )
+  charValue.setMdmEnableProcessLog ( )
   
   val timeStampValue = new HuemulColumns(TimestampType,true,"datos TimeStamp")
   timeStampValue.setNullable ( )
-  timeStampValue.setMDM_EnableDTLog ( )
-  timeStampValue.setMDM_EnableOldValue ( )
-  timeStampValue.setMDM_EnableProcessLog ( )
+  timeStampValue.setMdmEnableDTLog ( )
+  timeStampValue.setMdmEnableOldValue ( )
+  timeStampValue.setMdmEnableProcessLog ( )
   
   
    val IntDefaultValue = new HuemulColumns(IntegerType,false,"datos default integer")
@@ -124,16 +124,16 @@ class tbl_DatosBasicosInsert_exclude(HuemulLib: HuemulBigDataGovernance, Control
   timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   //Regla para probar exclusión de registro al fallar un warning
-  val DQ_warning_exclude: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Exclusión de valor Cero-Vacio", "tipoValor not in ('Cero-Vacio')",1).setNotification(HuemulTypeDQNotification.WARNING_EXCLUDE).setQueryLevel(HuemulTypeDQQueryLevel.Row)
-  val DQ_warning_solo: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Solo warning cuando aparezca registro Cero-Vacio", "tipoValor <> 'Negativo_Maximo'",2).setNotification(HuemulTypeDQNotification.WARNING).setQueryLevel(HuemulTypeDQQueryLevel.Row)
+  val DQ_warning_exclude: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Exclusión de valor Cero-Vacio", "tipoValor not in ('Cero-Vacio')",1).setNotification(HuemulTypeDqNotification.WARNING_EXCLUDE).setQueryLevel(HuemulTypeDqQueryLevel.Row)
+  val DQ_warning_solo: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Solo warning cuando aparezca registro Cero-Vacio", "tipoValor <> 'Negativo_Maximo'",2).setNotification(HuemulTypeDqNotification.WARNING).setQueryLevel(HuemulTypeDqQueryLevel.Row)
   
   
   //**********Ejemplo para aplicar DataQuality de Integridad Referencial
   val itbl_DatosBasicosNuevos = new tbl_DatosBasicosNuevos(HuemulLib,Control, TipoTabla)
-  val fk_tbl_DatosBasicos: HuemulTableRelationship = new HuemulTableRelationship(itbl_DatosBasicosNuevos, false).setNotification(HuemulTypeDQNotification.WARNING_EXCLUDE).broadcastJoin(true)
-  fk_tbl_DatosBasicos.AddRelationship(itbl_DatosBasicosNuevos.TipoValor , TipoValor)
+  val fk_tbl_DatosBasicos: HuemulTableRelationship = new HuemulTableRelationship(itbl_DatosBasicosNuevos, false).setNotification(HuemulTypeDqNotification.WARNING_EXCLUDE).broadcastJoin(true)
+  fk_tbl_DatosBasicos.addRelationship(itbl_DatosBasicosNuevos.TipoValor , TipoValor)
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

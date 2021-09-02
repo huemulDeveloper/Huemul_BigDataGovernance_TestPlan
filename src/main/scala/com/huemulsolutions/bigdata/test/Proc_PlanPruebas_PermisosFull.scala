@@ -7,12 +7,12 @@ import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
 
 /**
  * Este plan de pruebas valida lo siguiente:
- * Error en PK: hay registros duplicados, lo que se espera es un error de PK
+ * error en PK: hay registros duplicados, lo que se espera es un error de PK
  * el TipodeArchivo usado es Malo01
  */
 object Proc_PlanPruebas_PermisosFull {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Proc_PlanPruebas_PermisosFull",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Proc_PlanPruebas_PermisosFull",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -23,14 +23,14 @@ object Proc_PlanPruebas_PermisosFull {
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
     try {
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosBasicos(huemulLib, Control)
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"Malos01")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosBasicos(huemulLib, Control)    
-      TablaMaster.WhoCanRun_executeFull_addAccess("agrega otro", "cualquier clase")
+      TablaMaster.whoCanRunExecuteFullAddAccess("agrega otro", "cualquier clase")
   
       
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeFull","Pudo agregar acceso", "no Pudo agregar acceso", s"Pudo agregar acceso", p_testPlan_IsOK = false)
@@ -44,14 +44,14 @@ object Proc_PlanPruebas_PermisosFull {
       /////////////////////////////////////////////////////////////////////////////////////////
       //valida que respuesta sea negativa
       
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         
-        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeFull", "ERROR DE PROGRAMA -  deberia tener errror", "con error 1033", s"con error: ${Control.Control_Error.ControlError_ErrorCode}", Control.Control_Error.ControlError_ErrorCode == 1033)
+        val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeFull", "ERROR DE PROGRAMA -  deberia tener errror", "con error 1033", s"con error: ${Control.controlError.controlErrorErrorCode}", Control.controlError.controlErrorErrorCode == 1033)
         Control.RegisterTestPlanFeature("getWhoCanRun_executeFull", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(null))

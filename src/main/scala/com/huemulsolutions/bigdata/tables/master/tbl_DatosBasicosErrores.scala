@@ -11,9 +11,9 @@ import org.apache.spark.sql.types.Decimal
 
 class tbl_DatosBasicosErrores(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
   this.setStorageType(TipoTabla)
@@ -25,38 +25,38 @@ class tbl_DatosBasicosErrores(HuemulLib: HuemulBigDataGovernance, Control: Huemu
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK (  )
-  TipoValor.setDQ_MinLen ( 2,null)
-  TipoValor.setDQ_MaxLen ( 50,null)
+  TipoValor.setDqMinLen ( 2,null)
+  TipoValor.setDqMaxLen ( 50,null)
   
   //Valida MinMax String
   val Column_DQ_MinLen = new HuemulColumns(StringType,true,"Valida minimo largo de un string")
   Column_DQ_MinLen.setNullable ()
-  Column_DQ_MinLen.setDQ_MinLen ( 10,null) //3 errores
+  Column_DQ_MinLen.setDqMinLen ( 10,null) //3 errores
   
   val Column_DQ_MaxLen = new HuemulColumns(StringType,true,"Valida máximo largo de un string")
   Column_DQ_MaxLen.setNullable ( )
-  Column_DQ_MaxLen.setDQ_MaxLen ( 10,null )//2 errores
+  Column_DQ_MaxLen.setDqMaxLen ( 10,null )//2 errores
   
   //Valida MinMax Decimal
   val Column_DQ_MinDecimalValue = new HuemulColumns(DecimalType(10,4),true,"Valida minimo valor de un decimal")
   Column_DQ_MinDecimalValue.setNullable ( )
-  Column_DQ_MinDecimalValue.setDQ_MinDecimalValue ( Decimal.apply(0),null)//2 errores
+  Column_DQ_MinDecimalValue.setDqMinDecimalValue ( Decimal.apply(0),null)//2 errores
   
   val Column_DQ_MaxDecimalValue = new HuemulColumns(DecimalType(10,4),true,"Valida máximo valor de un decimal")
   Column_DQ_MaxDecimalValue.setNullable ( )
-  Column_DQ_MaxDecimalValue.setDQ_MaxDecimalValue ( Decimal.apply("10.124"),null ) //1 errores
+  Column_DQ_MaxDecimalValue.setDqMaxDecimalValue ( Decimal.apply("10.124"),null ) //1 errores
   
   
   //Valida MinMax DateTime
   val Column_DQ_MinDateTimeValue = new HuemulColumns(TimestampType,true,"Valida minimo valor de una fecha")
   Column_DQ_MinDateTimeValue.setNullable ()
-  Column_DQ_MinDateTimeValue.setDQ_MinDateTimeValue ( "2017-05-01",null) //3 errores
+  Column_DQ_MinDateTimeValue.setDqMinDateTimeValue ( "2017-05-01",null) //3 errores
   
   val Column_DQ_MaxDateTimeValue = new HuemulColumns(TimestampType,true,"Valida máximo valor de una fecha")
   Column_DQ_MaxDateTimeValue.setNullable ()
-  Column_DQ_MaxDateTimeValue.setDQ_MaxDateTimeValue ( "2017-05-01",null )//2 errores
+  Column_DQ_MaxDateTimeValue.setDqMaxDateTimeValue ( "2017-05-01",null )//2 errores
   
-  val Column_NotNull = new HuemulColumns(IntegerType,true,"datos integer - Error nulo")
+  val Column_NotNull = new HuemulColumns(IntegerType,true,"datos integer - error nulo")
   //Column_NotNull.setNullable ()
   
   val Column_IsUnique = new HuemulColumns(StringType,true,"datos string - valor unico")
@@ -73,6 +73,6 @@ class tbl_DatosBasicosErrores(HuemulLib: HuemulBigDataGovernance, Control: Huemu
   Column_DQ_MinDecimalValue.setDefaultValues ( "2017-05-01" )
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

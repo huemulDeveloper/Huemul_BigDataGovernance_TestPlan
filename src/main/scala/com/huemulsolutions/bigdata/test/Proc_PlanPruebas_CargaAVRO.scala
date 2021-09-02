@@ -11,7 +11,7 @@ import com.huemulsolutions.bigdata.tables.HuemulTypeInternalTableType
 
 object Proc_PlanPruebas_CargaAVRO {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -35,18 +35,18 @@ object Proc_PlanPruebas_CargaAVRO {
     try {
       var IdTestPlan: String = null
       
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosBasicos(huemulLib, Control)
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosBasicosAVRO(huemulLib, Control,TipoTabla)      
-      TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame, "DF_RAW", "DF_Original")
+      TablaMaster.dfFromDf(DF_RAW.dataFrameHuemul.dataFrame, "DF_RAW", "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
-      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.tableName.toUpperCase() }) {
         huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
@@ -56,13 +56,13 @@ object Proc_PlanPruebas_CargaAVRO {
         fs.delete(FullPath, true)
         
       if (TipoTablaParam == "hbase") {
-        Control.NewStep("borrar tabla")
+        Control.newStep("borrar tabla")
         val th = new HuemulTableConnector(huemulLib, Control)
         th.tableDeleteHBase(TablaMaster.getHBaseNamespace(HuemulTypeInternalTableType.Normal), TablaMaster.getHBaseTableName(HuemulTypeInternalTableType.Normal))
       }
         
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS  
-      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.TipoValor.setMapping("TipoValor",replaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
       TablaMaster.IntValue.setMapping("IntValue")
       TablaMaster.BigIntValue.setMapping("BigIntValue")
       TablaMaster.SmallIntValue.setMapping("SmallIntValue")
@@ -74,15 +74,15 @@ object Proc_PlanPruebas_CargaAVRO {
       TablaMaster.charValue.setMapping("charValue")
       TablaMaster.timeStampValue.setMapping("timeStampValue")
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
-      Control.NewStep("Ejecución")
+      Control.newStep("Ejecución")
       if (!TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización(${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}", p_testPlan_IsOK = false)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización(${TablaMaster.errorCode}): ${TablaMaster.errorText}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("StorageType avro", IdTestPlan)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
       
-        Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster.errorCode}): ${TablaMaster.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("StorageType avro", IdTestPlan)
@@ -97,11 +97,11 @@ object Proc_PlanPruebas_CargaAVRO {
       //  I N I C I A   P L A N   D E   P R U E B A S
       /////////////////////////////////////////////////////////////////////////////////////////
       /////////////////////////////////////////////////////////////////////////////////////////
-      Control.NewStep("Muestra de los datos ")
-      TablaMaster.DataFramehuemul.DataFrame.show()
+      Control.newStep("Muestra de los datos ")
+      TablaMaster.dataFrameHuemul.dataFrame.show()
       
-      Control.NewStep("DF Plan de pruebas: Cero-Vacio ")
-      val Cero_Vacio_Todos = huemulLib.DF_ExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Cero-Vacio ")
+      val Cero_Vacio_Todos = huemulLib.dfExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 0                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 0                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 0                          then true else false end as Cumple_TinyIntValue
@@ -124,8 +124,8 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Cero_Vacio = Cero_Vacio_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Maximo ")
-      val Negativo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Maximo ")
+      val Negativo_Maximo_Todos = huemulLib.dfExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -10                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -10                          then true else false end as Cumple_TinyIntValue
@@ -148,8 +148,8 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Maximo = Negativo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Minimo ")
-      val Negativo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Minimo ")
+      val Negativo_Minimo_Todos = huemulLib.dfExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -100                          then true else false end as Cumple_TinyIntValue
@@ -170,8 +170,8 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Minimo = Negativo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Minimo ")
-      val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Minimo ")
+      val Positivo_Minimo_Todos = huemulLib.dfExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 10                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 10                          then true else false end as Cumple_TinyIntValue
@@ -192,8 +192,8 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Minimo = Positivo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Maximo ")
-      val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Maximo ")
+      val Positivo_Maximo_Todos = huemulLib.dfExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 100                          then true else false end as Cumple_TinyIntValue
@@ -214,8 +214,8 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Maximo = Positivo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Null ")
-      val ValorNull_Todos = huemulLib.DF_ExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Null ")
+      val ValorNull_Todos = huemulLib.dfExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue IS NULL                    then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue IS NULL                    then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue IS NULL                     then true else false end as Cumple_TinyIntValue
@@ -238,8 +238,8 @@ object Proc_PlanPruebas_CargaAVRO {
       val ValorNull = ValorNull_Todos.first()
       
       
-      Control.NewStep("DF Plan de pruebas: ValoresDefault ")
-      val ValoresDefault_Todos = huemulLib.DF_ExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
+      Control.newStep("DF Plan de pruebas: ValoresDefault ")
+      val ValoresDefault_Todos = huemulLib.dfExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
                                                                                      ,case when IntDefaultValue = 10000                         then true else false end as Cumple_IntDefaultValue
                                                                                      ,case when SmallIntDefaultValue = 10000                         then true else false end as Cumple_SmallIntDefaultValue
                                                                                      ,case when TinyIntDefaultValue = 10000                          then true else false end as Cumple_TinyIntDefaultValue
@@ -265,7 +265,7 @@ object Proc_PlanPruebas_CargaAVRO {
        * -- Validar la funcionalidad SQL_Insert
        */
       
-      Control.NewStep("DF Plan de pruebas: Aplicando validaciones ")
+      Control.newStep("DF Plan de pruebas: Aplicando validaciones ")
       //**************************
       //****  C O M P A R A C I O N   C E R O - V A C I O  *************
       //**************************
@@ -517,14 +517,14 @@ object Proc_PlanPruebas_CargaAVRO {
       Control.RegisterTestPlanFeature("Datos de tipo TimestampType", IdTestPlan)
       
       
-          Control.FinishProcessOK
+          Control.finishProcessOk
     } catch {
       case e: Exception => 
         val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType avro", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(null))

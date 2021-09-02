@@ -15,22 +15,22 @@ import org.apache.spark.sql.types._
  * SE DEBE EJECUTAR DESPUÉS DE Proc_PlanPruebas_OnlyInsertNew
  */
 class raw_DatosFORMATO(huemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoArchivo: HuemulTypeFileType) extends HuemulDataLake(huemulLib, Control) with Serializable  {
-   this.Description = "Abre archivos PARQUET, AVRO, DELTA, ORC según corresponda."
-   this.GroupName = "HuemulPlanPruebas"
+   this.description = "Abre archivos PARQUET, AVRO, DELTA, ORC según corresponda."
+   this.groupName = "HuemulPlanPruebas"
       
    val FormatSetting = new HuemulDataLakeSetting(huemulLib)
-    FormatSetting.StartDate = huemulLib.setDateTime(2010,1,1,0,0,0)
-    FormatSetting.EndDate = huemulLib.setDateTime(2050,12,12,0,0,0)
+    FormatSetting.startDate = huemulLib.setDateTime(2010,1,1,0,0,0)
+    FormatSetting.endDate = huemulLib.setDateTime(2050,12,12,0,0,0)
 
     //Path info
-    FormatSetting.GlobalPath = huemulLib.GlobalSettings.MASTER_BigFiles_Path
-    FormatSetting.LocalPath = "planPruebas/"
-    FormatSetting.FileName = "tbl_DatosBasicosInsert"
+    FormatSetting.globalPath = huemulLib.globalSettings.masterBigFilesPath
+    FormatSetting.localPath = "planPruebas/"
+    FormatSetting.fileName = "tbl_DatosBasicosInsert"
     
-    FormatSetting.FileType = TipoArchivo
+    FormatSetting.fileType = TipoArchivo
     
     
-    FormatSetting.ContactName = "Sebastián Rodríguez"
+    FormatSetting.contactName = "Sebastián Rodríguez"
     
     val a = 1
     //Columns Info CHARACTER
@@ -38,41 +38,41 @@ class raw_DatosFORMATO(huemulLib: HuemulBigDataGovernance, Control: HuemulContro
    
     
     //PLAN EJECUCION 3:
-    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.POSITION  //POSITION;CHARACTER
+    FormatSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.POSITION  //POSITION;CHARACTER
     
-    FormatSetting.DataSchemaConf.AddColumns("TipoValor", "TipoValor_ti", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("IntValue", "IntValue_ti", IntegerType,"")
-    FormatSetting.DataSchemaConf.AddColumns("BigIntValue", "BigIntValue_ti", LongType, "con descripción mia")
-    FormatSetting.DataSchemaConf.AddColumns("SmallIntValue", "SmallIntValue_ti", ShortType,"")
-    FormatSetting.DataSchemaConf.AddColumns("TinyIntValue", "TinyIntValue_ti", ShortType,"")
-    FormatSetting.DataSchemaConf.AddColumns("DecimalValue", "DecimalValue_ti", DecimalType(10,4),"")
-    FormatSetting.DataSchemaConf.AddColumns("RealValue", "RealValue_ti", DoubleType,"")
-    FormatSetting.DataSchemaConf.AddColumns("FloatValue", "FloatValue_ti", FloatType,"")
-    FormatSetting.DataSchemaConf.AddColumns("StringValue", "StringValue_ti", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("charValue", "charValue_ti", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("timeStampValue", "timeStampValue_ti", TimestampType,"")
+    FormatSetting.dataSchemaConf.addColumns("TipoValor", "TipoValor_ti", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("IntValue", "IntValue_ti", IntegerType,"")
+    FormatSetting.dataSchemaConf.addColumns("BigIntValue", "BigIntValue_ti", LongType, "con descripción mia")
+    FormatSetting.dataSchemaConf.addColumns("SmallIntValue", "SmallIntValue_ti", ShortType,"")
+    FormatSetting.dataSchemaConf.addColumns("TinyIntValue", "TinyIntValue_ti", ShortType,"")
+    FormatSetting.dataSchemaConf.addColumns("DecimalValue", "DecimalValue_ti", DecimalType(10,4),"")
+    FormatSetting.dataSchemaConf.addColumns("RealValue", "RealValue_ti", DoubleType,"")
+    FormatSetting.dataSchemaConf.addColumns("FloatValue", "FloatValue_ti", FloatType,"")
+    FormatSetting.dataSchemaConf.addColumns("StringValue", "StringValue_ti", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("charValue", "charValue_ti", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("timeStampValue", "timeStampValue_ti", TimestampType,"")
     
-    FormatSetting.DataSchemaConf.AddColumns("IntDefaultValue", "IntDefaultValue", IntegerType,"")
-    FormatSetting.DataSchemaConf.AddColumns("BigIntDefaultValue", "BigIntDefaultValue", LongType, "con descripción mia")
-    FormatSetting.DataSchemaConf.AddColumns("SmallIntDefaultValue", "SmallIntDefaultValue", ShortType,"")
-    FormatSetting.DataSchemaConf.AddColumns("TinyIntDefaultValue", "TinyIntDefaultValue", ShortType,"")
-    FormatSetting.DataSchemaConf.AddColumns("DecimalDefaultValue", "DecimalDefaultValue", DecimalType(10,4),"")
-    FormatSetting.DataSchemaConf.AddColumns("RealDefaultValue", "RealDefaultValue", DoubleType,"")
-    FormatSetting.DataSchemaConf.AddColumns("FloatDefaultValue", "FloatDefaultValue", FloatType,"")
-    FormatSetting.DataSchemaConf.AddColumns("StringDefaultValue", "StringDefaultValue", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("charDefaultValue", "charDefaultValue", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("timeStampDefaultValue", "timeStampDefaultValue", TimestampType,"")
+    FormatSetting.dataSchemaConf.addColumns("IntDefaultValue", "IntDefaultValue", IntegerType,"")
+    FormatSetting.dataSchemaConf.addColumns("BigIntDefaultValue", "BigIntDefaultValue", LongType, "con descripción mia")
+    FormatSetting.dataSchemaConf.addColumns("SmallIntDefaultValue", "SmallIntDefaultValue", ShortType,"")
+    FormatSetting.dataSchemaConf.addColumns("TinyIntDefaultValue", "TinyIntDefaultValue", ShortType,"")
+    FormatSetting.dataSchemaConf.addColumns("DecimalDefaultValue", "DecimalDefaultValue", DecimalType(10,4),"")
+    FormatSetting.dataSchemaConf.addColumns("RealDefaultValue", "RealDefaultValue", DoubleType,"")
+    FormatSetting.dataSchemaConf.addColumns("FloatDefaultValue", "FloatDefaultValue", FloatType,"")
+    FormatSetting.dataSchemaConf.addColumns("StringDefaultValue", "StringDefaultValue", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("charDefaultValue", "charDefaultValue", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("timeStampDefaultValue", "timeStampDefaultValue", TimestampType,"")
     
     
-    //Log Info
-    FormatSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.NONE  //POSITION;CHARACTER;NONE
-    FormatSetting.LogNumRows_FieldName = null
+    //log Info
+    FormatSetting.logSchemaConf.colSeparatorType = HuemulTypeSeparator.NONE  //POSITION;CHARACTER;NONE
+    FormatSetting.logNumRowsFieldName = null
     //Fields Info for CHARACTER
-    FormatSetting.LogSchemaConf.ColSeparator = ";"    //SET FOR CARACTER
-    FormatSetting.LogSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
+    FormatSetting.logSchemaConf.colSeparator = ";"    //SET FOR CARACTER
+    FormatSetting.logSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
     
     
-    this.SettingByDate.append(FormatSetting)
+    this.settingByDate.append(FormatSetting)
   
     /***
    * open(ano: Int, mes: Int) <br>
@@ -88,44 +88,44 @@ class raw_DatosFORMATO(huemulLib: HuemulBigDataGovernance, Control: HuemulContro
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)
     
-    control.NewStep("Abriendo raw")
+    control.newStep("Abriendo raw")
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
-        control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
+      if (!this.openFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
+        control.raiseError(s"error al abrir archivo: ${this.error.controlErrorMessage}")
       }
       
       //import huemulLib.spark.implicits._
    
-      control.NewStep("Aplicando Filtro")
+      control.newStep("Aplicando Filtro")
       /**/    //Agregar filtros o cambiar forma de leer archivo en este lugar
-      this.ApplyTrim = AplicarTrim
+      this.applyTrim = AplicarTrim
      // this.allColumnsAsString(false)
-     /* val rowRDD = this.DataRDD     
-            .filter { x => x != this.Log.DataFirstRow  }
-            .map(  x => {this.ConvertSchema(x)} )
+     /* val rowRDD = this.dataRdd
+            .filter { x => x != this.log.dataFirstRow  }
+            .map(  x => {this.convertSchema(x)} )
        */ 
             
-      control.NewStep("Transformando a dataframe")      
-      //Crea DataFrame en Data.DataDF
-      this.DF_from_RAW(this.DataRawDF, Alias)
+      control.newStep("Transformando a dataframe")
+      //Crea dataFrame en Data.DataDF
+      this.dfFromRaw(this.dataRawDf, Alias)
         
       //****VALIDACION DQ*****
       //**********************
       
-      control.NewStep("Validando cantidad de filas")      
+      control.newStep("Validando cantidad de filas")
       //validacion cantidad de filas
-      val validanumfilas = this.DataFramehuemul.DQ_NumRowsInterval(this, 7,7)  
-      if (validanumfilas.isError) control.RaiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.Description}")
+      val validanumfilas = this.dataFrameHuemul.DQ_NumRowsInterval(this, 7,7)
+      if (validanumfilas.isError) control.raiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.description}")
                         
-      control.FinishProcessOK                      
+      control.finishProcessOk
     } catch {
       case e: Exception =>
-        control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()
+        control.controlError.setError(e, this.getClass.getName, this, null)
+        control.finishProcessError()
     }         
-    control.Control_Error.IsOK()
+    control.controlError.isOK
   }
 }
 
@@ -136,7 +136,7 @@ object raw_DatosFORMATO_test {
   def main(args : Array[String]) {
     
     //Creación API
-    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib, null, HuemulTypeFrequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
@@ -167,7 +167,7 @@ object raw_DatosFORMATO_test {
           println("**********  E  R R O R   E N   P R O C E S O   *************")
           println("************************************************************")
         } else
-          DF_RAW.DataFramehuemul.DataFrame.show()
+          DF_RAW.dataFrameHuemul.dataFrame.show()
           
       
       /////////////////////////////////////////////////////////////////////////////////////////
@@ -175,11 +175,11 @@ object raw_DatosFORMATO_test {
         //  I N I C I A   P L A N   D E   P R U E B A S
         /////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
-        Control.NewStep("Muestra de los datos ")
+        Control.newStep("Muestra de los datos ")
         
         
-        Control.NewStep("DF Plan de pruebas: Cero-Vacio ")
-        val Cero_Vacio_Todos = huemulLib.DF_ExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Cero-Vacio ")
+        val Cero_Vacio_Todos = huemulLib.dfExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = 0                         then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = 0                         then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = 0                          then true else false end as Cumple_TinyIntValue
@@ -212,8 +212,8 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
         val Cero_Vacio = Cero_Vacio_Todos.first()
         
-        Control.NewStep("DF Plan de pruebas: Negativo_Maximo ")
-        val Negativo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Negativo_Maximo ")
+        val Negativo_Maximo_Todos = huemulLib.dfExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = -10                         then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = -10                         then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = -10                          then true else false end as Cumple_TinyIntValue
@@ -246,8 +246,8 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
         val Negativo_Maximo = Negativo_Maximo_Todos.first()
         
-        Control.NewStep("DF Plan de pruebas: Negativo_Minimo ")
-        val Negativo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Negativo_Minimo ")
+        val Negativo_Minimo_Todos = huemulLib.dfExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = -100                         then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = -100                         then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = -100                          then true else false end as Cumple_TinyIntValue
@@ -278,8 +278,8 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
         val Negativo_Minimo = Negativo_Minimo_Todos.first()
         
-        Control.NewStep("DF Plan de pruebas: Positivo_Minimo ")
-        val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Positivo_Minimo ")
+        val Positivo_Minimo_Todos = huemulLib.dfExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = 10                         then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = 10                         then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = 10                          then true else false end as Cumple_TinyIntValue
@@ -310,8 +310,8 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
         val Positivo_Minimo = Positivo_Minimo_Todos.first()
         
-        Control.NewStep("DF Plan de pruebas: Positivo_Maximo ")
-        val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Positivo_Maximo ")
+        val Positivo_Maximo_Todos = huemulLib.dfExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = 100                         then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = 100                         then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = 100                          then true else false end as Cumple_TinyIntValue
@@ -342,8 +342,8 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
         val Positivo_Maximo = Positivo_Maximo_Todos.first()
         
-        Control.NewStep("DF Plan de pruebas: Null ")
-        val ValorNull_Todos = huemulLib.DF_ExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Null ")
+        val ValorNull_Todos = huemulLib.dfExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue IS NULL                    then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue IS NULL                    then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue IS NULL                     then true else false end as Cumple_TinyIntValue
@@ -377,8 +377,8 @@ object raw_DatosFORMATO_test {
         val ValorNull = ValorNull_Todos.first()
         
         
-        Control.NewStep("DF Plan de pruebas: ValoresDefault ")
-        val ValoresDefault_Todos = huemulLib.DF_ExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
+        Control.newStep("DF Plan de pruebas: ValoresDefault ")
+        val ValoresDefault_Todos = huemulLib.dfExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
                                                                                        ,case when IntDefaultValue = 10000                         then true else false end as Cumple_IntDefaultValue
                                                                                        ,case when SmallIntDefaultValue = 10000                         then true else false end as Cumple_SmallIntDefaultValue
                                                                                        ,case when TinyIntDefaultValue = 10000                          then true else false end as Cumple_TinyIntDefaultValue
@@ -401,8 +401,8 @@ object raw_DatosFORMATO_test {
         val ValoresDefault = ValoresDefault_Todos.first()
         
         
-        Control.NewStep("DF Plan de pruebas: Nuevos ")
-        val Nuevos_Todos = huemulLib.DF_ExecuteQuery("Nuevos_Todos", s"""SELECT case when BigIntValue = 1000                      then true else false end as Cumple_BigIntValue
+        Control.newStep("DF Plan de pruebas: Nuevos ")
+        val Nuevos_Todos = huemulLib.dfExecuteQuery("Nuevos_Todos", s"""SELECT case when BigIntValue = 1000                      then true else false end as Cumple_BigIntValue
                                                                                        ,case when IntValue = 1000                      then true else false end as Cumple_IntValue
                                                                                        ,case when SmallIntValue = 1000                      then true else false end as Cumple_SmallIntValue
                                                                                        ,case when TinyIntValue = 1000                          then true else false end as Cumple_TinyIntValue
@@ -440,7 +440,7 @@ object raw_DatosFORMATO_test {
          * -- Validar la funcionalidad SQL_Insert
          */
         
-        Control.NewStep("DF Plan de pruebas: Aplicando validaciones ")
+        Control.newStep("DF Plan de pruebas: Aplicando validaciones ")
         //**************************
         //****  C O M P A R A C I O N   C E R O - V A C I O  *************
         //**************************
@@ -769,7 +769,7 @@ object raw_DatosFORMATO_test {
         Control.RegisterTestPlanFeature("MDM_EnableOldValue", IdTestPlan)
         Control.RegisterTestPlanFeature("MDM_EnableProcessLog", IdTestPlan)
         
-            Control.FinishProcessOK
+            Control.finishProcessOk
             
             
             
@@ -777,11 +777,11 @@ object raw_DatosFORMATO_test {
       //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
       //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
        
-       Control.FinishProcessOK
+       Control.finishProcessOk
       } catch {
         case e: Exception =>
-          Control.Control_Error.GetError(e, this.getClass.getName, null, null)
-          Control.FinishProcessError
+          Control.controlError.setError(e, this.getClass.getName, null, null)
+          Control.finishProcessError
       }   
     } else {
       Control.RegisterTestPlan(TestPlanGroup, "No procesado por formato", s"formato no soportado $TipoTablaParam", "Valor = true", s"Valor = true", p_testPlan_IsOK = true)

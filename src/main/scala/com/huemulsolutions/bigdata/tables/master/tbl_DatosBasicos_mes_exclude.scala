@@ -12,16 +12,16 @@ import org.apache.spark.sql.types.DecimalType
 
 class tbl_DatosBasicos_mes_exclude(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Transaction)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   if (TipoTabla == HuemulTypeStorageType.HBASE)
     this.setStorageType(HuemulTypeStorageType.PARQUET)
   else 
     this.setStorageType(TipoTabla)
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
-  this.setDQ_MaxNewRecords_Num(4)
+  this.setDQMaxNewRecordsNum(4)
   //this.setPartitionField("periodo_mes")
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
   
@@ -35,8 +35,8 @@ class tbl_DatosBasicos_mes_exclude(HuemulLib: HuemulBigDataGovernance, Control: 
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK ( )
-  TipoValor.setDQ_MinLen ( 2)
-  TipoValor.setDQ_MaxLen ( 50)
+  TipoValor.setDqMinLen ( 2)
+  TipoValor.setDqMaxLen ( 50)
   
   
   val IntValue = new HuemulColumns(IntegerType,true,"datos integer")
@@ -72,16 +72,16 @@ class tbl_DatosBasicos_mes_exclude(HuemulLib: HuemulBigDataGovernance, Control: 
   timeStampValue.setNullable ( )
   
   //Regla para probar exclusión de registro al fallar un warning
-  val DQ_warning_exclude: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Exclusión de valor Cero-Vacio", "tipoValor not in ('Cero-Vacio')",1).setNotification(HuemulTypeDQNotification.WARNING_EXCLUDE).setQueryLevel(HuemulTypeDQQueryLevel.Row)
-  val DQ_warning_solo: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Solo warning cuando aparezca registro Cero-Vacio", "tipoValor <> 'Negativo_Maximo'",2).setNotification(HuemulTypeDQNotification.WARNING).setQueryLevel(HuemulTypeDQQueryLevel.Row)
+  val DQ_warning_exclude: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Exclusión de valor Cero-Vacio", "tipoValor not in ('Cero-Vacio')",1).setNotification(HuemulTypeDqNotification.WARNING_EXCLUDE).setQueryLevel(HuemulTypeDqQueryLevel.Row)
+  val DQ_warning_solo: HuemulDataQuality = new HuemulDataQuality(TipoValor ,"Solo warning cuando aparezca registro Cero-Vacio", "tipoValor <> 'Negativo_Maximo'",2).setNotification(HuemulTypeDqNotification.WARNING).setQueryLevel(HuemulTypeDqQueryLevel.Row)
   
   
   //**********Ejemplo para aplicar DataQuality de Integridad Referencial
   val itbl_DatosBasicos = new tbl_DatosBasicos(HuemulLib,Control)
-  val fk_tbl_DatosBasicos: HuemulTableRelationship = new HuemulTableRelationship(itbl_DatosBasicos, false).setNotification(HuemulTypeDQNotification.WARNING_EXCLUDE).broadcastJoin(true)
-  fk_tbl_DatosBasicos.AddRelationship(itbl_DatosBasicos.TipoValor , TipoValor)
+  val fk_tbl_DatosBasicos: HuemulTableRelationship = new HuemulTableRelationship(itbl_DatosBasicos, false).setNotification(HuemulTypeDqNotification.WARNING_EXCLUDE).broadcastJoin(true)
+  fk_tbl_DatosBasicos.addRelationship(itbl_DatosBasicos.TipoValor , TipoValor)
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

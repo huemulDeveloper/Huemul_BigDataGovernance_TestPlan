@@ -9,21 +9,21 @@ import org.apache.spark.sql.types.DecimalType
 
 class tbl_DatosBasicosNombres(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   //this.setStorageType(TipoTabla)
   this.setStorageType(HuemulTypeStorageType.ORC)
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
-  this.setDQ_MaxNewRecords_Num(4)
+  this.setDQMaxNewRecordsNum(4)
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
 
   //agrega versión 2.6 nombres de campos mdm
-  this.setNameForMDM_fhChange("xxxDtChange4")
-  this.setNameForMDM_fhNew("xxxDtNew4")
+  this.setNameForMdmFhChange("xxxDtChange4")
+  this.setNameForMdmFhNew("xxxDtNew4")
   this.setNameForMDM_ProcessNew("xxxProcNew4")
-  this.setNameForMDM_ProcessChange("xxxProcChange4")
+  this.setNameForMdmProcessChange("xxxProcChange4")
   this.setNameForMDM_hash("xxxHash4")
   this.setNameForMDM_StatusReg("xxxStatus")
 
@@ -33,29 +33,29 @@ class tbl_DatosBasicosNombres(HuemulLib: HuemulBigDataGovernance, Control: Huemu
   //Agrega versión 2.0
   this.setSaveBackup(true)
 
-  this.setPK_externalCode("USER_COD_PK")
+  this.setPkExternalCode("USER_COD_PK")
   
   val TipoValor: HuemulColumns = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
-                            .setIsPK().setDQ_MinLen(2, "USER_COD_MINLEN").setDQ_MaxLen(50, "USER_COD_MAXLEN")
+                            .setIsPK().setDqMinLen(2, "USER_COD_MINLEN").setDqMaxLen(50, "USER_COD_MAXLEN")
   //TipoValor.setIsPK ( true)
-  //TipoValor.setDQ_MinLen ( 2)
-  //TipoValor.setDQ_MaxLen ( 50)
+  //TipoValor.setDqMinLen ( 2)
+  //TipoValor.setDqMaxLen ( 50)
   //TipoValor.setBusinessGlossary_Id("BG_001")
   
   val IntValue: HuemulColumns = new HuemulColumns(IntegerType,true,"datos integer")
-                            .setMDM_EnableOldValue_FullTrace().setBusinessGlossary("BG_002")
+                            .setMdmEnableOldValueFullTrace().setBusinessGlossary("BG_002")
   IntValue.setNullable ( )
-  //IntValue.setMDM_EnableOldValue_FullTrace( true)
+  //IntValue.setMdmEnableOldValueFullTrace( true)
   //IntValue.setBusinessGlossary_Id("BG_002")
-  //IntValue.setDQ_MaxDecimalValue(Decimal.apply(10))
+  //IntValue.setDqMaxDecimalValue(Decimal.apply(10))
   
-  val BigIntValue: HuemulColumns = new HuemulColumns(LongType,true,"datos BigInt").setMDM_EnableOldValue_FullTrace()
+  val BigIntValue: HuemulColumns = new HuemulColumns(LongType,true,"datos BigInt").setMdmEnableOldValueFullTrace()
   BigIntValue.setNullable ()
-  //BigIntValue.setMDM_EnableOldValue_FullTrace( true)
+  //BigIntValue.setMdmEnableOldValueFullTrace( true)
   
-  val SmallIntValue: HuemulColumns = new HuemulColumns(ShortType,true,"datos SmallInt").setMDM_EnableOldValue_FullTrace()
+  val SmallIntValue: HuemulColumns = new HuemulColumns(ShortType,true,"datos SmallInt").setMdmEnableOldValueFullTrace()
                     .setNullable ()
-  //SmallIntValue.setMDM_EnableOldValue_FullTrace( true)
+  //SmallIntValue.setMdmEnableOldValueFullTrace( true)
   
   val TinyIntValue: HuemulColumns = new HuemulColumns(ShortType,true,"datos TinyInt")
             .setNullable ()
@@ -112,6 +112,6 @@ class tbl_DatosBasicosNombres(HuemulLib: HuemulBigDataGovernance, Control: Huemu
   timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

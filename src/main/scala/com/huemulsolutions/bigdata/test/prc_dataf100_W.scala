@@ -27,7 +27,7 @@ object prc_dataf100_W {
 
     val line="*********************************************************************************************************"
     println(line)
-    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulBigDataGov  = new HuemulBigDataGovernance(s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.global)
     println(line)
 
     /*************** PARÁMETROS **********************/
@@ -55,7 +55,7 @@ object prc_dataf100_W {
       //Ejecuta código
       val finControl = processMaster(huemulBigDataGov, null, paramAno, paramMes)
 
-      if (finControl.Control_Error.IsOK())
+      if (finControl.controlError.isOK)
         i+=1
       else {
         println(s"ERROR Procesando Año $paramAno, Mes $paramMes ($i de $paramNumMeses)")
@@ -87,10 +87,10 @@ object prc_dataf100_W {
       Control.AddParamMonth("param_mes", paramMes)
 
       /*************** ABRE RAW DESDE DATA LAKE **********************/
-      Control.NewStep("Abre DataLake")
+      Control.newStep("Abre DataLake")
       val dfRawDataF100 =  new raw_dataf100(huemulBigDataGov, Control)
       if (!dfRawDataF100.open("raw_dataf100", Control, paramAno, paramMes, 1, 0, 0, 0))
-        Control.RaiseError(s"error encontrado, abortar: ${dfRawDataF100.Error.ControlError_Message}")
+        Control.raiseError(s"error encontrado, abortar: ${dfRawDataF100.error.controlErrorMessage}")
 
       val TipoTablaParam: String = huemulBigDataGov.arguments.getValue("TipoTabla", null, "Debe especificar TipoTabla (ORC,PARQUET,HBASE,DELTA)")
       var TipoTabla: HuemulTypeStorageType = null
@@ -109,9 +109,9 @@ object prc_dataf100_W {
       /********************************************************/
 
       //instancia de clase <paises>
-      Control.NewStep("Asocia columnas de la tabla ")
+      Control.newStep("Asocia columnas de la tabla ")
       val tblDataF100W = new dataf100_W(huemulBigDataGov, Control, TipoTabla)
-      tblDataF100W.DF_from_RAW(dfRawDataF100,"dataf100_W")
+      tblDataF100W.dfFromRaw(dfRawDataF100,"dataf100_W")
       tblDataF100W.PKCOL1.setMapping("PKCOL1")
       tblDataF100W.PKCOL2.setMapping("PKCOL2")
       tblDataF100W.UNIQUECOL.setMapping("UNIQUECOL")
@@ -129,15 +129,15 @@ object prc_dataf100_W {
 
       tblDataF100W.setApplyDistinct(false) //deshabilitar si DF tiene datos únicos, por default está habilitado
 
-      Control.NewStep("Ejecuta Proceso carga <paises>")
+      Control.newStep("Ejecuta Proceso carga <paises>")
       if (!tblDataF100W.executeFull("FinalSaved"))
-        Control.RaiseError(s"User: Error al intentar masterizar los datos (${tblDataF100W.Error_Code}): ${tblDataF100W.Error_Text}")
+        Control.raiseError(s"User: error al intentar masterizar los datos (${tblDataF100W.errorCode}): ${tblDataF100W.errorText}")
 
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception =>
-        Control.Control_Error.GetError(e, this.getClass.getName, null)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getName, null)
+        Control.finishProcessError()
     }
 
     Control

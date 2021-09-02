@@ -4,8 +4,8 @@ import com.huemulsolutions.bigdata.common._
 import com.huemulsolutions.bigdata.control._
 import com.huemulsolutions.bigdata.raw.raw_DatosBasicos
 import com.huemulsolutions.bigdata.dataquality.HuemulDataQuality
-import com.huemulsolutions.bigdata.dataquality.HuemulTypeDQQueryLevel
-import com.huemulsolutions.bigdata.dataquality.HuemulTypeDQNotification
+import com.huemulsolutions.bigdata.dataquality.HuemulTypeDqQueryLevel
+import com.huemulsolutions.bigdata.dataquality.HuemulTypeDqNotification
 import scala.collection.mutable._
 import org.apache.spark.sql.types._
 import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicos_mes
@@ -20,7 +20,7 @@ import com.huemulsolutions.bigdata.tables.HuemulTypeStorageType
 
 object Proc_PlanPruebas_CargaMaster_mes_2 {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster_mes_2",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster_mes_2",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = "2018" //huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -44,22 +44,22 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
     try {
       var IdTestPlan: String = null
       
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosBasicos(huemulLib, Control)
       
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosBasicos_mes(huemulLib, Control,TipoTabla)
       
-      val periodo_mes = huemulLib.ReplaceWithParams("{{YYYY}}-{{MM}}-{{DD}}", Ano.toInt, Mes.toInt, 1, 0, 0, 0, null)
-      val df_final = DF_RAW.DataFramehuemul.DataFrame.withColumn("periodo_mes", lit(periodo_mes))
-      TablaMaster.DF_from_DF(df_final, "DF_RAW", "DF_Original")
+      val periodo_mes = huemulLib.replaceWithParams("{{YYYY}}-{{MM}}-{{DD}}", Ano.toInt, Mes.toInt, 1, 0, 0, 0, null)
+      val df_final = DF_RAW.dataFrameHuemul.dataFrame.withColumn("periodo_mes", lit(periodo_mes))
+      TablaMaster.dfFromDf(df_final, "DF_RAW", "DF_Original")
       
      
       TablaMaster.periodo_mes.setMapping("periodo_mes")
-      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.TipoValor.setMapping("TipoValor",replaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
       TablaMaster.IntValue.setMapping("IntValue")
       TablaMaster.BigIntValue.setMapping("BigIntValue")
       TablaMaster.SmallIntValue.setMapping("SmallIntValue")
@@ -71,7 +71,7 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       TablaMaster.charValue.setMapping("charValue")
       TablaMaster.timeStampValue.setMapping("timeStampValue")
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
-      Control.NewStep("Ejecución")
+      Control.newStep("Ejecución")
       if (!TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -81,7 +81,7 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
         Control.RegisterTestPlanFeature("Transaction", IdTestPlan)
         Control.RegisterTestPlanFeature("IsFK", IdTestPlan)
       
-        Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster.errorCode}): ${TablaMaster.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -98,11 +98,11 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       //  I N I C I A   P L A N   D E   P R U E B A S
       /////////////////////////////////////////////////////////////////////////////////////////
       /////////////////////////////////////////////////////////////////////////////////////////
-      Control.NewStep("Muestra de los datos ")
-      TablaMaster.DataFramehuemul.DataFrame.show()
+      Control.newStep("Muestra de los datos ")
+      TablaMaster.dataFrameHuemul.dataFrame.show()
       
-      Control.NewStep("DF Plan de pruebas: Cero-Vacio ")
-      val Cero_Vacio_Todos = huemulLib.DF_ExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Cero-Vacio ")
+      val Cero_Vacio_Todos = huemulLib.dfExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 0                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 0                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 0                          then true else false end as Cumple_TinyIntValue
@@ -126,8 +126,8 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Cero_Vacio = Cero_Vacio_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Maximo ")
-      val Negativo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Maximo ")
+      val Negativo_Maximo_Todos = huemulLib.dfExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -10                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -10                          then true else false end as Cumple_TinyIntValue
@@ -151,8 +151,8 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Maximo = Negativo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Minimo ")
-      val Negativo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Minimo ")
+      val Negativo_Minimo_Todos = huemulLib.dfExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -100                          then true else false end as Cumple_TinyIntValue
@@ -174,8 +174,8 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Minimo = Negativo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Minimo ")
-      val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Minimo ")
+      val Positivo_Minimo_Todos = huemulLib.dfExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 10                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 10                          then true else false end as Cumple_TinyIntValue
@@ -197,8 +197,8 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Minimo = Positivo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Maximo ")
-      val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Maximo ")
+      val Positivo_Maximo_Todos = huemulLib.dfExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 100                          then true else false end as Cumple_TinyIntValue
@@ -220,8 +220,8 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Maximo = Positivo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Null ")
-      val ValorNull_Todos = huemulLib.DF_ExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Null ")
+      val ValorNull_Todos = huemulLib.dfExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue IS NULL                    then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue IS NULL                    then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue IS NULL                     then true else false end as Cumple_TinyIntValue
@@ -252,7 +252,7 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
        * -- Validar la funcionalidad SQL_Insert
        */
       
-      Control.NewStep("DF Plan de pruebas: Aplicando validaciones ")
+      Control.newStep("DF Plan de pruebas: Aplicando validaciones ")
       //**************************
       //****  C O M P A R A C I O N   C E R O - V A C I O  *************
       //**************************
@@ -485,35 +485,35 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       //huemulLib.spark.sql("select DecimalValue, RealValue from DF_Final ").printSchema()
       //huemulLib.spark.sql("select DecimalValue, RealValue from DF_Final ").show()
       val DQRules = new ArrayBuffer[HuemulDataQuality]()
-      val DQ_ComparaAgrupado = new HuemulDataQuality(null,"Suma Float = Suma Decimal","sum(DecimalValue) = sum(FloatValue)",2,HuemulTypeDQQueryLevel.Aggregate)
+      val DQ_ComparaAgrupado = new HuemulDataQuality(null,"Suma Float = Suma Decimal","sum(DecimalValue) = sum(FloatValue)",2,HuemulTypeDqQueryLevel.Aggregate)
       DQRules.append(DQ_ComparaAgrupado)
       val DQ_ComparaFila = new HuemulDataQuality(null,"coalesce(Double,0) = coalesce(Decimal,0)","coalesce(DecimalValue,0) = coalesce(RealValue,0)",3)
       DQRules.append(DQ_ComparaFila)
       
-      val DQ_ComparaAgrupado_LanzaWarning = new HuemulDataQuality(null,"Suma Double is null","sum(DecimalValue) is null",4,HuemulTypeDQQueryLevel.Aggregate, HuemulTypeDQNotification.WARNING)
+      val DQ_ComparaAgrupado_LanzaWarning = new HuemulDataQuality(null,"Suma Double is null","sum(DecimalValue) is null",4,HuemulTypeDqQueryLevel.Aggregate, HuemulTypeDqNotification.WARNING)
       DQRules.append(DQ_ComparaAgrupado_LanzaWarning)
-      val DQ_ComparaFila_LanzaWarning = new HuemulDataQuality(null,"Double <> Decimal","DecimalValue <> FloatValue",5,HuemulTypeDQQueryLevel.Row, HuemulTypeDQNotification.WARNING)
+      val DQ_ComparaFila_LanzaWarning = new HuemulDataQuality(null,"Double <> Decimal","DecimalValue <> FloatValue",5,HuemulTypeDqQueryLevel.Row, HuemulTypeDqNotification.WARNING)
       DQRules.append(DQ_ComparaFila_LanzaWarning)
       
-      val DQResultManual = TablaMaster.DataFramehuemul.DF_RunDataQuality(DQRules, null, TablaMaster)
+      val DQResultManual = TablaMaster.dataFrameHuemul.DF_RunDataQuality(DQRules, null, TablaMaster)
       
-      val conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - no debe tener error", "ejecuta la validación, no debe tener error", "IsError = false", s"IsErorr = ${DQResultManual.isError} (errorcode: ${DQResultManual.Error_Code}) ${DQResultManual.Description}", !DQResultManual.isError)
+      val conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - no debe tener error", "ejecuta la validación, no debe tener error", "isError = false", s"IsErorr = ${DQResultManual.isError} (errorcode: ${DQResultManual.errorCode}) ${DQResultManual.description}", !DQResultManual.isError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", conError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", conError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", conError)
       Control.RegisterTestPlanFeature("DQManual_Row", conError)
-      val NumDQ = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones", "ejecuta la validación, debe tener 6 ejecuciones", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual.getDQResult.length}", DQResultManual.getDQResult.length == 4)
+      val NumDQ = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones", "ejecuta la validación, debe tener 6 ejecuciones", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual.getDqResult.length}", DQResultManual.getDqResult.length == 4)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ)
          
-      val NumDQ_conWarning = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Warning", "ejecuta la validación, debe tener 2 ejecuciones con warnings", "N° Ejecuciones = 2", s"N° Ejecuciones = ${DQResultManual.getDQResult.count { x => x.DQ_IsWarning }}", DQResultManual.getDQResult.count { x => x.DQ_IsWarning } == 2)
+      val NumDQ_conWarning = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Warning", "ejecuta la validación, debe tener 2 ejecuciones con warnings", "N° Ejecuciones = 2", s"N° Ejecuciones = ${DQResultManual.getDqResult.count { x => x.dqIsWarning }}", DQResultManual.getDqResult.count { x => x.dqIsWarning } == 2)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_conWarning)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conWarning)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_conWarning)
       
-      val NumDQ_conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error", "ejecuta la validación, debe tener 0 ejecuciones con error", "N° Ejecuciones = 0", s"N° Ejecuciones = ${DQResultManual.getDQResult.count { x => x.DQ_IsError }}", !DQResultManual.getDQResult.exists { x => x.DQ_IsError })
+      val NumDQ_conError = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con error", "ejecuta la validación, debe tener 0 ejecuciones con error", "N° Ejecuciones = 0", s"N° Ejecuciones = ${DQResultManual.getDqResult.count { x => x.dqIsError }}", !DQResultManual.getDqResult.exists { x => x.dqIsError })
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_conError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conError)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_conError)
@@ -525,7 +525,7 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       //******************************************************************
       
       val DQRulesConError = new ArrayBuffer[HuemulDataQuality]()
-      val DQ_ComparaAgrupado_conError = new HuemulDataQuality(null,"Suma Double > Suma Decimal","sum(DecimalValue) > sum(FloatValue)",6,HuemulTypeDQQueryLevel.Aggregate)
+      val DQ_ComparaAgrupado_conError = new HuemulDataQuality(null,"Suma Double > Suma Decimal","sum(DecimalValue) > sum(FloatValue)",6,HuemulTypeDqQueryLevel.Aggregate)
       DQRulesConError.append(DQ_ComparaAgrupado_conError)
       val DQ_ComparaFila_conError = new HuemulDataQuality(null,"Double > Decimal","DecimalValue > FloatValue",7)
       DQRulesConError.append(DQ_ComparaFila_conError)
@@ -548,27 +548,27 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       DQRulesConError.append(DQ_ComparaFila_ToleranciaSinErrorRow)
       
       
-      val DQResultManual_Errores = TablaMaster.DataFramehuemul.DF_RunDataQuality(DQRulesConError, null, TablaMaster)
+      val DQResultManual_Errores = TablaMaster.dataFrameHuemul.DF_RunDataQuality(DQRulesConError, null, TablaMaster)
       
-      val NumDQ_ErrorCode = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 8", "ejecuta la validación, debe tener un error de codigo 8", "error_code = 8", s"error_code = ?", DQResultManual_Errores.getDQResult.count { x => x.DQ_ErrorCode == 8 } == 1)
+      val NumDQ_ErrorCode = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 8", "ejecuta la validación, debe tener un error de codigo 8", "error_code = 8", s"error_code = ?", DQResultManual_Errores.getDqResult.count { x => x.dqErrorCode == 8 } == 1)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCode)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCode)
       
-      val NumDQ_ErrorCode10 = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 10", "ejecuta la validación, debe tener un error de codigo 10", "error_code = 10", s"error_code = ?", DQResultManual_Errores.getDQResult.count { x => x.DQ_ErrorCode == 10 } == 1)
+      val NumDQ_ErrorCode10 = Control.RegisterTestPlan(TestPlanGroup, "DQ - codigo error = 10", "ejecuta la validación, debe tener un error de codigo 10", "error_code = 10", s"error_code = ?", DQResultManual_Errores.getDqResult.count { x => x.dqErrorCode == 10 } == 1)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCode10)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCode10)
       
-      val NumDQ_ErrorCodeSinError = Control.RegisterTestPlan(TestPlanGroup, "DQ - DecimalValue > 0.1 sin error", "ejecuta la validación, no debe tener error", "DecimalValue > 0.1 sin error", s"DecimalValue > 0.1 ?", !DQResultManual_Errores.getDQResult.filter { x => x.DQ_SQLFormula == "DecimalValue > 0.1" }(0).DQ_IsError )
+      val NumDQ_ErrorCodeSinError = Control.RegisterTestPlan(TestPlanGroup, "DQ - DecimalValue > 0.1 sin error", "ejecuta la validación, no debe tener error", "DecimalValue > 0.1 sin error", s"DecimalValue > 0.1 ?", !DQResultManual_Errores.getDqResult.filter { x => x.dqSqlFormula == "DecimalValue > 0.1" }(0).dqIsError )
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_ErrorCodeSinError)
       Control.RegisterTestPlanFeature("DQManual_Row", NumDQ_ErrorCodeSinError)
      
-      val NumDQ_conErrores = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con Error (V2)", "ejecuta la validación, debe tener 4 ejecuciones con error (warnings) (v2)", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual_Errores.getDQResult.count { x => x.DQ_IsError }}", DQResultManual_Errores.getDQResult.count { x => x.DQ_IsError } == 4)
+      val NumDQ_conErrores = Control.RegisterTestPlan(TestPlanGroup, "DQ - N° Ejecuciones con error (V2)", "ejecuta la validación, debe tener 4 ejecuciones con error (warnings) (v2)", "N° Ejecuciones = 4", s"N° Ejecuciones = ${DQResultManual_Errores.getDqResult.count { x => x.dqIsError }}", DQResultManual_Errores.getDqResult.count { x => x.dqIsError } == 4)
       Control.RegisterTestPlanFeature("DQManual_Notification_Warning", NumDQ_conErrores)
       Control.RegisterTestPlanFeature("DQManual_Notification_Error", NumDQ_conErrores)
       Control.RegisterTestPlanFeature("DQManual_Aggregate", NumDQ_conErrores)
@@ -580,13 +580,13 @@ object Proc_PlanPruebas_CargaMaster_mes_2 {
       
       
       
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(null))

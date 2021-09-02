@@ -12,20 +12,20 @@ object App_hbase {
 
   
   def main(args : Array[String]) {
-    //val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
+    //val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.global)
     //val Control = new HuemulControl(huemulLib,null)
     
     /*
     println(s"${huemulLib.HuemulgetDateForLog()}")
-    val resultado = huemulLib.ExecuteJDBC_NoResulSet(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "insert into tempSeba values (10) ")
+    val resultado = huemulLib.ExecuteJDBC_NoResulSet(huemulLib.globalSettings.GetPath(huemulLib, huemulLib.globalSettings.POSTGRE_Setting), "insert into tempSeba values (10) ")
     println(s"${huemulLib.HuemulgetDateForLog()}")
     
     
-    val resultado2 = huemulLib.ExecuteJDBC_WithResult(huemulLib.GlobalSettings.GetPath(huemulLib, huemulLib.GlobalSettings.POSTGRE_Setting), "select * from tempSeba ")
+    val resultado2 = huemulLib.executeJdbcWithResult(huemulLib.globalSettings.GetPath(huemulLib, huemulLib.globalSettings.POSTGRE_Setting), "select * from tempSeba ")
     println(s"${huemulLib.HuemulgetDateForLog()}")
-    println(s"N° de registros resultantes: ${resultado2.ResultSet.length}")
-    resultado2.ResultSet.foreach { x => println(s"campo 0: ${x.get(0)} ") }
-    resultado2.ResultSet.foreach { x => println(s"campo campo: ${x.getAs("campo")} ") }
+    println(s"N° de registros resultantes: ${resultado2.resultSet.length}")
+    resultado2.resultSet.foreach { x => println(s"campo 0: ${x.get(0)} ") }
+    resultado2.resultSet.foreach { x => println(s"campo campo: ${x.getAs("campo")} ") }
     * 
     */
   
@@ -33,7 +33,7 @@ object App_hbase {
     
    
     //Validación que todo está OK
-    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,com.yourcompany.settings.globalSettings.global)
     new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
       /*
@@ -67,7 +67,7 @@ object App_hbase {
     val stagingFolder = s"/tmp/user/${Control.Control_Id}"
     println(stagingFolder)
     val tableNameString: String = "emp_4"
-    val tableName = TableName.valueOf(tableNameString)
+    val tableName = tableName.valueOf(tableNameString)
     
     //elimina los registros que tengan algún valor en null
     val __tdd_null = __pdd_2.filter(x=> x._2._3 == null).map(x=>x._1).distinct().map(x=> Bytes.toBytes(x))

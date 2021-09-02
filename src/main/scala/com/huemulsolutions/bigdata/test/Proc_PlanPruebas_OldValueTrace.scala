@@ -11,8 +11,8 @@ import com.huemulsolutions.bigdata.tables.HuemulTypeInternalTableType
 
 object Proc_PlanPruebas_OldValueTrace {
   def main(args: Array[String]): Unit = {
-    com.yourcompany.settings.globalSettings.Global.externalBBDD_conf.Using_HIVE.setActiveForHBASE(true)
-    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OldValueTrace",args,com.yourcompany.settings.globalSettings.Global)
+    com.yourcompany.settings.globalSettings.global.externalBbddConf.usingHive.setActiveForHBASE(true)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OldValueTrace",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -38,19 +38,19 @@ object Proc_PlanPruebas_OldValueTrace {
     try {
       var IdTestPlan: String = null
       
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosOldValue(huemulLib, Control)
       
       if (!DF_RAW.open("DF_RAW", Control, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"ini")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_OldValueTrace (huemulLib, Control,TipoTabla)      
-      TablaMaster.DF_from_RAW(DF_RAW, "DF_Original")
+      TablaMaster.dfFromRaw(DF_RAW, "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
-      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.tableName.toUpperCase() }) {
         huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
@@ -59,12 +59,12 @@ object Proc_PlanPruebas_OldValueTrace {
       if (fs.exists(FullPath))
         fs.delete(FullPath, true)
         
-      val FullPath_OVT = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPath_OldValueTrace}")
+      val FullPath_OVT = new org.apache.hadoop.fs.Path(s"${TablaMaster.getFullNameWithPathOldValueTrace}")
       if (fs.exists(FullPath_OVT))
         fs.delete(FullPath_OVT, true)
         
       if (TipoTablaParam == "hbase") {
-        Control.NewStep("borrar tabla")
+        Control.newStep("borrar tabla")
         val th = new HuemulTableConnector(huemulLib, Control)
         th.tableDeleteHBase(TablaMaster.getHBaseNamespace(HuemulTypeInternalTableType.Normal), TablaMaster.getHBaseTableName(HuemulTypeInternalTableType.Normal))
       }
@@ -75,13 +75,13 @@ object Proc_PlanPruebas_OldValueTrace {
       TablaMaster.setMappingAuto()
       
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
-      Control.NewStep("Ejecución")
+      Control.newStep("Ejecución")
       val tp_resultado = TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY ) 
       
       IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"${if (tp_resultado) "no" else "si"} hay error en masterización", tp_resultado)
       Control.RegisterTestPlanFeature("OldValueTrace - inicial", IdTestPlan)
       
-      TablaMaster.DataFramehuemul.DataFrame.show()  
+      TablaMaster.dataFrameHuemul.dataFrame.show()
       
       
       
@@ -89,16 +89,16 @@ object Proc_PlanPruebas_OldValueTrace {
       val DF_RAW_final =  new raw_DatosOldValue(huemulLib, Control)
       
       if (!DF_RAW_final.open("DF_RAW_final", Control, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"fin")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos fin: ${DF_RAW_final.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos fin: ${DF_RAW_final.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
-      TablaMaster.DF_from_DF(DF_RAW_final.DataFramehuemul.DataFrame, "DF_RAW_final", "DF_Original")
+      Control.newStep("Mapeo de Campos")
+      TablaMaster.dfFromDf(DF_RAW_final.dataFrameHuemul.dataFrame, "DF_RAW_final", "DF_Original")
 
       TablaMaster.setMappingAuto()
       TablaMaster.setRowStatusDeleteAsDeleted(false)
       TablaMaster.executeFull("DF_Final_2", org.apache.spark.storage.StorageLevel.MEMORY_ONLY )
       
-      TablaMaster.DataFramehuemul.DataFrame.show()
+      TablaMaster.dataFrameHuemul.dataFrame.show()
       
       //CREATE VALIDATION FOR TABLE RESULT
       val result_val_mdm = huemulLib.spark.sql(s"""
@@ -158,13 +158,13 @@ object Proc_PlanPruebas_OldValueTrace {
       Control.RegisterTestPlanFeature("setRowStatusDeleteAsDeleted", IdTestPlan)
       
      
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(null))

@@ -12,7 +12,7 @@ object prc_f100_testplan {
 
     huemulBigDataGov  = new HuemulBigDataGovernance(
       s"Masterizacion tabla <paises> - ${this.getClass.getSimpleName}"
-      , args, com.yourcompany.settings.globalSettings.Global)
+      , args, com.yourcompany.settings.globalSettings.global)
 
     control = new HuemulControl(huemulBigDataGov, null, HuemulTypeFrequency.ANY_MOMENT )
 
@@ -22,20 +22,20 @@ object prc_f100_testplan {
     // Ejecuta el plan de prueba WARNING_EXCLUDE
     //val TestPlanGroup: .arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
     val TestPlanGroup: String = huemulBigDataGov.arguments.getValue("TestPlanGroup", null, "Debe especificar el Grupo de Planes de Prueba")
-    val outputDatabase = huemulBigDataGov.GlobalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.DQError_DataBase)
-    val outputDatabase_master = huemulBigDataGov.GlobalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.GlobalSettings.MASTER_DataBase)
+    val outputDatabase = huemulBigDataGov.globalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.globalSettings.dqErrorDataBase)
+    val outputDatabase_master = huemulBigDataGov.globalSettings.getDataBase(huemulBigDataGov, huemulBigDataGov.globalSettings.masterDataBase)
 
     try {
 
       val dataF100ControlWEX: HuemulControl = prc_dataf100_WEX.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
-      val hasErrorWEX = dataF100ControlWEX.Control_Error.ControlError_IsError
+      val hasErrorWEX = dataF100ControlWEX.controlError.controlErrorIsError
       val dqControlIdWEX = dataF100ControlWEX.Control_Id
       println(s"dqControlId=$dqControlIdWEX")
       val tblDataF100WexDQ = s"$outputDatabase.dataf100_wex_dq"
 
       //------------------------------------------------------------------------------------------------------------
-      control.NewStep("WARNING_EXCLUDE - Valida que el process ejecute ok")
+      control.newStep("WARNING_EXCLUDE - Valida que el process ejecute ok")
       val tbExec = control.RegisterTestPlan(
         TestPlanGroup
         , "Process_Run"
@@ -90,13 +90,13 @@ object prc_f100_testplan {
       //------------------------------------------------------------------------------------------------------------
       val dataF100ControlW: HuemulControl = prc_dataf100_W.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
-      val hasErrorW = dataF100ControlW.Control_Error.ControlError_IsError
+      val hasErrorW = dataF100ControlW.controlError.controlErrorIsError
       val dqControlIdW = dataF100ControlW.Control_Id
       println(s"dqControlId=$dqControlIdW")
       val tblDataF100WDQ = s"$outputDatabase.dataf100_w_dq"
 
       //------------------------------------------------------------------------------------------------------------
-      control.NewStep("WARNING - Valida que el process ejecute ok")
+      control.newStep("WARNING - Valida que el process ejecute ok")
       val tbExecW = control.RegisterTestPlan(
         TestPlanGroup
         , "WARNING - Process_Run"
@@ -151,13 +151,13 @@ object prc_f100_testplan {
       //------------------------------------------------------------------------------------------------------------
       val dataF100ControlE: HuemulControl = prc_dataf100_E.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
-      val hasErrorE = dataF100ControlE.Control_Error.ControlError_IsError
+      val hasErrorE = dataF100ControlE.controlError.controlErrorIsError
       val dqControlIdE = dataF100ControlE.Control_Id
       println(s"dqControlId=$dqControlIdE")
       val tblDataF100EDQ = s"$outputDatabase.dataf100_E_dq"
 
       //------------------------------------------------------------------------------------------------------------
-      control.NewStep("ERROR - Valida que el process ejecute ok")
+      control.newStep("ERROR - Valida que el process ejecute ok")
       val tbExecE = control.RegisterTestPlan(
         TestPlanGroup
         , "ERROR - Process_Run"
@@ -212,12 +212,12 @@ object prc_f100_testplan {
       //------------------------------------------------------------------------------------------------------------
       val dataF100ControlWexW: HuemulControl = prc_dataf100_WEX_W.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
-      val hasErrorWexW = dataF100ControlWexW.Control_Error.ControlError_IsError
+      val hasErrorWexW = dataF100ControlWexW.controlError.controlErrorIsError
       val dqControlIdWexW = dataF100ControlWexW.Control_Id
       val tblDataF100WexWDQ = s"$outputDatabase.dataf100_WEX_W_dq"
 
       //------------------------------------------------------------------------------------------------------------
-      control.NewStep(s"Valida que el process ejecute ok")
+      control.newStep(s"Valida que el process ejecute ok")
       val tbExecWexW = control.RegisterTestPlan(
         TestPlanGroup
         , "WEX_W - Process_Run"
@@ -345,14 +345,14 @@ object prc_f100_testplan {
       //----------------------------------------------------------------------------
       val dataF100ControlWEXTrx: HuemulControl = prc_dataf100_WEX_TRX.processMaster(huemulBigDataGov: HuemulBigDataGovernance, control, 2020, 1)
 
-      val hasErrorWEXTrx = dataF100ControlWEXTrx.Control_Error.ControlError_IsError
+      val hasErrorWEXTrx = dataF100ControlWEXTrx.controlError.controlErrorIsError
       val dqControlIdWEXTrx = dataF100ControlWEXTrx.Control_Id
       println(s"dqControlId=$dqControlIdWEX")
       val tblDataF100WexTrxDQ = s"$outputDatabase.dataf100_wex_trx_dq"
       val tblDataF100WexTrx = s"$outputDatabase_master.dataf100_wex_trx"
 
       //------------------------------------------------------------------------------------------------------------
-      control.NewStep("WARNING_EXCLUDE - Valida que el process ejecute ok")
+      control.newStep("WARNING_EXCLUDE - Valida que el process ejecute ok")
       val tbExecTrx = control.RegisterTestPlan(
         TestPlanGroup
         , "WEX_TRX-Process_Run"
@@ -403,7 +403,7 @@ object prc_f100_testplan {
 
       testPlanCases(dqControlIdWEXTrx, TestPlanGroup,"WEX_TRX", tblDataF100WexTrxDQ,"WARNING_EXCLUDE")
 
-      control.NewStep(s"Valida Cantida de registros cargados")
+      control.newStep(s"Valida Cantida de registros cargados")
       val dfSQL = huemulBigDataGov.spark.sql(
         s"""select count(*) as cc
            | from (select DISTINCT pkcol1,pkcol2 from $tblDataF100WexTrx) A
@@ -459,7 +459,7 @@ object prc_f100_testplan {
                                  , notification:String
                                  , errorCode:Integer
                                  , resultExpected:Long):Unit = {
-    control.NewStep(s"Valida $notification - $testPlanName")
+    control.newStep(s"Valida $notification - $testPlanName")
     val dfSQL = huemulBigDataGov.spark.sql(
       s"""select count(*) as cc
          | from $tableName
@@ -664,10 +664,10 @@ object prc_f100_testplan {
 
   /*
   private def dataGeneration(huemulBigDataGov: HuemulBigDataGovernance): Unit = {
-    val path = huemulBigDataGov.GlobalSettings.getPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.RAW_BigFiles_Path )
+    val path = huemulBigDataGov.globalSettings.getPath(huemulBigDataGov,huemulBigDataGov.globalSettings.rawBigFilesPath )
     println(s"INFO path : $path")
 
-    val pathTemp = huemulBigDataGov.GlobalSettings.getPath(huemulBigDataGov,huemulBigDataGov.GlobalSettings.TEMPORAL_Path )
+    val pathTemp = huemulBigDataGov.globalSettings.getPath(huemulBigDataGov,huemulBigDataGov.globalSettings.TEMPORAL_Path )
     println(s"INFO path : $pathTemp")
     //Genera archivo de pruebas
     val someData = Seq(

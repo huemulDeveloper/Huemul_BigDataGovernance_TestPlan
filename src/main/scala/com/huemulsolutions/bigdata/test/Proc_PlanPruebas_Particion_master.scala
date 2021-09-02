@@ -9,7 +9,7 @@ import com.huemulsolutions.bigdata.tables.master.tbl_DatosParticionMaster
 
 /**
  * Este plan de pruebas valida lo siguiente:
- * Error en PK: hay registros duplicados, lo que se espera es un error de PK
+ * error en PK: hay registros duplicados, lo que se espera es un error de PK
  * el TipodeArchivo usado es Malo01
  */
 object Proc_PlanPruebas_Particion_master {
@@ -18,11 +18,11 @@ object Proc_PlanPruebas_Particion_master {
   }
 
   def processMaster(huemulLib2: HuemulBigDataGovernance, args: Array[String]): HuemulControl = {
-    val huemulLib = if (huemulLib2 == null) new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_dia",args,com.yourcompany.settings.globalSettings.Global) else huemulLib2
+    val huemulLib = if (huemulLib2 == null) new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_dia",args,com.yourcompany.settings.globalSettings.global) else huemulLib2
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
 
     /*
-    if (huemulLib.GlobalSettings.getBigDataProvider() == HuemulTypeBigDataProvider.databricks) {
+    if (huemulLib.globalSettings.getBigDataProvider() == HuemulTypeBigDataProvider.databricks) {
       huemulLib.spark.sql("SET spark.databricks.delta.formatCheck.enabled=false")
     }
 
@@ -51,15 +51,15 @@ object Proc_PlanPruebas_Particion_master {
     //Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
     try {
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosParticion(huemulLib, Control)
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, dia.toInt, 0, 0, 0,empresa)) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosParticionMaster(huemulLib, Control, TipoTabla)
 
-      TablaMaster.DF_from_SQL("df_data",
+      TablaMaster.dfFromSql("df_data",
         """SELECT to_date(periodo,'yyyyMMdd') as periodo,
               empresa,
               app,
@@ -79,7 +79,7 @@ object Proc_PlanPruebas_Particion_master {
       TablaMaster.idTx.setMapping("idTx")
 
       if (!TablaMaster.executeFull("DF_FinalParticion")) {
-        Control.RaiseError("Error al masterizar")
+        Control.raiseError("error al masterizar")
         println("error al masterizar")
       }
 
@@ -96,14 +96,14 @@ object Proc_PlanPruebas_Particion_master {
       /////////////////////////////////////////////////////////////////////////////////////////
       //valida que respuesta sea negativa
       
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         
-        ///val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeOnlyInsert", "ERROR DE PROGRAMA -  deberia tener errror", "con error 1033", s"con error: ${Control.Control_Error.ControlError_ErrorCode}", Control.Control_Error.ControlError_ErrorCode == 1033)
+        ///val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "getWhoCanRun_executeOnlyInsert", "ERROR DE PROGRAMA -  deberia tener errror", "con error 1033", s"con error: ${Control.controlError.controlErrorErrorCode}", Control.controlError.controlErrorErrorCode == 1033)
         //Control.RegisterTestPlanFeature("getWhoCanRun_executeOnlyInsert", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, Control.Control_Error.ControlError_ErrorCode)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, Control.controlError.controlErrorErrorCode)
+        Control.finishProcessError()
     }
     
     //if (Control.TestPlan_CurrentIsOK(null))

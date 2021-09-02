@@ -11,14 +11,14 @@ import org.apache.spark.sql.types.DecimalType
 
 class tbl_DatosBasicosPermisoFull(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
   this.setStorageType(TipoTabla)
-  this.setDQ_MaxNewRecords_Num(4)
-  this.WhoCanRun_executeFull_addAccess("com.huemulsolutions.bigdata.test", "Proc_PlanPruebas_PermisosFull")
+  this.setDQMaxNewRecordsNum(4)
+  this.whoCanRunExecuteFullAddAccess("com.huemulsolutions.bigdata.test", "Proc_PlanPruebas_PermisosFull")
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
   
   //Agrega version 1.3
@@ -27,8 +27,8 @@ class tbl_DatosBasicosPermisoFull(HuemulLib: HuemulBigDataGovernance, Control: H
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK ( )
-  TipoValor.setDQ_MinLen ( 2)
-  TipoValor.setDQ_MaxLen ( 50)
+  TipoValor.setDqMinLen ( 2)
+  TipoValor.setDqMaxLen ( 50)
   
   
   val IntValue = new HuemulColumns(IntegerType,true,"datos integer")
@@ -97,6 +97,6 @@ class tbl_DatosBasicosPermisoFull(HuemulLib: HuemulBigDataGovernance, Control: H
   timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

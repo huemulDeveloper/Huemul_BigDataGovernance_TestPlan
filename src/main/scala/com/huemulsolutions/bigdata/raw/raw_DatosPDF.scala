@@ -17,41 +17,41 @@ class keyvalue(key: String, value: String, posIni: Integer, posFin: Integer) ext
 }
 
 class raw_DatosPDF(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) extends HuemulDataLake(huemulLib, Control) with Serializable  {
-   this.Description = "Datos de prueba para validar con PDF"
-   this.GroupName = "HuemulPlanPruebas"
+   this.description = "Datos de prueba para validar con PDF"
+   this.groupName = "HuemulPlanPruebas"
       
    val FormatSetting = new HuemulDataLakeSetting(huemulLib)
-    FormatSetting.StartDate = huemulLib.setDateTime(2010,1,1,0,0,0)
-    FormatSetting.EndDate = huemulLib.setDateTime(2050,12,12,0,0,0)
+    FormatSetting.startDate = huemulLib.setDateTime(2010,1,1,0,0,0)
+    FormatSetting.endDate = huemulLib.setDateTime(2050,12,12,0,0,0)
 
     //Path info
-    FormatSetting.GlobalPath = huemulLib.GlobalSettings.RAW_BigFiles_Path
-    FormatSetting.LocalPath = "planPruebas/"
-    FormatSetting.FileName = "tabla_de_aplimentos.pdf"
-    FormatSetting.FileType = HuemulTypeFileType.PDF_FILE
-    FormatSetting.ContactName = "Sebastián Rodríguez"
+    FormatSetting.globalPath = huemulLib.globalSettings.rawBigFilesPath
+    FormatSetting.localPath = "planPruebas/"
+    FormatSetting.fileName = "tabla_de_aplimentos.pdf"
+    FormatSetting.fileType = HuemulTypeFileType.PDF_FILE
+    FormatSetting.contactName = "Sebastián Rodríguez"
     
     
     val a = 1
     //Columns Info CHARACTER
     
     //PLAN EJECUCION 3:
-    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.POSITION  //POSITION;CHARACTER
-    FormatSetting.DataSchemaConf.ColSeparator = " "
+    FormatSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.POSITION  //POSITION;CHARACTER
+    FormatSetting.dataSchemaConf.colSeparator = " "
     
-    FormatSetting.DataSchemaConf.AddColumns("Codigo", "Codigo", StringType)
-    FormatSetting.DataSchemaConf.AddColumns("Grupo", "Grupo", StringType)
-    //FormatSetting.DataSchemaConf.AddCustomColumn("nota", "texto explicativo de la nota")
+    FormatSetting.dataSchemaConf.addColumns("Codigo", "Codigo", StringType)
+    FormatSetting.dataSchemaConf.addColumns("Grupo", "Grupo", StringType)
+    //FormatSetting.dataSchemaConf.AddCustomColumn("nota", "texto explicativo de la nota")
     
     
-    //Log Info
-    FormatSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.NONE  //POSITION;CHARACTER;NONE
-    FormatSetting.LogNumRows_FieldName = null
+    //log Info
+    FormatSetting.logSchemaConf.colSeparatorType = HuemulTypeSeparator.NONE  //POSITION;CHARACTER;NONE
+    FormatSetting.logNumRowsFieldName = null
     //Fields Info for CHARACTER
-    FormatSetting.LogSchemaConf.ColSeparator = ";"    //SET FOR CARACTER
-    FormatSetting.LogSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
+    FormatSetting.logSchemaConf.colSeparator = ";"    //SET FOR CARACTER
+    FormatSetting.logSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
     
-    this.SettingByDate.append(FormatSetting)
+    this.settingByDate.append(FormatSetting)
   
     /***
    * open(ano: Int, mes: Int) <br>
@@ -67,32 +67,32 @@ class raw_DatosPDF(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) e
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)
     
-    control.NewStep("Abriendo raw")
+    control.newStep("Abriendo raw")
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, null)){
-        control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
+      if (!this.openFile(ano, mes, dia, hora, min, seg, null)){
+        control.raiseError(s"error al abrir archivo: ${this.error.controlErrorMessage}")
       }
       
       //import huemulLib.spark.implicits._
    
-      control.NewStep("Aplicando Filtro")
+      control.newStep("Aplicando Filtro")
        
       //*******************************************************
       //obtiene posicion inicial
       //*******************************************************
-      val reg_filaInicial = this.DataRDD_extended.filter { f => f._4.startsWith("Códigos y grupos de alimentos")}.collect()
+      val reg_filaInicial = this.dataRddExtended.filter { f => f._4.startsWith("Códigos y grupos de alimentos")}.collect()
       if (reg_filaInicial.length == 0)
-        RaiseError_RAW("Texto inicial no encontrado", 1)  
+        raiseErrorRaw("Texto inicial no encontrado", 1)
       val filaInicial = reg_filaInicial(0)._1
       
       //*******************************************************
       //obtiene posicion final
       //*******************************************************
-      val reg_filaFinal = this.DataRDD_extended.filter { f => f._4.startsWith("Componentes: definición y expresión de nutrientes")}.collect()
+      val reg_filaFinal = this.dataRddExtended.filter { f => f._4.startsWith("Componentes: definición y expresión de nutrientes")}.collect()
       if (reg_filaFinal.length == 0)
-        RaiseError_RAW("Texto final no encontrado", 2)
+        raiseErrorRaw("Texto final no encontrado", 2)
       val filaFinal = reg_filaFinal(0)._1
       
       //*******************************************************
@@ -107,7 +107,7 @@ class raw_DatosPDF(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) e
       //*******************************************************
       //obtiene RDD BASE con datos filtrados
       //*******************************************************
-      val rowRDD_Base = this.DataRDD_extended
+      val rowRDD_Base = this.dataRddExtended
             .filter { x => x._1 >= filaInicial && x._1 < filaFinal} //caracteres iniciales
             .filter { x => x._3 > 0  } //largo de fila con trim > 0
             .filter { x => !(x._4.toUpperCase() == filtroCirculares) } //filtro de textos que no deben ser considerados
@@ -164,25 +164,25 @@ class raw_DatosPDF(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) e
       println("")
       println("")
       
-      control.NewStep("Transformando a dataframe")      
-      //Crea DataFrame en Data.DataDF
-      this.DF_from_RAW(huemulLib.spark.sparkContext.parallelize(rowRDD), Alias)
+      control.newStep("Transformando a dataframe")
+      //Crea dataFrame en Data.DataDF
+      this.dfFromRaw(huemulLib.spark.sparkContext.parallelize(rowRDD), Alias)
         
       //****VALIDACION DQ*****
       //**********************
       
-      control.NewStep("Validando cantidad de filas")      
+      control.newStep("Validando cantidad de filas")
       //validacion cantidad de filas
-      val validanumfilas = this.DataFramehuemul.DQ_NumRowsInterval(this, 6,100)  
-      if (validanumfilas.isError) control.RaiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.Description}")
+      val validanumfilas = this.dataFrameHuemul.DQ_NumRowsInterval(this, 6,100)
+      if (validanumfilas.isError) control.raiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.description}")
                         
-      control.FinishProcessOK                      
+      control.finishProcessOk
     } catch {
       case e: Exception =>
-        control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()
+        control.controlError.setError(e, this.getClass.getName, this, null)
+        control.finishProcessError()
     }         
-    control.Control_Error.IsOK()
+    control.controlError.isOK
   }
 }
 
@@ -193,7 +193,7 @@ object raw_DatosPDF_test {
   def main(args : Array[String]) {
     
     //Creación API
-    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib, null, HuemulTypeFrequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
@@ -205,7 +205,7 @@ object raw_DatosPDF_test {
       println("***********  E R R O R   E N   P R O C E S O   *************")
       println("************************************************************")
     } else 
-      DF_RAW.DataFramehuemul.DataFrame.show()
+      DF_RAW.dataFrameHuemul.dataFrame.show()
       
     try { 
       val resultados = huemulLib.spark.sql("""select MAX(CASE WHEN Codigo = "A" and Grupo = "Cereales y derivados" then 1 else 0 end) as Cumple_A
@@ -301,11 +301,11 @@ object raw_DatosPDF_test {
       //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
       //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
       
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception =>
-        Control.Control_Error.GetError(e, this.getClass.getName, null, null)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getName, null, null)
+        Control.finishProcessError()
     }   
     
     if (Control.TestPlan_CurrentIsOK(17))

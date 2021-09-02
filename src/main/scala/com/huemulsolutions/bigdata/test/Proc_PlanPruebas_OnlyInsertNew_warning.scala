@@ -11,7 +11,7 @@ import com.huemulsolutions.bigdata.tables.HuemulTypeInternalTableType
 
 object Proc_PlanPruebas_OnlyInsertNew_warning {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OnlyInsertNew_warning",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_OnlyInsertNew_warning",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -35,19 +35,19 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
     try {
       var IdTestPlan: String = null
       
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosBasicos(huemulLib, Control)
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
       
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosBasicosInsert(huemulLib, Control,TipoTabla)      
-      TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame,"DF_RAW", "DF_Original")
+      TablaMaster.dfFromDf(DF_RAW.dataFrameHuemul.dataFrame,"DF_RAW", "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
-      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.tableName.toUpperCase() }) {
         huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
@@ -57,14 +57,14 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
         fs.delete(FullPath, true)
         
       if (TipoTablaParam == "hbase") {
-        Control.NewStep("borrar tabla")
+        Control.newStep("borrar tabla")
         val th = new HuemulTableConnector(huemulLib, Control)
         th.tableDeleteHBase(TablaMaster.getHBaseNamespace(HuemulTypeInternalTableType.Normal), TablaMaster.getHBaseTableName(HuemulTypeInternalTableType.Normal))
       }
         
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       
-      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.TipoValor.setMapping("TipoValor",replaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
       TablaMaster.IntValue.setMapping("IntValue")
       TablaMaster.BigIntValue.setMapping("BigIntValue")
       TablaMaster.SmallIntValue.setMapping("SmallIntValue")
@@ -76,14 +76,14 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       TablaMaster.charValue.setMapping("charValue")
       TablaMaster.timeStampValue.setMapping("timeStampValue")
       
-      Control.NewStep("PASO 1: INSERTA NORMAL")
+      Control.newStep("PASO 1: INSERTA NORMAL")
       if (!TablaMaster.executeFull("DF_Final_Todo", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       
-        Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster.errorCode}): ${TablaMaster.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -94,23 +94,23 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       
       
       
-      Control.NewStep("Define DataFrame iInsert")
+      Control.newStep("Define dataFrame iInsert")
       if (!DF_RAW.open("DF_RAW_2", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"Mod")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")      
-      TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame,"DF_RAW_2", "DF_Mod")
+      Control.newStep("Mapeo de Campos")
+      TablaMaster.dfFromDf(DF_RAW.dataFrameHuemul.dataFrame,"DF_RAW_2", "DF_Mod")
       
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
-      Control.NewStep("PASO 2: SOLO INSERTA 1 REGISTRO, NO MODIFICA NI ELMINA NADA --> registra en DQ")
-      if (!TablaMaster.executeOnlyInsert("DF_Final_New", org.apache.spark.storage.StorageLevel.MEMORY_ONLY,RegisterOnlyInsertInDQ = true)) {
+      Control.newStep("PASO 2: SOLO INSERTA 1 REGISTRO, NO MODIFICA NI ELMINA NADA --> registra en DQ")
+      if (!TablaMaster.executeOnlyInsert("DF_Final_New", org.apache.spark.storage.StorageLevel.MEMORY_ONLY,registerOnlyInsertInDq = true)) {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
         Control.RegisterTestPlanFeature("IsPK", IdTestPlan)
         Control.RegisterTestPlanFeature("executeOnlyInsert_DQ", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       
-        Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster.errorCode}): ${TablaMaster.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -120,10 +120,10 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       }
         
       
-      val DF_Final = huemulLib.DF_ExecuteQuery("DF_Final", s"""select * from ${TablaMaster.getTable}  """)
+      val DF_Final = huemulLib.dfExecuteQuery("DF_Final", s"""select * from ${TablaMaster.getTable}  """)
       DF_Final.show()
 
-      val ErrorReg = TablaMaster.DataFramehuemul.getDQResult.filter { x => x.DQ_ErrorCode == 1055 }
+      val ErrorReg = TablaMaster.dataFrameHuemul.getDqResult.filter { x => x.dqErrorCode == 1055 }
       var CodWarningInsert: String = ""
       if (ErrorReg == null || ErrorReg.isEmpty){
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "WARNING Insert only new", "Warning NO encontrado con codigo 1055", "Warning NO encontrado con codigo 1055", s"Warning NO encontrado con codigo 1055", p_testPlan_IsOK = false)
@@ -132,15 +132,15 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       else {
         val ErrorEncontrado = ErrorReg(0)
         
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR Column_DQ_MinLen Codigo", "Warnings encontrados correctamente", "ErrorCode = 1055, N° registros con error: 1", s"ErrorCode = 1055, N° registros con warning: ${ErrorEncontrado.DQ_NumRowsError}", ErrorEncontrado.DQ_NumRowsError == 1)
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR Column_DQ_MinLen Codigo", "Warnings encontrados correctamente", "ErrorCode = 1055, N° registros con error: 1", s"ErrorCode = 1055, N° registros con warning: ${ErrorEncontrado.dqNumRowsError}", ErrorEncontrado.dqNumRowsError == 1)
         Control.RegisterTestPlanFeature("DQ_MinLen", IdTestPlan)
         
-        CodWarningInsert = ErrorEncontrado.DQ_Id
+        CodWarningInsert = ErrorEncontrado.dqId
       }
       
-      Control.NewStep("DF Plan de pruebas: Nuevos ")
-      val DF_Resultado = huemulLib.DF_ExecuteQuery("DF_Resultado", s"""SELECT *
-                                                                       FROM ${TablaMaster.getTable_DQ}
+      Control.newStep("DF Plan de pruebas: Nuevos ")
+      val DF_Resultado = huemulLib.dfExecuteQuery("DF_Resultado", s"""SELECT *
+                                                                       FROM ${TablaMaster.getTableDq}
                                                                        WHERE dq_control_id = '${Control.Control_Id}'
                                                                        AND   dq_dq_id = '$CodWarningInsert'""")
       val Cantidad = if (DF_Resultado == null) 0 else DF_Resultado.count()
@@ -150,7 +150,7 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       Control.RegisterTestPlanFeature("autoCast Encendido", IdTestPlan)
       Control.RegisterTestPlanFeature("InsertOnlyNew_InDQ", IdTestPlan)
       
-      val Nuevos_Todos = huemulLib.DF_ExecuteQuery("Nuevos_Todos", s"""SELECT case when BigIntValue = 1000                      then true else false end as Cumple_BigIntValue
+      val Nuevos_Todos = huemulLib.dfExecuteQuery("Nuevos_Todos", s"""SELECT case when BigIntValue = 1000                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 1000                      then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 1000                      then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 1000                          then true else false end as Cumple_TinyIntValue
@@ -219,18 +219,18 @@ object Proc_PlanPruebas_OnlyInsertNew_warning {
       //  I N I C I A   P L A N   D E   P R U E B A S
       /////////////////////////////////////////////////////////////////////////////////////////
       /////////////////////////////////////////////////////////////////////////////////////////
-      Control.NewStep("Muestra de los datos ")
-      TablaMaster.DataFramehuemul.DataFrame.show()
+      Control.newStep("Muestra de los datos ")
+      TablaMaster.dataFrameHuemul.dataFrame.show()
       
       
       
-          Control.FinishProcessOK
+          Control.finishProcessOk
     } catch {
       case e: Exception => 
         val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeOnlyInsert_DQ", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(null))

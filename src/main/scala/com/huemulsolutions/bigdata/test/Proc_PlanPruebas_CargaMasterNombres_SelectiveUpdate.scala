@@ -7,7 +7,7 @@ import com.huemulsolutions.bigdata.tables.master.tbl_DatosBasicosNombres
 
 object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Plan pruebas Proc_PlanPruebas_CargaMaster",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     
     val Ano = huemulLib.arguments.getValue("ano", null,"Debe especificar ano de proceso: ejemplo: ano=2017")
@@ -20,21 +20,21 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
     try {
       var IdTestPlan: String = null
       
-      Control.NewStep("Define DataFrame Original")
+      Control.newStep("Define dataFrame Original")
       val DF_RAW =  new raw_DatosBasicos(huemulLib, Control)
       
       if (!DF_RAW.open("DF_RAW", null, Ano.toInt, Mes.toInt, 1, 0, 0, 0,"")) {
-        Control.RaiseError(s"Error al intentar abrir archivo de datos: ${DF_RAW.Error.ControlError_Message}")
+        Control.raiseError(s"error al intentar abrir archivo de datos: ${DF_RAW.error.controlErrorMessage}")
       }
-      Control.NewStep("Mapeo de Campos")
+      Control.newStep("Mapeo de Campos")
       val TablaMaster = new tbl_DatosBasicosNombres(huemulLib, Control)
       val df_temp_vacia = TablaMaster.getEmptyTable("pruebaVacia")
       df_temp_vacia.show()
-      TablaMaster.DF_from_DF(DF_RAW.DataFramehuemul.DataFrame, "DF_RAW", "DF_Original")
+      TablaMaster.dfFromDf(DF_RAW.dataFrameHuemul.dataFrame, "DF_RAW", "DF_Original")
       
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
       val a = huemulLib.spark.catalog.listTables(TablaMaster.getCurrentDataBase).collect()
-      if (a.exists { x => x.name.toUpperCase() == TablaMaster.TableName.toUpperCase() }) {
+      if (a.exists { x => x.name.toUpperCase() == TablaMaster.tableName.toUpperCase() }) {
         huemulLib.spark.sql(s"drop table if exists ${TablaMaster.getTable} ")
       } 
       
@@ -46,7 +46,7 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
    //BORRA HDFS ANTIGUO PARA EFECTOS DEL PLAN DE PRUEBAS
         
         
-      TablaMaster.TipoValor.setMapping("TipoValor",ReplaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
+      TablaMaster.TipoValor.setMapping("TipoValor",replaceValueOnUpdate = true,"coalesce(new.TipoValor,'nulo')","coalesce(new.TipoValor,'nulo')")
       TablaMaster.IntValue.setMapping("IntValue")
       TablaMaster.BigIntValue.setMapping("BigIntValue")
       TablaMaster.SmallIntValue.setMapping("SmallIntValue")
@@ -58,7 +58,7 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       TablaMaster.charValue.setMapping("charValue")
       TablaMaster.timeStampValue.setMapping("timeStampValue")
       //TODO: cambiar el parámetro "true" por algo.UPDATE O algo.NOUPDATE (en replaceValueOnUpdate
-      Control.NewStep("Ejecución")
+      Control.newStep("Ejecución")
       if (!TablaMaster.executeFull("DF_Final", org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -66,7 +66,7 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
         Control.RegisterTestPlanFeature("executeFull", IdTestPlan)
         Control.RegisterTestPlanFeature("StorageType parquet", IdTestPlan)
       
-        Control.RaiseError(s"Error al masterizar (${TablaMaster.Error_Code}): ${TablaMaster.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster.errorCode}): ${TablaMaster.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("Requiered OK", IdTestPlan)
@@ -77,16 +77,16 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
         
       
       val TablaMaster2 = new tbl_DatosBasicosNombres(huemulLib, Control)
-      TablaMaster2.DF_from_SQL("DF_Original", s"""select 'Cero-Vacio' as codTipoValor, 45 as valIntValue union all  select 'Negativo_Maximo' as codTipoValor, -55 as valIntValue """) 
+      TablaMaster2.dfFromSql("DF_Original", s"""select 'Cero-Vacio' as codTipoValor, 45 as valIntValue union all  select 'Negativo_Maximo' as codTipoValor, -55 as valIntValue """)
       TablaMaster2.TipoValor.setMapping("codTipoValor")
       TablaMaster2.IntValue.setMapping("valIntValue")
-      Control.NewStep("executeSelectiveUpdate")
+      Control.newStep("executeSelectiveUpdate")
       val partitionValueNull: String = null
       if (!TablaMaster2.executeSelectiveUpdate("DF_Final",partitionValueNull, org.apache.spark.storage.StorageLevel.MEMORY_ONLY)) {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"Si hay error en masterización", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeSelectiveUpdate", IdTestPlan)
      
-        Control.RaiseError(s"Error al masterizar (${TablaMaster2.Error_Code}): ${TablaMaster2.Error_Text}")
+        Control.raiseError(s"error al masterizar (${TablaMaster2.errorCode}): ${TablaMaster2.errorText}")
       } else {
         IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "No hay error en masterización", "No hay error en masterización", s"No hay error en masterización", p_testPlan_IsOK = true)
         Control.RegisterTestPlanFeature("executeSelectiveUpdate", IdTestPlan)
@@ -97,11 +97,11 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       //  I N I C I A   P L A N   D E   P R U E B A S
       /////////////////////////////////////////////////////////////////////////////////////////
       /////////////////////////////////////////////////////////////////////////////////////////
-      Control.NewStep("Muestra de los datos ")
-      TablaMaster2.DataFramehuemul.DataFrame.show()
+      Control.newStep("Muestra de los datos ")
+      TablaMaster2.dataFrameHuemul.dataFrame.show()
       
-      Control.NewStep("DF Plan de pruebas: Cero-Vacio ")
-      val Cero_Vacio_Todos = huemulLib.DF_ExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Cero-Vacio ")
+      val Cero_Vacio_Todos = huemulLib.dfExecuteQuery("Cero_Vacio_Todos", s"""SELECT case when BigIntValue = 0                           then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 45                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 0                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 0                          then true else false end as Cumple_TinyIntValue
@@ -124,8 +124,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Cero_Vacio = Cero_Vacio_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Maximo ")
-      val Negativo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Maximo ")
+      val Negativo_Maximo_Todos = huemulLib.dfExecuteQuery("Negativo_Maximo_Todos", s"""SELECT case when BigIntValue = -10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -55                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -10                          then true else false end as Cumple_TinyIntValue
@@ -148,8 +148,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Maximo = Negativo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Negativo_Minimo ")
-      val Negativo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Negativo_Minimo ")
+      val Negativo_Minimo_Todos = huemulLib.dfExecuteQuery("Negativo_Minimo_Todos", s"""SELECT case when BigIntValue = -100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = -100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = -100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = -100                          then true else false end as Cumple_TinyIntValue
@@ -170,8 +170,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Negativo_Minimo = Negativo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Minimo ")
-      val Positivo_Minimo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Minimo ")
+      val Positivo_Minimo_Todos = huemulLib.dfExecuteQuery("Positivo_Minimo_Todos", s"""SELECT case when BigIntValue = 10                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 10                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 10                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 10                          then true else false end as Cumple_TinyIntValue
@@ -192,8 +192,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Minimo = Positivo_Minimo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Positivo_Maximo ")
-      val Positivo_Maximo_Todos = huemulLib.DF_ExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Positivo_Maximo ")
+      val Positivo_Maximo_Todos = huemulLib.dfExecuteQuery("Positivo_Maximo_Todos", s"""SELECT case when BigIntValue = 100                      then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue = 100                         then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue = 100                         then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue = 100                          then true else false end as Cumple_TinyIntValue
@@ -214,8 +214,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       Control.RegisterTestPlanFeature("RAW - realiza trim", IdTestPlan)
       val Positivo_Maximo = Positivo_Maximo_Todos.first()
       
-      Control.NewStep("DF Plan de pruebas: Null ")
-      val ValorNull_Todos = huemulLib.DF_ExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
+      Control.newStep("DF Plan de pruebas: Null ")
+      val ValorNull_Todos = huemulLib.dfExecuteQuery("ValorNull_Todos", s"""SELECT case when BigIntValue IS NULL                       then true else false end as Cumple_BigIntValue
                                                                                      ,case when IntValue IS NULL                    then true else false end as Cumple_IntValue
                                                                                      ,case when SmallIntValue IS NULL                    then true else false end as Cumple_SmallIntValue
                                                                                      ,case when TinyIntValue IS NULL                     then true else false end as Cumple_TinyIntValue
@@ -238,8 +238,8 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       val ValorNull = ValorNull_Todos.first()
       
       
-      Control.NewStep("DF Plan de pruebas: ValoresDefault ")
-      val ValoresDefault_Todos = huemulLib.DF_ExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
+      Control.newStep("DF Plan de pruebas: ValoresDefault ")
+      val ValoresDefault_Todos = huemulLib.dfExecuteQuery("ValoresDefault_Todos", s"""SELECT case when BigIntDefaultValue = 10000                      then true else false end as Cumple_BigIntDefaultValue
                                                                                      ,case when IntDefaultValue = 10000                         then true else false end as Cumple_IntDefaultValue
                                                                                      ,case when SmallIntDefaultValue = 10000                         then true else false end as Cumple_SmallIntDefaultValue
                                                                                      ,case when TinyIntDefaultValue = 10000                          then true else false end as Cumple_TinyIntDefaultValue
@@ -266,7 +266,7 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
        * -- Validar la funcionalidad SQL_Insert
        */
       
-      Control.NewStep("DF Plan de pruebas: Aplicando validaciones ")
+      Control.newStep("DF Plan de pruebas: Aplicando validaciones ")
       //**************************
       //****  C O M P A R A C I O N   C E R O - V A C I O  *************
       //**************************
@@ -535,13 +535,13 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       //Se debe caer, no encuentra una clave
       
       val TablaMaster3 = new tbl_DatosBasicosNombres(huemulLib, Control)
-      TablaMaster3.DF_from_SQL("DF_Original", s"""select 'Cero-Vacio-2' as codTipoValor, 45 as valIntValue union all  select 'Negativo_Maximo' as codTipoValor, -55 as valIntValue """) 
+      TablaMaster3.dfFromSql("DF_Original", s"""select 'Cero-Vacio-2' as codTipoValor, 45 as valIntValue union all  select 'Negativo_Maximo' as codTipoValor, -55 as valIntValue """)
       TablaMaster3.TipoValor.setMapping("codTipoValor")
       TablaMaster3.IntValue.setMapping("valIntValue")
-      Control.NewStep("executeSelectiveUpdate")
+      Control.newStep("executeSelectiveUpdate")
       if (!TablaMaster3.executeSelectiveUpdate("DF_Final",null)) {
-        println(s"error: ${TablaMaster3.Error_Code} ${TablaMaster3.Error_Text}")
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "Si hay error en masterización", "si hay error en masterización", s"Si hay error en masterización", TablaMaster3.Error_Code == 1045)
+        println(s"error: ${TablaMaster3.errorCode} ${TablaMaster3.errorText}")
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "Si hay error en masterización", "si hay error en masterización", s"Si hay error en masterización", TablaMaster3.errorCode == 1045)
         Control.RegisterTestPlanFeature("executeSelectiveUpdate", IdTestPlan)
     
       } else {
@@ -553,13 +553,13 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       //Se debe caer, clave duplicada 
       
       val TablaMaster4 = new tbl_DatosBasicosNombres(huemulLib, Control)
-      TablaMaster4.DF_from_SQL("DF_Original", s"""select 'Cero-Vacio' as codTipoValor, 45 as valIntValue union all  select 'Cero-Vacio' as codTipoValor, -55 as valIntValue """) 
+      TablaMaster4.dfFromSql("DF_Original", s"""select 'Cero-Vacio' as codTipoValor, 45 as valIntValue union all  select 'Cero-Vacio' as codTipoValor, -55 as valIntValue """)
       TablaMaster4.TipoValor.setMapping("codTipoValor")
       TablaMaster4.IntValue.setMapping("valIntValue")
-      Control.NewStep("executeSelectiveUpdate")
+      Control.newStep("executeSelectiveUpdate")
       if (!TablaMaster4.executeSelectiveUpdate("DF_Final",null)) {
-        println(s"error: ${TablaMaster4.Error_Code} ${TablaMaster4.Error_Text}")
-        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "Si hay error en masterización", "si hay error en masterización", s"Si hay error en masterización", TablaMaster4.Error_Code == 1046)
+        println(s"error: ${TablaMaster4.errorCode} ${TablaMaster4.errorText}")
+        IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Masterización", "Si hay error en masterización", "si hay error en masterización", s"Si hay error en masterización", TablaMaster4.errorCode == 1046)
         Control.RegisterTestPlanFeature("executeSelectiveUpdate", IdTestPlan)
     
       } else {
@@ -568,7 +568,7 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
       }
 
       //valida nombres
-      val existenCampos = huemulLib.DF_ExecuteQuery("ValorNull_Todos", s"""SELECT xxxDtChange4
+      val existenCampos = huemulLib.dfExecuteQuery("ValorNull_Todos", s"""SELECT xxxDtChange4
                                                                              ,xxxDtNew4
                                                                              ,xxxProcNew4
                                                                              ,xxxProcChange4
@@ -583,13 +583,13 @@ object Proc_PlanPruebas_CargaMasterNombres_SelectiveUpdate {
 
 
 
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         val IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "ERROR", "ERROR DE PROGRAMA -  no deberia tener errror", "sin error", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
         Control.RegisterTestPlanFeature("executeSelectiveUpdate", IdTestPlan)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(82))

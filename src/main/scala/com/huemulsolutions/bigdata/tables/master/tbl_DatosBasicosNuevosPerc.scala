@@ -11,13 +11,13 @@ import org.apache.spark.sql.types.Decimal
 
 class tbl_DatosBasicosNuevosPerc(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
   this.setStorageType(TipoTabla)
-  this.setDQ_MaxNewRecords_Perc(Decimal.apply(0.3))
+  this.setDqMaxNewRecordsPerc(Decimal.apply(0.3))
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
   
   //Agrega version 1.3
@@ -26,8 +26,8 @@ class tbl_DatosBasicosNuevosPerc(HuemulLib: HuemulBigDataGovernance, Control: Hu
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK ( )
-  TipoValor.setDQ_MinLen ( 2)
-  TipoValor.setDQ_MaxLen ( 50)
+  TipoValor.setDqMinLen ( 2)
+  TipoValor.setDqMaxLen ( 50)
   
   
   val IntValue = new HuemulColumns(IntegerType,true,"datos integer")
@@ -96,6 +96,6 @@ class tbl_DatosBasicosNuevosPerc(HuemulLib: HuemulBigDataGovernance, Control: Hu
   timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

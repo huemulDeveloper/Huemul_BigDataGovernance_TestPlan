@@ -10,67 +10,67 @@ import org.apache.spark.sql.types._
 
 
 class raw_DatosOldValue(huemulLib: HuemulBigDataGovernance, Control: HuemulControl) extends HuemulDataLake(huemulLib, Control) with Serializable  {
-   this.Description = "datos para probar funcionalidades de Old VAlue Trace"
-   this.GroupName = "HuemulPlanPruebas"
+   this.description = "datos para probar funcionalidades de Old VAlue Trace"
+   this.groupName = "HuemulPlanPruebas"
       
    val FormatSetting = new HuemulDataLakeSetting(huemulLib)
-    FormatSetting.StartDate = huemulLib.setDateTime(2010,1,1,0,0,0)
-    FormatSetting.EndDate = huemulLib.setDateTime(2050,12,12,0,0,0)
+    FormatSetting.startDate = huemulLib.setDateTime(2010,1,1,0,0,0)
+    FormatSetting.endDate = huemulLib.setDateTime(2050,12,12,0,0,0)
 
     //Path info
-    FormatSetting.GlobalPath = huemulLib.GlobalSettings.RAW_BigFiles_Path
-    FormatSetting.LocalPath = "planPruebas/"
-    FormatSetting.FileName = "OldValueTrace_{{TipoArchivo}}.txt"
-    FormatSetting.FileType = HuemulTypeFileType.TEXT_FILE
-    FormatSetting.ContactName = "Sebastián Rodríguez"
+    FormatSetting.globalPath = huemulLib.globalSettings.rawBigFilesPath
+    FormatSetting.localPath = "planPruebas/"
+    FormatSetting.fileName = "OldValueTrace_{{TipoArchivo}}.txt"
+    FormatSetting.fileType = HuemulTypeFileType.TEXT_FILE
+    FormatSetting.contactName = "Sebastián Rodríguez"
     
     //Columns Info CHARACTER
     
     //PLAN EJECUCION 1:
     /*
-    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
-    FormatSetting.DataSchemaConf.ColSeparator = "\\|"    //SET FOR CARACTER
-    FormatSetting.DataSchemaConf.setHeaderColumnsString("TipoValor;IntValue;BigIntValue;SmallIntValue;TinyIntValue;DecimalValue;RealValue;FloatValue;StringValue;charValue;timeStampValue") //siempre con ;
+    FormatSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.dataSchemaConf.colSeparator = "\\|"    //SET FOR CARACTER
+    FormatSetting.dataSchemaConf.setHeaderColumnsString("TipoValor;IntValue;BigIntValue;SmallIntValue;TinyIntValue;DecimalValue;RealValue;FloatValue;StringValue;charValue;timeStampValue") //siempre con ;
     *  
     */
     
     //PLAN EJECUCION 2:
     /*
-    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
-    FormatSetting.DataSchemaConf.ColSeparator = "\\|"    //SET FOR CARACTER
+    FormatSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.dataSchemaConf.colSeparator = "\\|"    //SET FOR CARACTER
     
-    FormatSetting.DataSchemaConf.AddColumns("TipoValor", "TipoValor_ti", StringType)
-    FormatSetting.DataSchemaConf.AddColumns("IntValue", "IntValue_ti", IntegerType)
-    FormatSetting.DataSchemaConf.AddColumns("BigIntValue", "BigIntValue_ti", LongType, "con descripción mia")
-    FormatSetting.DataSchemaConf.AddColumns("SmallIntValue", "SmallIntValue_ti", ShortType)
-    FormatSetting.DataSchemaConf.AddColumns("TinyIntValue", "TinyIntValue_ti", ShortType)
-    FormatSetting.DataSchemaConf.AddColumns("DecimalValue", "DecimalValue_ti", DecimalType(10,4))
-    FormatSetting.DataSchemaConf.AddColumns("RealValue", "RealValue_ti", DoubleType)
-    FormatSetting.DataSchemaConf.AddColumns("FloatValue", "FloatValue_ti", FloatType)
-    FormatSetting.DataSchemaConf.AddColumns("StringValue", "StringValue_ti", StringType)
-    FormatSetting.DataSchemaConf.AddColumns("charValue", "charValue_ti", StringType)
-    FormatSetting.DataSchemaConf.AddColumns("timeStampValue", "timeStampValue_ti", TimestampType)
+    FormatSetting.dataSchemaConf.addColumns("TipoValor", "TipoValor_ti", StringType)
+    FormatSetting.dataSchemaConf.addColumns("IntValue", "IntValue_ti", IntegerType)
+    FormatSetting.dataSchemaConf.addColumns("BigIntValue", "BigIntValue_ti", LongType, "con descripción mia")
+    FormatSetting.dataSchemaConf.addColumns("SmallIntValue", "SmallIntValue_ti", ShortType)
+    FormatSetting.dataSchemaConf.addColumns("TinyIntValue", "TinyIntValue_ti", ShortType)
+    FormatSetting.dataSchemaConf.addColumns("DecimalValue", "DecimalValue_ti", DecimalType(10,4))
+    FormatSetting.dataSchemaConf.addColumns("RealValue", "RealValue_ti", DoubleType)
+    FormatSetting.dataSchemaConf.addColumns("FloatValue", "FloatValue_ti", FloatType)
+    FormatSetting.dataSchemaConf.addColumns("StringValue", "StringValue_ti", StringType)
+    FormatSetting.dataSchemaConf.addColumns("charValue", "charValue_ti", StringType)
+    FormatSetting.dataSchemaConf.addColumns("timeStampValue", "timeStampValue_ti", TimestampType)
     * 
     */
     
     //PLAN EJECUCION 3:
-    FormatSetting.DataSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
-    FormatSetting.DataSchemaConf.ColSeparator = "\\|"
+    FormatSetting.dataSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER
+    FormatSetting.dataSchemaConf.colSeparator = "\\|"
     
-    FormatSetting.DataSchemaConf.AddColumns("codigo", "codigo", StringType,"")
-    FormatSetting.DataSchemaConf.AddColumns("descripcion", "descripcion_ti", IntegerType,"")
-    FormatSetting.DataSchemaConf.AddColumns("fecha", "fecha_ti", TimestampType,"")
-    FormatSetting.DataSchemaConf.AddColumns("monto", "monto_ti", IntegerType,"")
+    FormatSetting.dataSchemaConf.addColumns("codigo", "codigo", StringType,"")
+    FormatSetting.dataSchemaConf.addColumns("descripcion", "descripcion_ti", IntegerType,"")
+    FormatSetting.dataSchemaConf.addColumns("fecha", "fecha_ti", TimestampType,"")
+    FormatSetting.dataSchemaConf.addColumns("monto", "monto_ti", IntegerType,"")
     
     
-    //Log Info
-    FormatSetting.LogSchemaConf.ColSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER;NONE
-    FormatSetting.LogNumRows_FieldName = null
+    //log Info
+    FormatSetting.logSchemaConf.colSeparatorType = HuemulTypeSeparator.CHARACTER  //POSITION;CHARACTER;NONE
+    FormatSetting.logNumRowsFieldName = null
     //Fields Info for CHARACTER
-    FormatSetting.LogSchemaConf.ColSeparator = "|"    //SET FOR CARACTER
-    FormatSetting.LogSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
+    FormatSetting.logSchemaConf.colSeparator = "|"    //SET FOR CARACTER
+    FormatSetting.logSchemaConf.setHeaderColumnsString("VACIO") //Fielda;Fieldb;fieldc
     
-    this.SettingByDate.append(FormatSetting)
+    this.settingByDate.append(FormatSetting)
   
     /***
    * open(ano: Int, mes: Int) <br>
@@ -86,44 +86,44 @@ class raw_DatosOldValue(huemulLib: HuemulBigDataGovernance, Control: HuemulContr
     control.AddParamYear("Ano", ano)
     control.AddParamMonth("Mes", mes)
     
-    control.NewStep("Abriendo raw")
+    control.newStep("Abriendo raw")
        
     try { 
       //Abre archivo RDD y devuelve esquemas para transformar a DF
-      if (!this.OpenFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
-        control.RaiseError(s"Error al abrir archivo: ${this.Error.ControlError_Message}")
+      if (!this.openFile(ano, mes, dia, hora, min, seg, s"{{TipoArchivo}}=$TipoArchivo")){
+        control.raiseError(s"error al abrir archivo: ${this.error.controlErrorMessage}")
       }
       
       //import huemulLib.spark.implicits._
    
-      control.NewStep("Aplicando Filtro")
+      control.newStep("Aplicando Filtro")
       /**/    //Agregar filtros o cambiar forma de leer archivo en este lugar
-      this.ApplyTrim = AplicarTrim
+      this.applyTrim = AplicarTrim
      // this.allColumnsAsString(false)
-      val rowRDD = this.DataRDD     
-            .filter { x => x != this.Log.DataFirstRow  }
-            .map(  x => {this.ConvertSchema(x)} )
+      val rowRDD = this.dataRdd
+            .filter { x => x != this.log.dataFirstRow  }
+            .map(  x => {this.convertSchema(x)} )
         
             
-      control.NewStep("Transformando a dataframe")      
-      //Crea DataFrame en Data.DataDF
-      this.DF_from_RAW(rowRDD, Alias)
+      control.newStep("Transformando a dataframe")
+      //Crea dataFrame en Data.DataDF
+      this.dfFromRaw(rowRDD, Alias)
         
       //****VALIDACION DQ*****
       //**********************
       
-      control.NewStep("Validando cantidad de filas")      
+      control.newStep("Validando cantidad de filas")
       //validacion cantidad de filas
-      val validanumfilas = this.DataFramehuemul.DQ_NumRowsInterval(this, 6,6)  
-      if (validanumfilas.isError) control.RaiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.Description}")
+      val validanumfilas = this.dataFrameHuemul.DQ_NumRowsInterval(this, 6,6)
+      if (validanumfilas.isError) control.raiseError(s"user: Numero de Filas fuera del rango. ${validanumfilas.description}")
                         
-      control.FinishProcessOK                      
+      control.finishProcessOk
     } catch {
       case e: Exception =>
-        control.Control_Error.GetError(e, this.getClass.getName, this, null)
-        control.FinishProcessError()
+        control.controlError.setError(e, this.getClass.getName, this, null)
+        control.finishProcessError()
     }         
-    control.Control_Error.IsOK()
+    control.controlError.isOK
   }
 }
 
@@ -134,7 +134,7 @@ object raw_DatosOldValue {
   def main(args : Array[String]) {
     
     //Creación API
-    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.Global)
+    val huemulLib  = new HuemulBigDataGovernance(s"BigData Fabrics - ${this.getClass.getSimpleName}", args, com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib, null, HuemulTypeFrequency.MONTHLY)
     /*************** PARAMETROS **********************/
     
@@ -145,13 +145,13 @@ object raw_DatosOldValue {
       println("**********  E  R R O R   E N   P R O C E S O   *************")
       println("************************************************************")
     } else
-      DF_RAW.DataFramehuemul.DataFrame.show()
+      DF_RAW.dataFrameHuemul.dataFrame.show()
       
     
     this.getClass.getSimpleName
     //Cambiar los parametros:             nombre tabla hive   ,   package base , package específico
     //DF_RAW.GenerateInitialCode(MyName, "sbif_institucion_mes","bigdata.fabrics","sbif.bancos")       
     
-    Control.FinishProcessOK
+    Control.finishProcessOk
   }  
 }

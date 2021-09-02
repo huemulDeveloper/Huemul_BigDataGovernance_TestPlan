@@ -10,17 +10,17 @@ import org.apache.spark.sql.types.DataTypes._
 
 class tbl_OldValueTrace(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verifica el correcto registro de los cambios en tabla oldvalue")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
  
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
   this.setStorageType(TipoTabla)
-  this.setDQ_MaxNewRecords_Num(4)
+  this.setDQMaxNewRecordsNum(4)
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
   
-  this.WhoCanRun_executeFull_addAccess("Proc_PlanPruebas_OldValueTrace","com.huemulsolutions.bigdata.test")
+  this.whoCanRunExecuteFullAddAccess("Proc_PlanPruebas_OldValueTrace","com.huemulsolutions.bigdata.test")
   
   //Agrega version 1.3
   this.setNumPartitions(1)
@@ -32,23 +32,23 @@ class tbl_OldValueTrace(HuemulLib: HuemulBigDataGovernance, Control: HuemulContr
   
   val Descripcion = new HuemulColumns(StringType,true,"descripción de la tabla")
   Descripcion.setNullable ( )
-  Descripcion.setMDM_EnableOldValue_FullTrace( )
+  Descripcion.setMdmEnableOldValueFullTrace( )
   
   val Fecha = new HuemulColumns(TimestampType,true,"datos TimeStamp")
   Fecha.setNullable ( )
-  Fecha.setMDM_EnableOldValue_FullTrace( )
-  Fecha.setMDM_EnableDTLog()
-  Fecha.setMDM_EnableProcessLog()
-  Fecha.setMDM_EnableOldValue()
+  Fecha.setMdmEnableOldValueFullTrace( )
+  Fecha.setMdmEnableDTLog()
+  Fecha.setMdmEnableProcessLog()
+  Fecha.setMdmEnableOldValue()
   
   val Monto = new HuemulColumns(IntegerType,true,"datos Monto")
   Monto.setNullable ( )
-  Monto.setMDM_EnableOldValue_FullTrace( )
-  Monto.setMDM_EnableDTLog()
-  Monto.setMDM_EnableProcessLog()
-  Monto.setMDM_EnableOldValue()
+  Monto.setMdmEnableOldValueFullTrace( )
+  Monto.setMdmEnableDTLog()
+  Monto.setMdmEnableProcessLog()
+  Monto.setMdmEnableOldValue()
    
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

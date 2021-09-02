@@ -11,9 +11,9 @@ import org.apache.spark.sql.types.DecimalType
 
 class tbl_DatosBasicosAVRO(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Master)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que tabla creada con JSON se guarde correctamente")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   this.setStorageType(TipoTabla)
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
@@ -24,8 +24,8 @@ class tbl_DatosBasicosAVRO(HuemulLib: HuemulBigDataGovernance, Control: HuemulCo
   
   val TipoValor = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
   TipoValor.setIsPK (  )
-  TipoValor.setDQ_MinLen ( 2)
-  TipoValor.setDQ_MaxLen ( 50)
+  TipoValor.setDqMinLen ( 2)
+  TipoValor.setDqMaxLen ( 50)
   
   
   val IntValue = new HuemulColumns(IntegerType,true,"datos integer")
@@ -92,6 +92,6 @@ class tbl_DatosBasicosAVRO(HuemulLib: HuemulBigDataGovernance, Control: HuemulCo
   timeStampDefaultValue.setDefaultValues ( "'2019-01-01'")
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }

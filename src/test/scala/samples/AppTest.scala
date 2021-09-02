@@ -12,7 +12,7 @@ class AppTest {
     val args: Array[String] = new Array[String](1)
     args(0) = "Environment=production,RegisterInControl=false,TestPlanMode=true"
       
-    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("Pruebas Inicialización de Clases",args,globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
       
     @Test
@@ -54,8 +54,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicos(huemulLib,Control)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {
@@ -76,8 +76,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicos_mes(huemulLib,Control,HuemulTypeStorageType.HBASE)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {
@@ -98,8 +98,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicosAVRO(huemulLib,Control,HuemulTypeStorageType.ORC)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {
@@ -120,8 +120,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicosInsert(huemulLib,Control,HuemulTypeStorageType.HBASE)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {
@@ -142,8 +142,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicosErrores(huemulLib,Control,HuemulTypeStorageType.HBASE)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {
@@ -164,8 +164,8 @@ class AppTest {
       
       try {
         val Master = new tbl_DatosBasicosUpdate(huemulLib,Control,HuemulTypeStorageType.PARQUET)
-        if (Master.Error_isError) {
-          println(s"Codigo: ${Master.Error_Code}, Descripción: ${Master.Error_Text}")
+        if (Master.errorIsError) {
+          println(s"Codigo: ${Master.errorCode}, Descripción: ${Master.errorText}")
           SinError = false
         }
       } catch {

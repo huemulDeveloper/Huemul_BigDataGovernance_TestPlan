@@ -8,12 +8,12 @@ import com.huemulsolutions.bigdata.tables.master.tbl_DatosParticion
 
 /**
  * Este plan de pruebas valida lo siguiente:
- * Error en PK: hay registros duplicados, lo que se espera es un error de PK
+ * error en PK: hay registros duplicados, lo que se espera es un error de PK
  * el TipodeArchivo usado es Malo01
  */
 object Proc_PlanPruebas_Particion_dia_dia1p2 {
   def main(args: Array[String]): Unit = {
-    val huemulLib = new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_dia_dia1p2",args,com.yourcompany.settings.globalSettings.Global)
+    val huemulLib = new HuemulBigDataGovernance("01 - Proc_PlanPruebas_Particion_dia_dia1p2",args,com.yourcompany.settings.globalSettings.global)
     val Control = new HuemulControl(huemulLib,null, HuemulTypeFrequency.MONTHLY)
     var empresaName: String = "EmpresA"
 
@@ -38,7 +38,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
     Control.AddParamInformation("TestPlanGroup", TestPlanGroup)
         
     try {
-      Control.NewStep("Ejecuta pruebas con dia 01")
+      Control.newStep("Ejecuta pruebas con dia 01")
       val args_01: Array[String] = new Array[String](1)
       val Ano = 2017
       val Mes = 5
@@ -47,7 +47,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
       args_01(0) = s"Environment=production,ano=$Ano,mes=$Mes,dia=$dia,empresa=$empresa,TipoTabla=$TipoTablaParam"
       val control_resultado01 = Proc_PlanPruebas_Particion_dia.processMaster(huemulLib, args_01)
 
-      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Resultado Ejecucion dia 01", "Resultado Ejecución 01", "error = false", s"error = ${control_resultado01.Control_Error.ControlError_IsError}", !control_resultado01.Control_Error.ControlError_IsError)
+      IdTestPlan = Control.RegisterTestPlan(TestPlanGroup, "Resultado Ejecucion dia 01", "Resultado Ejecución 01", "error = false", s"error = ${control_resultado01.controlError.controlErrorIsError}", !control_resultado01.controlError.controlErrorIsError)
 
       //abre instancia de tabla para obtener algunos parámetros
       val TablaMaster = new tbl_DatosParticion(huemulLib, Control, TipoTabla)
@@ -58,7 +58,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
       val path_20170501_super02_internet = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-02/app=internet")
       val path_20170501_super02_telefono = TablaMaster.getFullNameWithPath.concat(s"/periodo=2017-05-01/$empresaName=super-02/app=telefono")
 
-      Control.NewStep(s"buscando path $path_20170501_super01_internet")
+      Control.newStep(s"buscando path $path_20170501_super01_internet")
       var path_existe = huemulLib.hdfsPath_exists(path_20170501_super01_internet)
       IdTestPlan = Control.RegisterTestPlan(
            TestPlanGroup
@@ -68,7 +68,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
         , s"path existe = $path_existe"
         , path_existe)
 
-      Control.NewStep(s"buscando path $path_20170501_super01_tienda")
+      Control.newStep(s"buscando path $path_20170501_super01_tienda")
       path_existe = huemulLib.hdfsPath_exists(path_20170501_super01_tienda)
       IdTestPlan = Control.RegisterTestPlan(
         TestPlanGroup
@@ -79,7 +79,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
         , path_existe)
 
 
-      Control.NewStep(s"buscando path $path_20170501_super02_internet")
+      Control.newStep(s"buscando path $path_20170501_super02_internet")
       path_existe = huemulLib.hdfsPath_exists(path_20170501_super02_internet)
       IdTestPlan = Control.RegisterTestPlan(
         TestPlanGroup
@@ -89,7 +89,7 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
         , s"path existe = $path_existe"
         , path_existe)
 
-      Control.NewStep(s"buscando path $path_20170501_super02_telefono")
+      Control.newStep(s"buscando path $path_20170501_super02_telefono")
       path_existe = huemulLib.hdfsPath_exists(path_20170501_super02_telefono)
       IdTestPlan = Control.RegisterTestPlan(
         TestPlanGroup
@@ -216,13 +216,13 @@ object Proc_PlanPruebas_Particion_dia_dia1p2 {
       /////////////////////////////////////////////////////////////////////////////////////////
       //valida que respuesta sea negativa
       
-      Control.FinishProcessOK
+      Control.finishProcessOk
     } catch {
       case e: Exception => 
         
-        Control.RegisterTestPlan(TestPlanGroup, "Error en pruebas", "ERROR DE PROGRAMA -  NO deberia tener errror", "sin errores", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
-        Control.Control_Error.GetError(e, this.getClass.getSimpleName, 1)
-        Control.FinishProcessError()
+        Control.RegisterTestPlan(TestPlanGroup, "error en pruebas", "ERROR DE PROGRAMA -  NO deberia tener errror", "sin errores", s"con error: ${e.getMessage}", p_testPlan_IsOK = false)
+        Control.controlError.setError(e, this.getClass.getSimpleName, 1)
+        Control.finishProcessError()
     }
     
     if (Control.TestPlan_CurrentIsOK(10))

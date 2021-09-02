@@ -10,9 +10,9 @@ import org.apache.spark.sql.types.DecimalType
 
 class tbl_DatosBasicosNombres_mes(HuemulLib: HuemulBigDataGovernance, Control: HuemulControl, TipoTabla: HuemulTypeStorageType) extends HuemulTable(HuemulLib,Control) with Serializable {
   this.setTableType(HuemulTypeTables.Transaction)
-  this.setDataBase(HuemulLib.GlobalSettings.MASTER_DataBase)
+  this.setDataBase(HuemulLib.globalSettings.masterDataBase)
   this.setDescription("Plan pruebas: verificar que todos los tipos de datos sean interpretados de forma correcta")
-  this.setGlobalPaths(HuemulLib.GlobalSettings.MASTER_BigFiles_Path)
+  this.setGlobalPaths(HuemulLib.globalSettings.masterBigFilesPath)
   this.setLocalPath("planPruebas/")
   //this.setStorageType(HuemulTypeStorageType.PARQUET)
   if (TipoTabla == HuemulTypeStorageType.HBASE)
@@ -21,14 +21,14 @@ class tbl_DatosBasicosNombres_mes(HuemulLib: HuemulBigDataGovernance, Control: H
     this.setStorageType(TipoTabla)
 
   //agrega versión 2.6 nombres de campos mdm
-  this.setNameForMDM_fhChange("xxxDtChange4")
-  this.setNameForMDM_fhNew("xxxDtNew4")
+  this.setNameForMdmFhChange("xxxDtChange4")
+  this.setNameForMdmFhNew("xxxDtNew4")
   this.setNameForMDM_ProcessNew("xxxProcNew4")
-  this.setNameForMDM_ProcessChange("xxxProcChange4")
+  this.setNameForMdmProcessChange("xxxProcChange4")
   this.setNameForMDM_hash("xxxHash4")
   this.setNameForMDM_StatusReg("xxxStatus")
   
-  this.setDQ_MaxNewRecords_Num(4)
+  this.setDQMaxNewRecordsNum(4)
   //this.setPartitionField("periodo_mes")
   this.setFrequency(HuemulTypeFrequency.ANY_MOMENT)
   
@@ -42,8 +42,8 @@ class tbl_DatosBasicosNombres_mes(HuemulLib: HuemulBigDataGovernance, Control: H
   
   val TipoValor: HuemulColumns = new HuemulColumns(StringType,true,"Nombre del tipo de valor")
     .setIsPK ()
-    .setDQ_MinLen ( 2,null)
-    .setDQ_MaxLen ( 50,null)
+    .setDqMinLen ( 2,null)
+    .setDqMaxLen ( 50,null)
   
   
   val IntValue: HuemulColumns = new HuemulColumns(IntegerType,true,"datos integer")
@@ -84,9 +84,9 @@ class tbl_DatosBasicosNombres_mes(HuemulLib: HuemulBigDataGovernance, Control: H
   //**********Ejemplo para aplicar DataQuality de Integridad Referencial
   val itbl_DatosBasicos = new tbl_DatosBasicos(HuemulLib,Control)
   val fk_tbl_DatosBasicos = new HuemulTableRelationship(itbl_DatosBasicos, false)
-  fk_tbl_DatosBasicos.AddRelationship(itbl_DatosBasicos.TipoValor , TipoValor)
+  fk_tbl_DatosBasicos.addRelationship(itbl_DatosBasicos.TipoValor , TipoValor)
   
   
-  this.ApplyTableDefinition()
+  this.applyTableDefinition()
   
 }
